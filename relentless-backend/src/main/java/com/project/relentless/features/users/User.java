@@ -1,8 +1,12 @@
 package com.project.relentless.features.users;
 
+import com.project.relentless.features.bookings.Booking;
+import com.project.relentless.features.spaces.Space;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.*;
 
 @Entity
@@ -40,4 +44,30 @@ public class User {
   @Enumerated(EnumType.STRING)
   @Builder.Default
   private Role role = Role.USER;
+
+  @NotNull(message = "Is deleted flag is required.")
+  @Builder.Default
+  private boolean isDeleted = false;
+
+  @OneToMany(mappedBy = "user")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @Builder.Default
+  private Set<Booking> bookings = new HashSet<>();
+
+  @OneToMany(mappedBy = "host")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @Builder.Default
+  private Set<Space> spaces = new HashSet<>();
+
+  @ManyToMany
+  @JoinTable(
+      name = "user_space",
+      joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "space_id"))
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @Builder.Default
+  private Set<Space> savedSpaces = new HashSet<>();
 }

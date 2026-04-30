@@ -1,11 +1,10 @@
 package com.project.relentless.features.spaces;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.*;
 
 @Entity
@@ -27,4 +26,10 @@ public class Category {
   @NotBlank(message = "Description is required.")
   @Size(min = 1, max = 255, message = "Description must be between 1 and 255 characters.")
   private String description;
+
+  @OneToMany(mappedBy = "category")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @Builder.Default
+  private Set<Space> spaces = new HashSet<>();
 }

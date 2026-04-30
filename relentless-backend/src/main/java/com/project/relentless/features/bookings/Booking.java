@@ -1,5 +1,7 @@
 package com.project.relentless.features.bookings;
 
+import com.project.relentless.features.spaces.Space;
+import com.project.relentless.features.users.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -36,4 +38,15 @@ public class Booking {
   @Enumerated(EnumType.STRING)
   @Builder.Default
   private BookingStatus status = BookingStatus.PENDING;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false, updatable = false)
+  private User user;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "space_id", nullable = false, updatable = false)
+  private Space space;
+
+  @OneToOne(mappedBy = "booking", cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private Review review;
 }

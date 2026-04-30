@@ -1,9 +1,6 @@
-package com.project.relentless.features.reviews;
+package com.project.relentless.features.bookings;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -32,4 +29,8 @@ public class Review {
   @NotNull(message = "Time of creation is required.")
   @PastOrPresent(message = "Time of creation must be in the past or present.")
   private LocalDateTime createdAt;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "booking_id", nullable = false)
+  private Booking booking;
 }
