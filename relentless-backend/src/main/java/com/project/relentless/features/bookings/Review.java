@@ -2,8 +2,11 @@ package com.project.relentless.features.bookings;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 @Entity
 @Getter
@@ -33,4 +36,41 @@ public class Review {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "booking_id", nullable = false)
   private Booking booking;
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null) {
+      return false;
+    }
+    Class<?> oClass;
+    if (o instanceof HibernateProxy) {
+      oClass = ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass();
+    } else {
+      oClass = o.getClass();
+    }
+    Class<?> thisClass;
+    if (this instanceof HibernateProxy) {
+      thisClass = ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass();
+    } else {
+      thisClass = this.getClass();
+    }
+    if (thisClass != oClass) {
+      return false;
+    }
+    Review review = (Review) o;
+    return getId() != null && Objects.equals(getId(), review.getId());
+  }
+
+  @Override
+  public final int hashCode() {
+    Object o = this;
+    if (this instanceof HibernateProxy) {
+      o = ((HibernateProxy) this).getHibernateLazyInitializer().getImplementation();
+    }
+    Serializable id = ((Review) o).getId();
+    return id != null ? id.hashCode() : super.hashCode();
+  }
 }

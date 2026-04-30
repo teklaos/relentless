@@ -4,9 +4,12 @@ import com.project.relentless.features.spaces.Space;
 import com.project.relentless.features.users.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 @Entity
 @Getter
@@ -49,4 +52,41 @@ public class Booking {
 
   @OneToOne(mappedBy = "booking", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private Review review;
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null) {
+      return false;
+    }
+    Class<?> oClass;
+    if (o instanceof HibernateProxy) {
+      oClass = ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass();
+    } else {
+      oClass = o.getClass();
+    }
+    Class<?> thisClass;
+    if (this instanceof HibernateProxy) {
+      thisClass = ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass();
+    } else {
+      thisClass = this.getClass();
+    }
+    if (thisClass != oClass) {
+      return false;
+    }
+    Booking booking = (Booking) o;
+    return getId() != null && Objects.equals(getId(), booking.getId());
+  }
+
+  @Override
+  public final int hashCode() {
+    Object o = this;
+    if (this instanceof HibernateProxy) {
+      o = ((HibernateProxy) this).getHibernateLazyInitializer().getImplementation();
+    }
+    Serializable id = ((Booking) o).getId();
+    return id != null ? id.hashCode() : super.hashCode();
+  }
 }

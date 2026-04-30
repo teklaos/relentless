@@ -5,11 +5,14 @@ import com.project.relentless.features.users.User;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 @Entity
 @Getter
@@ -80,4 +83,41 @@ public class Space {
   @EqualsAndHashCode.Exclude
   @Builder.Default
   private Set<User> savedBy = new HashSet<>();
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null) {
+      return false;
+    }
+    Class<?> oClass;
+    if (o instanceof HibernateProxy) {
+      oClass = ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass();
+    } else {
+      oClass = o.getClass();
+    }
+    Class<?> thisClass;
+    if (this instanceof HibernateProxy) {
+      thisClass = ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass();
+    } else {
+      thisClass = this.getClass();
+    }
+    if (thisClass != oClass) {
+      return false;
+    }
+    Space space = (Space) o;
+    return getId() != null && Objects.equals(getId(), space.getId());
+  }
+
+  @Override
+  public final int hashCode() {
+    Object o = this;
+    if (this instanceof HibernateProxy) {
+      o = ((HibernateProxy) this).getHibernateLazyInitializer().getImplementation();
+    }
+    Serializable id = ((Space) o).getId();
+    return id != null ? id.hashCode() : super.hashCode();
+  }
 }
