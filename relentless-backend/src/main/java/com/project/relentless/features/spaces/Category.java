@@ -26,7 +26,6 @@ public class Category {
   @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters.")
   private String name;
 
-  @NotBlank(message = "Description is required.")
   @Size(min = 1, max = 255, message = "Description must be between 1 and 255 characters.")
   private String description;
 
