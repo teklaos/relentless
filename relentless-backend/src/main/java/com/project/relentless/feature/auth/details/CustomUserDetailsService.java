@@ -1,6 +1,6 @@
-package com.project.relentless.features.auth.details;
+package com.project.relentless.feature.auth.details;
 
-import com.project.relentless.features.users.UserRepository;
+import com.project.relentless.feature.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.userdetails.UserDetails;

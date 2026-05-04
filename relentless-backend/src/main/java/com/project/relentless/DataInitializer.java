@@ -1,9 +1,9 @@
 package com.project.relentless;
 
-import com.project.relentless.features.bookings.*;
-import com.project.relentless.features.spaces.*;
-import com.project.relentless.features.users.User;
-import com.project.relentless.features.users.UserRepository;
+import com.project.relentless.feature.booking.*;
+import com.project.relentless.feature.space.*;
+import com.project.relentless.feature.user.User;
+import com.project.relentless.feature.user.UserRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;

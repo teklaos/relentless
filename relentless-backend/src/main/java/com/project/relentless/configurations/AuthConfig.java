@@ -1,6 +1,6 @@
 package com.project.relentless.configurations;
 
-import com.project.relentless.features.auth.details.CustomUserDetailsService;
+import com.project.relentless.feature.auth.details.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

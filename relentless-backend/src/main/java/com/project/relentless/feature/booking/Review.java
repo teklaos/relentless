@@ -1,4 +1,4 @@
-package com.project.relentless.features.bookings;
+package com.project.relentless.feature.booking;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;

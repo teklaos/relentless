@@ -1,6 +1,6 @@
 package com.project.relentless.configurations;
 
-import com.project.relentless.features.auth.jwts.JwtAuthFilter;
+import com.project.relentless.feature.auth.jwt.JwtAuthFilter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

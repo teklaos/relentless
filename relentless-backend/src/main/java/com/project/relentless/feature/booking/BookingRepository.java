@@ -1,7 +1,7 @@
-package com.project.relentless.features.bookings;
+package com.project.relentless.feature.booking;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ReviewRepository extends JpaRepository<Review, Long> {}
+public interface BookingRepository extends JpaRepository<Booking, Long> {}

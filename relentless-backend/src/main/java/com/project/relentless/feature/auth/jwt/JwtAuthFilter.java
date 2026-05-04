@@ -1,6 +1,6 @@
-package com.project.relentless.features.auth.jwts;
+package com.project.relentless.feature.auth.jwt;
 
-import com.project.relentless.features.auth.details.CustomUserDetailsService;
+import com.project.relentless.feature.auth.details.CustomUserDetailsService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

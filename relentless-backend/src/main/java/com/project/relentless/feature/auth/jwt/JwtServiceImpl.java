@@ -1,4 +1,4 @@
-package com.project.relentless.features.auth.jwts;
+package com.project.relentless.feature.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

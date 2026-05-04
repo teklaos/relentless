@@ -1,7 +1,7 @@
-package com.project.relentless.features.users;
+package com.project.relentless.feature.user;
 
-import com.project.relentless.features.bookings.Booking;
-import com.project.relentless.features.spaces.Space;
+import com.project.relentless.feature.booking.Booking;
+import com.project.relentless.feature.space.Space;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;

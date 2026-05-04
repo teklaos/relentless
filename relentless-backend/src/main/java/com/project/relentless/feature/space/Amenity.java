@@ -1,4 +1,4 @@
-package com.project.relentless.features.spaces;
+package com.project.relentless.feature.space;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -16,7 +16,7 @@ import org.hibernate.proxy.HibernateProxy;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Category {
+public class Amenity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +26,7 @@ public class Category {
   @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters.")
   private String name;
 
-  @Size(min = 1, max = 255, message = "Description must be between 1 and 255 characters.")
-  private String description;
-
-  @OneToMany(mappedBy = "category")
+  @ManyToMany(mappedBy = "amenities")
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   @Builder.Default
@@ -58,8 +55,8 @@ public class Category {
     if (thisClass != oClass) {
       return false;
     }
-    Category category = (Category) o;
-    return getId() != null && Objects.equals(getId(), category.getId());
+    Amenity amenity = (Amenity) o;
+    return getId() != null && Objects.equals(getId(), amenity.getId());
   }
 
   @Override
@@ -68,7 +65,7 @@ public class Category {
     if (this instanceof HibernateProxy) {
       o = ((HibernateProxy) this).getHibernateLazyInitializer().getImplementation();
     }
-    Serializable id = ((Category) o).getId();
+    Serializable id = ((Amenity) o).getId();
     return id != null ? id.hashCode() : super.hashCode();
   }
 }

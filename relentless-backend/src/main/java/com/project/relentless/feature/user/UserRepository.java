@@ -1,4 +1,4 @@
-package com.project.relentless.features.users;
+package com.project.relentless.feature.user;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

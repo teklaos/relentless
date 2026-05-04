@@ -1,6 +1,6 @@
-package com.project.relentless.features.auth.details;
+package com.project.relentless.feature.auth.details;
 
-import com.project.relentless.features.users.User;
+import com.project.relentless.feature.user.User;
 import java.util.Collection;
 import java.util.List;
 import org.jspecify.annotations.NullMarked;
