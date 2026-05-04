@@ -16,11 +16,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtServiceImpl implements JwtService {
 
-  @Value("${jwt.secret}")
+  @Value("${jwt.access.secret}")
   private String secret;
 
-  @Value("${jwt.access-expiration}")
-  private long accessTokenExpiration;
+  private static final long accessTokenExpiration = 60 * 60 * 1000L;
 
   private Key key;
 
@@ -31,12 +30,8 @@ public class JwtServiceImpl implements JwtService {
 
   @Override
   public String generateAccessToken(Long id) {
-    return generateToken(id, accessTokenExpiration);
-  }
-
-  private String generateToken(Long id, long expiration) {
     var now = new Date();
-    var exp = new Date(now.getTime() + expiration);
+    var exp = new Date(now.getTime() + accessTokenExpiration);
 
     return Jwts.builder()
         .setSubject(id.toString())

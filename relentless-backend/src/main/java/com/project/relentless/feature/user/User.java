@@ -1,5 +1,6 @@
 package com.project.relentless.feature.user;
 
+import com.project.relentless.feature.auth.refresh.RefreshToken;
 import com.project.relentless.feature.booking.Booking;
 import com.project.relentless.feature.space.Space;
 import jakarta.persistence.*;
@@ -63,6 +64,12 @@ public class User {
   @EqualsAndHashCode.Exclude
   @Builder.Default
   private Set<Space> spaces = new HashSet<>();
+
+  @OneToMany(mappedBy = "user")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @Builder.Default
+  private Set<RefreshToken> refreshTokens = new HashSet<>();
 
   @ManyToMany
   @JoinTable(

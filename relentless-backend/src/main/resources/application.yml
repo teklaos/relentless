@@ -15,5 +15,7 @@ spring:
       ddl-auto: create-drop
 
 jwt:
-  secret: ${JWT_SECRET}
-  access-expiration: ${JWT_ACCESS_EXPIRATION}
+  access:
+    secret: ${JWT_ACCESS_SECRET}
+  refresh:
+    secret: ${JWT_REFRESH_SECRET}
