@@ -27,7 +27,7 @@ public class User {
   private Long id;
 
   @NotBlank(message = "Username is required.")
-  @Size(min = 1, max = 50, message = "Username must be between 1 and 50 characters.")
+  @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters.")
   private String username;
 
   @NotBlank(message = "Password hash is required.")
@@ -36,7 +36,7 @@ public class User {
 
   @NotBlank(message = "Email is required.")
   @Column(unique = true)
-  @Size(min = 1, max = 100, message = "Email must be between 1 and 100 characters.")
+  @Size(min = 3, max = 100, message = "Email must be between 3 and 100 characters.")
   @Email(message = "Invalid email format.")
   private String email;
 

@@ -1,4 +1,4 @@
-package com.project.relentless.configurations;
+package com.project.relentless.config;
 
 import com.project.relentless.feature.auth.jwt.JwtAuthFilter;
 import java.util.List;
@@ -35,7 +35,7 @@ public class SecurityConfig {
     http.csrf(AbstractHttpConfigurer::disable)
         .cors(Customizer.withDefaults())
         .authorizeHttpRequests(
-            auth -> auth.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
+            auth -> auth.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

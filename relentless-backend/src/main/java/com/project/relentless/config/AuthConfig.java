@@ -1,4 +1,4 @@
-package com.project.relentless.configurations;
+package com.project.relentless.config;
 
 import com.project.relentless.feature.auth.details.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
