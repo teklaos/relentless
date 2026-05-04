@@ -1,4 +1,4 @@
-package com.project.relentless.features.spaces;
+package com.project.relentless.feature.space;
 
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;

@@ -1,13 +1,17 @@
-package com.project.relentless.features.users;
+package com.project.relentless.feature.user;
 
-import com.project.relentless.features.bookings.Booking;
-import com.project.relentless.features.spaces.Space;
+import com.project.relentless.feature.auth.refresh.RefreshToken;
+import com.project.relentless.feature.booking.Booking;
+import com.project.relentless.feature.space.Space;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 @Entity
 @Getter
@@ -32,7 +36,7 @@ public class User {
 
   @NotBlank(message = "Email is required.")
   @Column(unique = true)
-  @Size(min = 1, max = 255, message = "Email must be between 1 and 75 characters.")
+  @Size(min = 1, max = 100, message = "Email must be between 1 and 100 characters.")
   @Email(message = "Invalid email format.")
   private String email;
 
@@ -61,6 +65,12 @@ public class User {
   @Builder.Default
   private Set<Space> spaces = new HashSet<>();
 
+  @OneToMany(mappedBy = "user")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @Builder.Default
+  private Set<RefreshToken> refreshTokens = new HashSet<>();
+
   @ManyToMany
   @JoinTable(
       name = "user_space",
@@ -70,4 +80,41 @@ public class User {
   @EqualsAndHashCode.Exclude
   @Builder.Default
   private Set<Space> savedSpaces = new HashSet<>();
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null) {
+      return false;
+    }
+    Class<?> oClass;
+    if (o instanceof HibernateProxy) {
+      oClass = ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass();
+    } else {
+      oClass = o.getClass();
+    }
+    Class<?> thisClass;
+    if (this instanceof HibernateProxy) {
+      thisClass = ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass();
+    } else {
+      thisClass = this.getClass();
+    }
+    if (thisClass != oClass) {
+      return false;
+    }
+    User user = (User) o;
+    return getId() != null && Objects.equals(getId(), user.getId());
+  }
+
+  @Override
+  public final int hashCode() {
+    Object o = this;
+    if (this instanceof HibernateProxy) {
+      o = ((HibernateProxy) this).getHibernateLazyInitializer().getImplementation();
+    }
+    Serializable id = ((User) o).getId();
+    return id != null ? id.hashCode() : super.hashCode();
+  }
 }
