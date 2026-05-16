@@ -8,7 +8,7 @@ import com.project.relentless.feature.auth.dto.response.AccessTokenResponse;
 import com.project.relentless.feature.auth.dto.response.AuthResponse;
 import com.project.relentless.feature.auth.jwt.JwtService;
 import com.project.relentless.feature.auth.refresh.RefreshTokenService;
-import com.project.relentless.feature.user.User;
+import com.project.relentless.feature.user.UserMapper;
 import com.project.relentless.feature.user.UserRepository;
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityExistsException;
@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
   private final UserRepository userRepository;
+  private final UserMapper userMapper;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final RefreshTokenService refreshTokenService;
@@ -37,13 +38,8 @@ public class AuthServiceImpl implements AuthService {
       throw new EntityExistsException("Email is already in use");
     }
 
-    var user =
-        User.builder()
-            .username(request.username())
-            .passwordHash(passwordEncoder.encode(request.password()))
-            .email(request.email())
-            .dateOfBirth(request.dateOfBirth())
-            .build();
+    var user = userMapper.toUser(request);
+    user.setPasswordHash(passwordEncoder.encode(request.password()));
 
     var savedUser = userRepository.save(user);
 
