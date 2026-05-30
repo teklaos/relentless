@@ -1,0 +1,160 @@
+.app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 248px 1fr;
+  background: var(--bg);
+}
+
+.app.compact {
+  font-size: 13px;
+}
+
+.main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  padding: 40px;
+  max-width: 1440px;
+  width: 100%;
+}
+
+.page-header {
+  display: flex;
+  align-items: end;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 20px;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.page-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 120px;
+  height: 3px;
+  background: var(--accent);
+}
+
+.page-title {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 56px;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 12px 18px;
+  z-index: 300;
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  animation: toast-pop 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  white-space: nowrap;
+}
+
+@keyframes toast-pop {
+  from {
+    transform: translateX(-50%) translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%);
+    opacity: 1;
+  }
+}
+
+.toast .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  border: 1px dashed var(--hairline-strong);
+  text-align: center;
+}
+
+.empty-icon {
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--hairline-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--ink-3);
+  margin-bottom: 16px;
+}
+
+.empty-h {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.empty-p {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 11px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  max-width: 320px;
+}
+
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .content {
+    padding: 24px 20px 100px;
+  }
+
+  .page-title {
+    font-size: 34px;
+  }
+
+  .page-header {
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+
+  .toast {
+    bottom: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 20px 16px 100px;
+  }
+
+  .page-title {
+    font-size: 28px;
+  }
+}

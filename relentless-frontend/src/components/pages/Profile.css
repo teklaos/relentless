@@ -1,0 +1,204 @@
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.profile-card {
+  border: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  padding: 32px;
+}
+
+.profile-avatar {
+  width: 88px;
+  height: 88px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 36px;
+  letter-spacing: -0.04em;
+  margin-bottom: 20px;
+}
+
+.profile-name {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  margin: 0 0 4px;
+}
+
+.profile-role {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 11px;
+  color: var(--accent-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: var(--accent-softer);
+  border: 1px solid var(--accent-soft);
+  border-radius: 2px;
+}
+
+.profile-kv {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 14px 16px;
+  border-top: 1px solid var(--hairline);
+  padding-top: 20px;
+}
+
+.profile-kv .k {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-3);
+}
+
+.profile-kv .v {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 13px;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--hairline);
+  margin-bottom: 24px;
+}
+
+.profile-stat {
+  padding: 24px 20px;
+  border-right: 1px solid var(--hairline);
+}
+
+.profile-stat:last-child {
+  border-right: none;
+}
+
+.profile-stat .num {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 36px;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--accent-ink);
+}
+
+.profile-stat .lbl {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  margin-top: 8px;
+}
+
+.settings-list {
+  border: 1px solid var(--hairline);
+}
+
+.setting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.setting:last-child {
+  border-bottom: none;
+}
+
+.setting:hover {
+  background: var(--bg-sunken);
+}
+
+.setting-l {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.setting-t {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.setting-d {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10.5px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.setting-v {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 12px;
+  color: var(--ink-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--hairline-strong);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.toggle.on {
+  background: var(--accent);
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.2s;
+  display: block;
+}
+
+.toggle.on .toggle-thumb {
+  transform: translateX(18px);
+}
+
+@media (max-width: 768px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-stat {
+    padding: 16px 12px;
+  }
+
+  .profile-stat .num {
+    font-size: 26px;
+  }
+}
