@@ -1,0 +1,8 @@
+package com.project.relentless.feature.booking.service;
+
+import com.project.relentless.feature.booking.dto.response.BookingResponse;
+import java.util.List;
+
+public interface BookingService {
+  List<BookingResponse> getByCurrentUser();
+}

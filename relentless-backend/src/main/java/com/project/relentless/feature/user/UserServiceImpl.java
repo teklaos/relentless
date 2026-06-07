@@ -24,6 +24,9 @@ public class UserServiceImpl implements UserService {
       throw new AuthenticationCredentialsNotFoundException("Unauthorized");
     }
     CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+    if (userDetails == null) {
+      throw new AuthenticationCredentialsNotFoundException("Unauthorized");
+    }
     return userMapper.toUserResponse(userDetails.user());
   }
 

@@ -1,12 +1,10 @@
-package com.project.relentless.feature.space;
+package com.project.relentless.feature.booking.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import java.io.Serializable;
-import java.util.HashSet;
+import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Set;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -16,24 +14,28 @@ import org.hibernate.proxy.HibernateProxy;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Category {
+public class Review {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotBlank(message = "Name is required.")
-  @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters.")
-  private String name;
+  @NotNull(message = "Rating is required.")
+  @Min(value = 1, message = "Rating must be at least 1.")
+  @Max(value = 5, message = "Rating must be at most 5.")
+  private int rating;
 
-  @Size(min = 1, max = 255, message = "Description must be between 1 and 255 characters.")
-  private String description;
+  @NotBlank(message = "Comment is required.")
+  @Size(min = 1, max = 255, message = "Comment must be between 1 and 255 characters.")
+  private String comment;
 
-  @OneToMany(mappedBy = "category")
-  @ToString.Exclude
-  @EqualsAndHashCode.Exclude
-  @Builder.Default
-  private Set<Space> spaces = new HashSet<>();
+  @NotNull(message = "Time of creation is required.")
+  @PastOrPresent(message = "Time of creation must be in the past or present.")
+  private LocalDateTime createdAt;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "booking_id", nullable = false)
+  private Booking booking;
 
   @Override
   public final boolean equals(Object o) {
@@ -58,8 +60,8 @@ public class Category {
     if (thisClass != oClass) {
       return false;
     }
-    Category category = (Category) o;
-    return getId() != null && Objects.equals(getId(), category.getId());
+    Review review = (Review) o;
+    return getId() != null && Objects.equals(getId(), review.getId());
   }
 
   @Override
@@ -68,7 +70,7 @@ public class Category {
     if (this instanceof HibernateProxy) {
       o = ((HibernateProxy) this).getHibernateLazyInitializer().getImplementation();
     }
-    Serializable id = ((Category) o).getId();
+    Serializable id = ((Review) o).getId();
     return id != null ? id.hashCode() : super.hashCode();
   }
 }

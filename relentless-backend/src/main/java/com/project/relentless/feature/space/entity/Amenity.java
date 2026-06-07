@@ -1,10 +1,12 @@
-package com.project.relentless.feature.booking;
+package com.project.relentless.feature.space.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -14,28 +16,21 @@ import org.hibernate.proxy.HibernateProxy;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Review {
+public class Amenity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotNull(message = "Rating is required.")
-  @Min(value = 1, message = "Rating must be at least 1.")
-  @Max(value = 5, message = "Rating must be at most 5.")
-  private int rating;
+  @NotBlank(message = "Name is required.")
+  @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters.")
+  private String name;
 
-  @NotBlank(message = "Comment is required.")
-  @Size(min = 1, max = 255, message = "Comment must be between 1 and 255 characters.")
-  private String comment;
-
-  @NotNull(message = "Time of creation is required.")
-  @PastOrPresent(message = "Time of creation must be in the past or present.")
-  private LocalDateTime createdAt;
-
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "booking_id", nullable = false)
-  private Booking booking;
+  @ManyToMany(mappedBy = "amenities")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @Builder.Default
+  private Set<Space> spaces = new HashSet<>();
 
   @Override
   public final boolean equals(Object o) {
@@ -60,8 +55,8 @@ public class Review {
     if (thisClass != oClass) {
       return false;
     }
-    Review review = (Review) o;
-    return getId() != null && Objects.equals(getId(), review.getId());
+    Amenity amenity = (Amenity) o;
+    return getId() != null && Objects.equals(getId(), amenity.getId());
   }
 
   @Override
@@ -70,7 +65,7 @@ public class Review {
     if (this instanceof HibernateProxy) {
       o = ((HibernateProxy) this).getHibernateLazyInitializer().getImplementation();
     }
-    Serializable id = ((Review) o).getId();
+    Serializable id = ((Amenity) o).getId();
     return id != null ? id.hashCode() : super.hashCode();
   }
 }

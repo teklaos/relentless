@@ -1,4 +1,4 @@
-package com.project.relentless.feature.space;
+package com.project.relentless.feature.space.entity;
 
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
@@ -23,7 +23,7 @@ public class Address {
   private String streetNumber;
 
   @Size(min = 1, max = 10, message = "Unit number must be between 1 and 10 characters.")
-  private String unitNumber;
+  private String apartmentNumber;
 
   @NotBlank(message = "Postal code is required.")
   @Size(min = 3, max = 10, message = "Postal code must be between 3 and 10 characters.")

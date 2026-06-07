@@ -1,8 +1,8 @@
 package com.project.relentless.feature.user;
 
 import com.project.relentless.feature.auth.refresh.RefreshToken;
-import com.project.relentless.feature.booking.Booking;
-import com.project.relentless.feature.space.Space;
+import com.project.relentless.feature.booking.entity.Booking;
+import com.project.relentless.feature.space.entity.Space;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;

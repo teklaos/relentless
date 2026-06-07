@@ -1,6 +1,6 @@
-package com.project.relentless.feature.space;
+package com.project.relentless.feature.space.entity;
 
-import com.project.relentless.feature.booking.Booking;
+import com.project.relentless.feature.booking.entity.Booking;
 import com.project.relentless.feature.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;

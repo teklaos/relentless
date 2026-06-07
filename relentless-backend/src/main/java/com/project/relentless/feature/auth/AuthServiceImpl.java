@@ -15,8 +15,11 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -91,5 +94,17 @@ public class AuthServiceImpl implements AuthService {
     Long userId = refreshToken.getUser().getId();
 
     refreshTokenService.deleteAllByUserId(userId);
+  }
+
+  @Override
+  public Long getCurrentUserId() {
+    var auth = SecurityContextHolder.getContext().getAuthentication();
+    if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
+      throw new AuthenticationCredentialsNotFoundException("Unauthorized");
+    }
+    if (!(auth.getPrincipal() instanceof CustomUserDetails userDetails)) {
+      throw new AuthenticationCredentialsNotFoundException("Unauthorized");
+    }
+    return userDetails.getId();
   }
 }
