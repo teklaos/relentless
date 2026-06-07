@@ -44,6 +44,11 @@ public class User {
   @PastOrPresent(message = "Date of birth must be in the past or present.")
   private LocalDate dateOfBirth;
 
+  @NotNull(message = "Date joined is required.")
+  @PastOrPresent(message = "Date joined must be in the past or present.")
+  @Builder.Default
+  private LocalDate dateJoined = LocalDate.now();
+
   @NotNull(message = "Role is required.")
   @Enumerated(EnumType.STRING)
   @Builder.Default
