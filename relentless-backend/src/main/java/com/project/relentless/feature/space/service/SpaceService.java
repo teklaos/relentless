@@ -6,5 +6,11 @@ import java.util.List;
 public interface SpaceService {
   List<SpaceResponse> getAll();
 
+  List<SpaceResponse> getSavedByCurrentUser();
+
   SpaceResponse getById(Long id);
+
+  void save(Long id);
+
+  void unsave(Long id);
 }

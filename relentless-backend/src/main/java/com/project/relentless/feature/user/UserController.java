@@ -1,7 +1,8 @@
 package com.project.relentless.feature.user;
 
-import com.project.relentless.feature.user.dto.request.EditUserRequest;
+import com.project.relentless.feature.user.dto.request.UpdateUserRequest;
 import com.project.relentless.feature.user.dto.response.UserResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class UserController {
 
   @PatchMapping("/{id}")
   public ResponseEntity<UserResponse> update(
-      @PathVariable Long id, @RequestBody EditUserRequest request) {
+      @PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
     return ResponseEntity.ok(userService.update(id, request));
   }
 }

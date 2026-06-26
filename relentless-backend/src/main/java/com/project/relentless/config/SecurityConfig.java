@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,7 +36,17 @@ public class SecurityConfig {
     http.csrf(AbstractHttpConfigurer::disable)
         .cors(Customizer.withDefaults())
         .authorizeHttpRequests(
-            auth -> auth.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated())
+            auth ->
+                auth.requestMatchers("/api/auth/**")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/spaces/**")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/categories/**")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/reviews/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

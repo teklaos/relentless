@@ -1,7 +1,7 @@
 package com.project.relentless.feature.user;
 
 import com.project.relentless.feature.auth.details.CustomUserDetails;
-import com.project.relentless.feature.user.dto.request.EditUserRequest;
+import com.project.relentless.feature.user.dto.request.UpdateUserRequest;
 import com.project.relentless.feature.user.dto.response.UserResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserResponse update(Long id, EditUserRequest request) {
+  public UserResponse update(Long id, UpdateUserRequest request) {
     var user =
         userRepository
             .findById(id)
