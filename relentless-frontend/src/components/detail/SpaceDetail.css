@@ -1,0 +1,265 @@
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  animation: fade 0.2s ease;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(960px, 80vw);
+  background: var(--bg);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  animation: slidein 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: -20px 0 60px -10px rgba(10, 10, 10, 0.18);
+}
+
+.drawer-head {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.drawer-close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--hairline-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+}
+
+.drawer-close:hover {
+  background: var(--bg-sunken);
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 0;
+}
+
+.drawer-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.drawer-body::-webkit-scrollbar-thumb {
+  background: var(--hairline-strong);
+  border-radius: 3px;
+}
+
+.detail-main {
+  padding: 32px;
+  border-right: 1px solid var(--hairline);
+}
+
+.detail-side {
+  padding: 32px;
+  background: var(--bg);
+}
+
+.detail-cat {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-ink);
+  margin-bottom: 12px;
+}
+
+.detail-title {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 42px;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0 0 14px;
+}
+
+.detail-loc {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 12px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.detail-hero {
+  aspect-ratio: 16/10;
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.detail-thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.detail-thumb {
+  aspect-ratio: 1;
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+}
+
+.detail-section {
+  margin-bottom: 32px;
+}
+
+.detail-section-h {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-4);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.detail-section-h::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--hairline);
+}
+
+.detail-desc {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 540px;
+}
+
+.amenity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  border: 1px solid var(--hairline);
+}
+
+.amenity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-right: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  font-size: 13px;
+}
+
+.amenity:nth-child(2n) {
+  border-right: none;
+}
+
+.amenity:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+
+.amenity .icon {
+  color: var(--accent-ink);
+}
+
+.review {
+  border-top: 1px solid var(--hairline);
+  padding: 16px 0;
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.review:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.review-author {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.review-date {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  color: var(--ink-4);
+  margin-top: 4px;
+}
+
+.review-body {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.review-rating {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 11px;
+  color: var(--ink);
+  display: flex;
+  gap: 1px;
+}
+
+@media (max-width: 1100px) {
+  .drawer-body {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-main {
+    border-right: none;
+    border-bottom: 1px solid var(--hairline);
+  }
+}
+
+@media (max-width: 768px) {
+  .drawer {
+    width: 100vw;
+    top: 0;
+  }
+
+  .drawer-body {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-main {
+    border-right: none;
+    border-bottom: 1px solid var(--hairline);
+    padding: 20px;
+  }
+
+  .detail-side {
+    padding: 20px;
+  }
+
+  .detail-title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-thumbs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

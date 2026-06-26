@@ -1,0 +1,199 @@
+.history-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 24px;
+}
+
+.history-tab {
+  padding: 12px 18px;
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.history-tab .ct {
+  font-size: 10px;
+  background: var(--bg-sunken);
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+.history-tab.active {
+  color: var(--accent-ink);
+}
+
+.history-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+}
+
+.history-tab.active .ct {
+  background: var(--accent);
+  color: white;
+}
+
+.booking-row {
+  display: grid;
+  grid-template-columns: 60px 80px 1fr 1.2fr 100px 110px 140px;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--hairline);
+  transition: background 0.12s;
+  cursor: pointer;
+}
+
+.booking-row.head {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-4);
+  cursor: default;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.booking-row.head:hover {
+  background: transparent;
+}
+
+.booking-row:hover {
+  background: var(--bg-sunken);
+}
+
+.br-id {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.br-thumb {
+  width: 64px;
+  height: 48px;
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+}
+
+.br-title {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
+.br-cat {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  margin-top: 2px;
+}
+
+.br-when {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 11.5px;
+}
+
+.br-when .t {
+  color: var(--ink-3);
+  margin-top: 2px;
+  font-size: 10.5px;
+}
+
+.br-price {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.br-status {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 7px;
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  justify-self: start;
+}
+
+.br-status .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.br-status.confirmed {
+  color: oklch(0.45 0.13 145);
+}
+
+.br-status.confirmed .dot {
+  background: oklch(0.55 0.13 145);
+}
+
+.br-status.pending {
+  color: oklch(0.55 0.13 70);
+}
+
+.br-status.pending .dot {
+  background: oklch(0.65 0.14 70);
+}
+
+.br-status.completed {
+  color: var(--ink-3);
+}
+
+.br-status.completed .dot {
+  background: var(--ink-3);
+}
+
+.br-status.cancelled {
+  color: var(--danger);
+}
+
+.br-status.cancelled .dot {
+  background: var(--danger);
+}
+
+.br-action {
+  justify-self: end;
+}
+
+@media (max-width: 768px) {
+  .booking-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 14px;
+  }
+
+  .booking-row.head {
+    display: none;
+  }
+
+  .br-thumb {
+    display: none;
+  }
+
+  .br-action {
+    justify-self: end;
+  }
+}

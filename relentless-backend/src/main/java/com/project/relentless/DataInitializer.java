@@ -1,7 +1,17 @@
 package com.project.relentless;
 
 import com.project.relentless.feature.booking.*;
-import com.project.relentless.feature.space.*;
+import com.project.relentless.feature.booking.entity.Booking;
+import com.project.relentless.feature.booking.entity.Review;
+import com.project.relentless.feature.booking.repository.BookingRepository;
+import com.project.relentless.feature.booking.repository.ReviewRepository;
+import com.project.relentless.feature.space.entity.Address;
+import com.project.relentless.feature.space.entity.Amenity;
+import com.project.relentless.feature.space.entity.Category;
+import com.project.relentless.feature.space.entity.Space;
+import com.project.relentless.feature.space.repository.AmenityRepository;
+import com.project.relentless.feature.space.repository.CategoryRepository;
+import com.project.relentless.feature.space.repository.SpaceRepository;
 import com.project.relentless.feature.user.User;
 import com.project.relentless.feature.user.UserRepository;
 import java.math.BigDecimal;
@@ -89,7 +99,7 @@ public class DataInitializer {
                 Address.builder()
                     .street("Main St.")
                     .streetNumber("67")
-                    .unitNumber("A")
+                    .apartmentNumber("A")
                     .city("Warsaw")
                     .postalCode("00-120")
                     .country("Poland")
@@ -106,7 +116,7 @@ public class DataInitializer {
                 Address.builder()
                     .street("Second St.")
                     .streetNumber("45")
-                    .unitNumber("B")
+                    .apartmentNumber("B")
                     .city("Warsaw")
                     .postalCode("00-130")
                     .country("Poland")

@@ -61,12 +61,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     return token;
   }
 
-  private String generateToken() {
-    byte[] randomBytes = new byte[64];
-    secureRandom.nextBytes(randomBytes);
-    return encoder.encodeToString(randomBytes);
-  }
-
   @Override
   public RefreshToken findByRawToken(String rawToken) {
     String tokenHash = hmacSha256Hex(rawToken);
@@ -82,6 +76,18 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     refreshTokenRepository.deleteByTokenHash(tokenHash);
   }
 
+  @Override
+  @Transactional
+  public void deleteAllByUserId(Long userId) {
+    refreshTokenRepository.deleteAllByUserId(userId);
+  }
+
+  private String generateToken() {
+    byte[] randomBytes = new byte[64];
+    secureRandom.nextBytes(randomBytes);
+    return encoder.encodeToString(randomBytes);
+  }
+
   private String hmacSha256Hex(String rawToken) {
     try {
       var mac = Mac.getInstance("HmacSHA256");
@@ -93,11 +99,5 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
       log.error("{}: {}", ex.getClass().getName(), ex.getMessage());
       throw new RuntimeException("Could not generate HMAC-SHA256", ex);
     }
-  }
-
-  @Override
-  @Transactional
-  public void deleteAllByUserId(Long userId) {
-    refreshTokenRepository.deleteAllByUserId(userId);
   }
 }

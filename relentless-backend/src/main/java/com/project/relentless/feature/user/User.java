@@ -1,8 +1,8 @@
 package com.project.relentless.feature.user;
 
 import com.project.relentless.feature.auth.refresh.RefreshToken;
-import com.project.relentless.feature.booking.Booking;
-import com.project.relentless.feature.space.Space;
+import com.project.relentless.feature.booking.entity.Booking;
+import com.project.relentless.feature.space.entity.Space;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -27,7 +27,7 @@ public class User {
   private Long id;
 
   @NotBlank(message = "Username is required.")
-  @Size(min = 1, max = 50, message = "Username must be between 1 and 50 characters.")
+  @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters.")
   private String username;
 
   @NotBlank(message = "Password hash is required.")
@@ -36,13 +36,18 @@ public class User {
 
   @NotBlank(message = "Email is required.")
   @Column(unique = true)
-  @Size(min = 1, max = 100, message = "Email must be between 1 and 100 characters.")
+  @Size(min = 3, max = 100, message = "Email must be between 3 and 100 characters.")
   @Email(message = "Invalid email format.")
   private String email;
 
   @NotNull(message = "Date of birth is required.")
   @PastOrPresent(message = "Date of birth must be in the past or present.")
   private LocalDate dateOfBirth;
+
+  @NotNull(message = "Date joined is required.")
+  @PastOrPresent(message = "Date joined must be in the past or present.")
+  @Builder.Default
+  private LocalDate dateJoined = LocalDate.now();
 
   @NotNull(message = "Role is required.")
   @Enumerated(EnumType.STRING)
