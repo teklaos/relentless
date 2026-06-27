@@ -56,6 +56,9 @@ public class UserServiceImpl implements UserService {
     if (request.dateOfBirth() != null) {
       user.setDateOfBirth(request.dateOfBirth());
     }
+    if (request.profileImageKey() != null) {
+      user.setProfileImageKey(request.profileImageKey());
+    }
 
     return userMapper.toUserResponse(userRepository.save(user));
   }

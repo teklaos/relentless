@@ -8,9 +8,7 @@ import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -49,6 +47,13 @@ public class Space {
   @NotNull(message = "Publication date is required.")
   @PastOrPresent(message = "Publication date must be in the past or present.")
   private LocalDate publishedOn;
+
+  @ElementCollection
+  @CollectionTable(name = "space_image", joinColumns = @JoinColumn(name = "space_id"))
+  @Column(name = "image_key")
+  @OrderColumn(name = "position")
+  @Builder.Default
+  private List<String> imageKeys = new ArrayList<>();
 
   @NotNull(message = "Is deleted flag is required.")
   @Builder.Default

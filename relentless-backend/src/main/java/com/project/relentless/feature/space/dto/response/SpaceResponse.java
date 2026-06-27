@@ -9,6 +9,7 @@ public record SpaceResponse(
     String name,
     String description,
     BigDecimal pricePerHour,
+    List<String> imageKeys,
     AddressResponse address,
     CategorySummaryResponse category,
     UserSummaryResponse host,
