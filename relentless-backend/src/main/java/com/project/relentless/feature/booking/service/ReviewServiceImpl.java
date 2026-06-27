@@ -30,14 +30,12 @@ public class ReviewServiceImpl implements ReviewService {
 
   @Override
   public List<ReviewResponse> getBySpaceId(Long spaceId) {
-    var space =
-        spaceRepository
-            .findById(spaceId)
-            .orElseThrow(() -> new EntityNotFoundException("Space not found"));
+    if (!spaceRepository.existsById(spaceId)) {
+      throw new EntityNotFoundException("Space not found");
+    }
 
-    return space.getBookings().stream()
-        .filter(b -> b.getReview() != null)
-        .map(b -> reviewMapper.toReviewResponse(b.getReview()))
+    return reviewRepository.findBySpaceIdWithAuthor(spaceId).stream()
+        .map(reviewMapper::toReviewResponse)
         .toList();
   }
 
