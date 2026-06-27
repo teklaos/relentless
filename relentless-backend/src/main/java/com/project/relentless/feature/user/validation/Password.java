@@ -1,4 +1,4 @@
-package com.project.relentless.validation;
+package com.project.relentless.feature.user.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
