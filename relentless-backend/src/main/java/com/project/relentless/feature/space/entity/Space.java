@@ -44,6 +44,16 @@ public class Space {
       message = "Price per hour must be a valid number with up to 2 decimal places.")
   private BigDecimal pricePerHour;
 
+  @NotNull(message = "Rating is required.")
+  @PositiveOrZero(message = "Rating must be positive.")
+  @Builder.Default
+  private double rating = 0.0;
+
+  @NotNull(message = "Review count is required.")
+  @PositiveOrZero(message = "Review count must be positive.")
+  @Builder.Default
+  private int reviewCount = 0;
+
   @NotNull(message = "Publication date is required.")
   @PastOrPresent(message = "Publication date must be in the past or present.")
   private LocalDate publishedOn;

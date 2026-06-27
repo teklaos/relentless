@@ -69,6 +69,19 @@ public class ReviewServiceImpl implements ReviewService {
             .createdAt(LocalDateTime.now())
             .build();
 
-    return reviewMapper.toReviewResponse(reviewRepository.save(review));
+    var saved = reviewRepository.save(review);
+
+    var space = booking.getSpace();
+
+    int newReviewCount = space.getReviewCount() + 1;
+    double newRating =
+        (space.getRating() * space.getReviewCount() + saved.getRating()) / newReviewCount;
+
+    space.setReviewCount(newReviewCount);
+    space.setRating(newRating);
+
+    spaceRepository.save(space);
+
+    return reviewMapper.toReviewResponse(saved);
   }
 }

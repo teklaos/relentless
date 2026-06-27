@@ -176,6 +176,11 @@ public class DataInitializer {
 
     reviewRepository.save(review);
 
+    space1.setRating(5);
+    space1.setReviewCount(1);
+
+    spaceRepository.save(space1);
+
     log.info("Database initialized.");
   }
 }

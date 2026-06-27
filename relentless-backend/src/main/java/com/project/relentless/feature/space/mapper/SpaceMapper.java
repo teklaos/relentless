@@ -8,10 +8,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface SpaceMapper {
-
-  @Mapping(target = "rating", source = "rating")
-  @Mapping(target = "reviewCount", source = "reviewCount")
-  SpaceResponse toSpaceResponse(Space space, double rating, int reviewCount);
+  SpaceResponse toSpaceResponse(Space space);
 
   @Mapping(target = "city", source = "address.city")
   @Mapping(target = "country", source = "address.country")
