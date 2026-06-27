@@ -37,8 +37,8 @@ public class BookingServiceImpl implements BookingService {
         .toList();
   }
 
-  @Transactional
   @Override
+  @Transactional
   public BookingResponse create(CreateBookingRequest request) {
     if (!request.startTime().isBefore(request.endTime())) {
       throw new IllegalArgumentException("Start time must be before end time");

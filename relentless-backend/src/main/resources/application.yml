@@ -14,8 +14,18 @@ spring:
     hibernate:
       ddl-auto: create-drop
 
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
 jwt:
   access:
     secret: ${JWT_ACCESS_SECRET}
   refresh:
     secret: ${JWT_REFRESH_SECRET}
+
+minio:
+  url: http://${MINIO_HOST}:${MINIO_PORT}
+  access-key: ${MINIO_ACCESS_KEY}
+  secret-key: ${MINIO_SECRET_KEY}

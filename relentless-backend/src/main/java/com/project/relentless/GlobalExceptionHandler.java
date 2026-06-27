@@ -2,11 +2,14 @@ package com.project.relentless;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.jsonwebtoken.JwtException;
+import io.minio.errors.ErrorResponseException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.impl.InvalidContentTypeException;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -21,7 +24,9 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @NullMarked
@@ -73,7 +78,11 @@ public class GlobalExceptionHandler {
     return buildResponse(HttpStatus.FORBIDDEN, "Forbidden", ex);
   }
 
-  @ExceptionHandler({EntityNotFoundException.class, NoResourceFoundException.class})
+  @ExceptionHandler({
+    EntityNotFoundException.class,
+    NoResourceFoundException.class,
+    ErrorResponseException.class
+  })
   public ResponseEntity<ErrorResponse> handleNotFound(Exception ex) {
     return buildResponse(HttpStatus.NOT_FOUND, "Not found", ex);
   }
@@ -86,6 +95,21 @@ public class GlobalExceptionHandler {
   @ExceptionHandler({EntityExistsException.class, DataIntegrityViolationException.class})
   public ResponseEntity<ErrorResponse> handleConflict(Exception ex) {
     return buildResponse(HttpStatus.CONFLICT, "Conflict", ex);
+  }
+
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  public ResponseEntity<ErrorResponse> handleContentTooLarge(Exception ex) {
+    return buildResponse(HttpStatus.CONTENT_TOO_LARGE, "Content too large", ex);
+  }
+
+  @ExceptionHandler(InvalidContentTypeException.class)
+  public ResponseEntity<ErrorResponse> handleUnsupportedMediaType(Exception ex) {
+    return buildResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported media type", ex);
+  }
+
+  @ExceptionHandler({ConnectException.class, ResourceAccessException.class})
+  public ResponseEntity<ErrorResponse> handleServiceUnavailable(Exception ex) {
+    return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, "Service unavailable", ex);
   }
 
   @ExceptionHandler(Exception.class)

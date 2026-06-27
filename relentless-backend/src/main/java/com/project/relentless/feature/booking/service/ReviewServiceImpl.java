@@ -39,8 +39,8 @@ public class ReviewServiceImpl implements ReviewService {
         .toList();
   }
 
-  @Transactional
   @Override
+  @Transactional
   public ReviewResponse leave(LeaveReviewRequest request) {
     Long userId = authService.getCurrentUserId();
 
