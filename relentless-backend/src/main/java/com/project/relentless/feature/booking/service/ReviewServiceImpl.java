@@ -60,7 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     if (booking.getStatus() != BookingStatus.COMPLETED) {
-      throw new IllegalStateException("Booking is not completed");
+      throw new IllegalArgumentException("Booking is not completed");
     }
 
     var review =
