@@ -12,6 +12,7 @@ import com.project.relentless.feature.space.entity.Space;
 import com.project.relentless.feature.space.repository.AmenityRepository;
 import com.project.relentless.feature.space.repository.CategoryRepository;
 import com.project.relentless.feature.space.repository.SpaceRepository;
+import com.project.relentless.feature.user.Role;
 import com.project.relentless.feature.user.User;
 import com.project.relentless.feature.user.UserRepository;
 import java.math.BigDecimal;
@@ -69,6 +70,7 @@ public class DataInitializer {
             .passwordHash(passwordEncoder.encode("P@ssw0rd"))
             .email("host@gmail.com")
             .dateOfBirth(LocalDate.of(2004, 11, 20))
+            .role(Role.HOST)
             .isDeleted(false)
             .build();
 
