@@ -8,6 +8,8 @@ public interface SpaceService {
 
   List<SpaceResponse> getSavedByCurrentUser();
 
+  List<SpaceResponse> getHostedByCurrentUser();
+
   SpaceResponse getById(Long id);
 
   void save(Long id);

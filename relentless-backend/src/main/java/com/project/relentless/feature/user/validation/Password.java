@@ -1,4 +1,4 @@
-package com.project.relentless.validation;
+package com.project.relentless.feature.user.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -19,7 +19,6 @@ import java.lang.annotation.Target;
     message =
         "Password must be 8-64 characters long, include uppercase and lowercase letters, at least one digit, at least one special character, and no whitespaces.")
 public @interface Password {
-
   String message() default "Invalid password";
 
   Class<?>[] groups() default {};

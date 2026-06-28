@@ -15,11 +15,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
   @Query(
       """
-    SELECT COUNT(b) > 0 FROM Booking b
-    WHERE b.space.id = :spaceId
-        AND b.status <> :excludedStatus
-        AND b.startTime < :endTime AND b.endTime > :startTime
-    """)
+      SELECT COUNT(b) > 0 FROM Booking b
+      WHERE b.space.id = :spaceId
+          AND b.status <> :excludedStatus
+          AND b.startTime < :endTime AND b.endTime > :startTime
+      """)
   boolean existsOverlapping(
       @Param("spaceId") Long spaceId,
       @Param("excludedStatus") BookingStatus excluded,

@@ -8,4 +8,5 @@ public record UserResponse(
     String email,
     LocalDate dateOfBirth,
     LocalDate dateJoined,
+    String profileImageKey,
     String role) {}

@@ -3,6 +3,7 @@
 import "./Profile.css";
 import { useState } from "react";
 import { Booking, User } from "@/data";
+import AvatarImg from "@/components/shared/AvatarImg";
 import { Edit2, ChevronRight, ArrowRight } from "lucide-react";
 
 interface ProfileProps {
@@ -42,7 +43,15 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
 
       <div className="profile-grid">
         <div className="profile-card">
-          <div className="profile-avatar">{initials}</div>
+          <div className="profile-avatar">
+            <AvatarImg
+              imageKey={user.profileImageKey}
+              name={user.username}
+              size={88}
+              radius="inherit"
+              fallback={initials}
+            />
+          </div>
           <h2 className="profile-name">{user.username}</h2>
           <div className="profile-kv">
             <div className="k">USERNAME</div>
@@ -51,8 +60,6 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
             <div className="v">{user.email}</div>
             <div className="k">DOB</div>
             <div className="v">{user.dateOfBirth}</div>
-            <div className="k">ROLE</div>
-            <div className="v">{user.role}</div>
             <div className="k">JOINED</div>
             <div className="v">{user.dateJoined}</div>
           </div>

@@ -7,4 +7,5 @@ import java.time.LocalDate;
 public record UpdateUserRequest(
     @Size(min = 3, max = 50) String username,
     @Size(min = 3, max = 100) String email,
-    @PastOrPresent LocalDate dateOfBirth) {}
+    @PastOrPresent LocalDate dateOfBirth,
+    @Size(min = 3, max = 255) String profileImageKey) {}

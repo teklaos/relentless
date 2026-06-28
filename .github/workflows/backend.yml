@@ -1,8 +1,6 @@
 name: Java CI with Maven
 
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
 
@@ -47,3 +45,11 @@ jobs:
           DB_PASSWORD: testpassword
           JWT_ACCESS_SECRET: ci-dummy-jwt-access-token-secret
           JWT_REFRESH_SECRET: ci-dummy-jwt-refresh-token-secret
+          MINIO_HOST: localhost
+          MINIO_PORT: 9000
+          MINIO_ACCESS_KEY: ci-dummy-minio-access-key
+          MINIO_SECRET_KEY: ci-dummy-minio-secret-key
+          MAIL_HOST: localhost
+          MAIL_PORT: 1025
+          MAIL_USERNAME: testuser
+          MAIL_PASSWORD: testpassword

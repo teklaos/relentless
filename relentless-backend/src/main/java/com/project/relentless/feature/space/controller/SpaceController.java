@@ -24,6 +24,11 @@ public class SpaceController {
     return ResponseEntity.ok(spaceService.getSavedByCurrentUser());
   }
 
+  @GetMapping("/me/hosted")
+  public ResponseEntity<List<SpaceResponse>> getHostedByCurrentUser() {
+    return ResponseEntity.ok(spaceService.getHostedByCurrentUser());
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<SpaceResponse> getById(@PathVariable Long id) {
     return ResponseEntity.ok(spaceService.getById(id));

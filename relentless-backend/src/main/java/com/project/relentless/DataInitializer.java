@@ -12,6 +12,7 @@ import com.project.relentless.feature.space.entity.Space;
 import com.project.relentless.feature.space.repository.AmenityRepository;
 import com.project.relentless.feature.space.repository.CategoryRepository;
 import com.project.relentless.feature.space.repository.SpaceRepository;
+import com.project.relentless.feature.user.Role;
 import com.project.relentless.feature.user.User;
 import com.project.relentless.feature.user.UserRepository;
 import java.math.BigDecimal;
@@ -59,6 +60,7 @@ public class DataInitializer {
             .passwordHash(passwordEncoder.encode("P@ssw0rd"))
             .email("user@gmail.com")
             .dateOfBirth(LocalDate.of(2005, 1, 12))
+            .profileImageKey("avatar.jpg")
             .isDeleted(false)
             .build();
 
@@ -68,6 +70,7 @@ public class DataInitializer {
             .passwordHash(passwordEncoder.encode("P@ssw0rd"))
             .email("host@gmail.com")
             .dateOfBirth(LocalDate.of(2004, 11, 20))
+            .role(Role.HOST)
             .isDeleted(false)
             .build();
 
@@ -175,6 +178,11 @@ public class DataInitializer {
     review.setBooking(booking);
 
     reviewRepository.save(review);
+
+    space1.setRating(5);
+    space1.setReviewCount(1);
+
+    spaceRepository.save(space1);
 
     log.info("Database initialized.");
   }

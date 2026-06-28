@@ -1,6 +1,6 @@
 package com.project.relentless.feature.auth.dto.request;
 
-import com.project.relentless.validation.Password;
+import com.project.relentless.feature.user.validation.Password;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 

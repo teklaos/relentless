@@ -49,6 +49,9 @@ public class User {
   @Builder.Default
   private LocalDate dateJoined = LocalDate.now();
 
+  @Size(min = 3, max = 255, message = "Profile image key must be between 3 and 255 characters.")
+  private String profileImageKey;
+
   @NotNull(message = "Role is required.")
   @Enumerated(EnumType.STRING)
   @Builder.Default

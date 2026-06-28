@@ -30,19 +30,17 @@ public class ReviewServiceImpl implements ReviewService {
 
   @Override
   public List<ReviewResponse> getBySpaceId(Long spaceId) {
-    var space =
-        spaceRepository
-            .findById(spaceId)
-            .orElseThrow(() -> new EntityNotFoundException("Space not found"));
+    if (!spaceRepository.existsById(spaceId)) {
+      throw new EntityNotFoundException("Space not found");
+    }
 
-    return space.getBookings().stream()
-        .filter(b -> b.getReview() != null)
-        .map(b -> reviewMapper.toReviewResponse(b.getReview()))
+    return reviewRepository.findBySpaceIdWithAuthor(spaceId).stream()
+        .map(reviewMapper::toReviewResponse)
         .toList();
   }
 
-  @Transactional
   @Override
+  @Transactional
   public ReviewResponse leave(LeaveReviewRequest request) {
     Long userId = authService.getCurrentUserId();
 
@@ -60,7 +58,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     if (booking.getStatus() != BookingStatus.COMPLETED) {
-      throw new IllegalStateException("Booking is not completed");
+      throw new IllegalArgumentException("Booking is not completed");
     }
 
     var review =
@@ -71,6 +69,19 @@ public class ReviewServiceImpl implements ReviewService {
             .createdAt(LocalDateTime.now())
             .build();
 
-    return reviewMapper.toReviewResponse(reviewRepository.save(review));
+    var saved = reviewRepository.save(review);
+
+    var space = booking.getSpace();
+
+    int newReviewCount = space.getReviewCount() + 1;
+    double newRating =
+        (space.getRating() * space.getReviewCount() + saved.getRating()) / newReviewCount;
+
+    space.setReviewCount(newReviewCount);
+    space.setRating(newRating);
+
+    spaceRepository.save(space);
+
+    return reviewMapper.toReviewResponse(saved);
   }
 }

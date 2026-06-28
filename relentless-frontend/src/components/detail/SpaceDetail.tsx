@@ -3,14 +3,12 @@
 import "./SpaceDetail.css";
 import { useEffect, useState } from "react";
 import Placeholder from "@/components/shared/Placeholder";
+import AvatarImg from "@/components/shared/AvatarImg";
 import BookingWidget from "./BookingWidget";
-import {
-  CAT_ICON_COMPONENT,
-  CAT_ICON_FALLBACK,
-  AMEN_ICON_COMPONENT,
-} from "@/lib/iconMap";
+import { CAT_ICON_COMPONENT, CAT_ICON_FALLBACK, AMEN_ICON_COMPONENT } from "@/lib/iconMap";
 import { Space, Review, fmtDateShort } from "@/data";
-import { fetchReviews } from "@/lib/api";
+import { fetchReviews, imageUrl } from "@/lib/api";
+import Image from "next/image"
 import { Heart, X, MapPin, Star } from "lucide-react";
 
 interface SpaceDetailProps {
@@ -18,27 +16,18 @@ interface SpaceDetailProps {
   saved: boolean;
   onClose: () => void;
   onSave: (id: number) => void;
-  onBook: (params: {
-    space: Space;
-    startIso: string;
-    endIso: string;
-    total: number;
-    duration: number;
-  }) => void;
+  onBook: (params: { space: Space; startIso: string; endIso: string; total: number; duration: number }) => void;
 }
 
-export default function SpaceDetail({
-  space,
-  saved,
-  onClose,
-  onSave,
-  onBook,
-}: SpaceDetailProps) {
+export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: SpaceDetailProps) {
   const cat = space.category;
   const CatIcon = CAT_ICON_COMPONENT[cat.id] ?? CAT_ICON_FALLBACK;
   const host = space.host;
   const amens = space.amenities;
   const rating = space.rating;
+  const images = space.imageKeys ?? [];
+  const hero = images[0];
+  const thumbs = images.length ? images.slice(0, 4) : [null, null, null, null];
   const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
@@ -69,15 +58,8 @@ export default function SpaceDetail({
       <div className="drawer">
         <div className="drawer-head">
           <div style={{ display: "flex", gap: 8 }}>
-            <button
-              className={`btn sm ${saved ? "primary" : ""}`}
-              onClick={() => onSave(space.id)}
-            >
-              <Heart
-                size={13}
-                fill={saved ? "currentColor" : "none"}
-                strokeWidth={saved ? 0 : 1.5}
-              />
+            <button className={`btn sm ${saved ? "primary" : ""}`} onClick={() => onSave(space.id)}>
+              <Heart size={13} fill={saved ? "currentColor" : "none"} strokeWidth={saved ? 0 : 1.5} />
               {saved ? "SAVED" : "SAVE"}
             </button>
             <button className="drawer-close" onClick={onClose}>
@@ -95,31 +77,59 @@ export default function SpaceDetail({
                 style={{
                   marginRight: 8,
                   verticalAlign: "middle",
+                  display: "inline-block"
+                }}
+              />
+              {cat.name.toUpperCase()} · HOSTED BY{" "}
+              <AvatarImg
+                imageKey={host.profileImageKey}
+                name={host.username}
+                size={16}
+                style={{
+                  verticalAlign: "middle",
+                  margin: "0 4px",
                   display: "inline-block",
                 }}
               />
-              {cat.name.toUpperCase()} · HOSTED BY {host.username.toUpperCase()}
+              {host.username.toUpperCase()}
             </div>
             <h1 className="detail-title">{space.name}</h1>
             <div className="detail-loc">
               <MapPin size={13} />
               {space.address.street} {space.address.streetNumber}
-              {space.address.apartmentNumber
-                ? `/${space.address.apartmentNumber}`
-                : ""}
+              {space.address.apartmentNumber ? `/${space.address.apartmentNumber}` : ""}
               ,&nbsp;
-              {space.address.city} {space.address.postalCode},{" "}
-              {space.address.country}
+              {space.address.city} {space.address.postalCode}, {space.address.country}
             </div>
 
             <div className="detail-hero">
-              <Placeholder />
+              {hero ? (
+                <Image
+                  src={imageUrl(hero)}
+                  alt={space.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 720px"
+                  style={{ objectFit: "cover" }}
+                />
+              ) : (
+                <Placeholder />
+              )}
             </div>
 
             <div className="detail-thumbs">
-              {[0, 1, 2, 3].map((i) => (
+              {thumbs.map((key, i) => (
                 <div key={i} className="detail-thumb">
-                  <Placeholder />
+                  {key ? (
+                    <Image
+                      src={imageUrl(key)}
+                      alt={`${space.name} ${i + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 50vw, 180px"
+                      style={{ objectFit: "cover" }}
+                    />
+                  ) : (
+                    <Placeholder />
+                  )}
                 </div>
               ))}
             </div>
@@ -130,15 +140,11 @@ export default function SpaceDetail({
             </div>
 
             <div className="detail-section">
-              <div className="detail-section-h">
-                AMENITIES · {amens.length} ITEMS
-              </div>
+              <div className="detail-section-h">AMENITIES · {amens.length} ITEMS</div>
               <div className="amenity-grid">
                 {amens.map((a) => {
                   if (!a) return null;
-                  const AmenIcon =
-                    AMEN_ICON_COMPONENT[a.name] ??
-                    AMEN_ICON_COMPONENT["_fallback"];
+                  const AmenIcon = AMEN_ICON_COMPONENT[a.name] ?? AMEN_ICON_COMPONENT["_fallback"];
                   return (
                     <div key={a.id} className="amenity">
                       <span className="icon">
@@ -161,7 +167,7 @@ export default function SpaceDetail({
                     fontFamily: "'Geist Mono',monospace",
                     fontSize: 12,
                     color: "var(--ink-3)",
-                    padding: "8px 0",
+                    padding: "8px 0"
                   }}
                 >
                   NO REVIEWS YET — BE THE FIRST.
@@ -169,10 +175,16 @@ export default function SpaceDetail({
               ) : (
                 reviews.map((r) => (
                   <div key={r.id} className="review">
-                    <div>
-                      <div className="review-author">@{r.author.username}</div>
-                      <div className="review-date">
-                        {fmtDateShort(r.createdAt)}
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <AvatarImg
+                        imageKey={r.author.profileImageKey}
+                        name={r.author.username}
+                        size={28}
+                        style={{ flexShrink: 0 }}
+                      />
+                      <div>
+                        <div className="review-author">@{r.author.username}</div>
+                        <div className="review-date">{fmtDateShort(r.createdAt)}</div>
                       </div>
                     </div>
                     <div className="review-body">{r.comment}</div>

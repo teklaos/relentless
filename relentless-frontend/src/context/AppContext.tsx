@@ -24,6 +24,7 @@ import {
   login,
   register,
   logout,
+  setUnauthorizedHandler,
 } from "@/lib/api";
 import {
   getAccessToken,
@@ -88,6 +89,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (getAccessToken()) setAuth(true);
   }, []);
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      clearTokens();
+      setAuth(false);
+      setUser(null);
+      setBookings([]);
+      setSavedSpaces([]);
+      setDetail(null);
+      router.push("/login");
+    });
+    return () => setUnauthorizedHandler(null);
+  }, [router]);
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
