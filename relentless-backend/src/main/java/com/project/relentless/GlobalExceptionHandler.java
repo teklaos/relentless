@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @NullMarked
@@ -43,7 +44,8 @@ public class GlobalExceptionHandler {
     IllegalArgumentException.class,
     MethodArgumentTypeMismatchException.class,
     HttpMessageNotReadableException.class,
-    HttpMediaTypeNotSupportedException.class
+    HttpMediaTypeNotSupportedException.class,
+    MultipartException.class
   })
   public ResponseEntity<ErrorResponse> handleBadRequest(Exception ex) {
     return buildResponse(HttpStatus.BAD_REQUEST, "Bad request", ex);

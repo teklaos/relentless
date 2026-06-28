@@ -24,7 +24,7 @@ public class ImageController {
         .body(new InputStreamResource(imageService.getByKey(key)));
   }
 
-  @PostMapping("/upload")
+  @PostMapping
   public ResponseEntity<UploadImageResponse> upload(@RequestParam("file") MultipartFile file) {
     return ResponseEntity.ok(imageService.upload(file));
   }
