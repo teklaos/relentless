@@ -22,16 +22,20 @@ public class EmailServiceImpl implements EmailService {
   @Async
   @SneakyThrows
   public void sendEmail(String to, String subject, String text) {
-    MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+    try {
+      MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
-    helper.setFrom(fromEmail, fromName);
-    helper.setTo(to);
-    helper.setSubject(subject);
-    helper.setReplyTo(fromEmail);
-    helper.setText(text, false);
+      helper.setFrom(fromEmail, fromName);
+      helper.setTo(to);
+      helper.setSubject(subject);
+      helper.setReplyTo(fromEmail);
+      helper.setText(text, false);
 
-    javaMailSender.send(mimeMessage);
-    log.info("Email sent successfully to: {}", to);
+      javaMailSender.send(mimeMessage);
+      log.info("Email sent successfully to: {}", to);
+    } catch (Exception ex) {
+      log.error("Error sending email to {}: {}", to, ex.getMessage(), ex);
+    }
   }
 }
