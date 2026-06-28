@@ -67,4 +67,10 @@ public class ImageServiceImpl implements ImageService {
 
     return new UploadImageResponse(key);
   }
+
+  @Override
+  @SneakyThrows
+  public void deleteByKey(String key) {
+    minioClient.removeObject(RemoveObjectArgs.builder().bucket(BUCKET).object(key).build());
+  }
 }

@@ -8,4 +8,6 @@ public interface ImageService {
   InputStream getByKey(String key);
 
   UploadImageResponse upload(MultipartFile file);
+
+  void deleteByKey(String key);
 }
