@@ -13,21 +13,41 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
-async function tryRefresh(): Promise<boolean> {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) return false;
-  const res = await fetch(`${API_BASE}/api/auth/refresh-token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refreshToken }),
-  });
-  if (!res.ok) {
-    clearTokens();
-    return false;
+export function imageUrl(key: string): string {
+  return `${API_BASE}/api/images/${key}`;
+}
+
+let onUnauthorized: (() => void) | null = null;
+
+export function setUnauthorizedHandler(handler: (() => void) | null): void {
+  onUnauthorized = handler;
+}
+
+let refreshInFlight: Promise<boolean> | null = null;
+
+function refreshAccessToken(): Promise<boolean> {
+  if (!refreshInFlight) {
+    refreshInFlight = (async () => {
+      const refreshToken = getRefreshToken();
+      if (!refreshToken) return false;
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/refresh-token`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken }),
+        });
+        if (!res.ok) return false;
+        const data: { accessToken: string } = await res.json();
+        setTokens(data.accessToken);
+        return true;
+      } catch {
+        return false;
+      }
+    })().finally(() => {
+      refreshInFlight = null;
+    });
   }
-  const data: { accessToken: string } = await res.json();
-  setTokens(data.accessToken);
-  return true;
+  return refreshInFlight;
 }
 
 async function request<T>(
@@ -45,10 +65,13 @@ async function request<T>(
     },
   });
 
-  if (res.status === 401 && retry && getRefreshToken()) {
-    if (await tryRefresh()) {
+  if (res.status === 401 && retry) {
+    if (await refreshAccessToken()) {
       return request<T>(path, init, false);
     }
+    clearTokens();
+    onUnauthorized?.();
+    throw new Error(`${init?.method ?? "GET"} ${path} failed: 401`);
   }
 
   if (!res.ok) {

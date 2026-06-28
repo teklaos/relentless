@@ -2,6 +2,7 @@
 
 import "./Sidebar.css";
 import { usePathname, useRouter } from "next/navigation";
+import AvatarImg from "@/components/shared/AvatarImg";
 import { useApp } from "@/context/AppContext";
 import {
   Compass,
@@ -71,7 +72,15 @@ export default function Sidebar() {
       </div>
 
       <div className="sb-footer">
-        <div className="sb-avatar">{initials}</div>
+        <div className="sb-avatar">
+          <AvatarImg
+            imageKey={user?.profileImageKey}
+            name={user?.username ?? ""}
+            size={32}
+            radius="inherit"
+            fallback={initials}
+          />
+        </div>
         <div className="sb-user-meta">
           <span className="sb-user-name">{user?.username ?? "—"}</span>
           <span className="sb-user-email">{user?.email ?? ""}</span>

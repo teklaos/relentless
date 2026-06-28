@@ -21,6 +21,7 @@ export interface CategorySummary {
 export interface HostSummary {
   id: number;
   username: string;
+  profileImageKey: string | null;
 }
 
 export interface AmenitySummary {
@@ -33,6 +34,7 @@ export interface Space {
   name: string;
   description: string;
   pricePerHour: number;
+  imageKeys: string[];
   address: SpaceAddress;
   category: CategorySummary;
   host: HostSummary;
@@ -52,6 +54,7 @@ export interface Review {
 export interface UserSummary {
   id: number;
   username: string;
+  profileImageKey: string | null;
 }
 
 export interface User {
@@ -60,6 +63,7 @@ export interface User {
   email: string;
   dateOfBirth: string;
   dateJoined: string;
+  profileImageKey: string | null;
   role: string;
 }
 

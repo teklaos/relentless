@@ -3,7 +3,9 @@
 import "./SpaceCard.css";
 import Placeholder from "@/components/shared/Placeholder";
 import { Space, fmtPrice } from "@/data";
+import { imageUrl } from "@/lib/api";
 import { CAT_ICON_COMPONENT, CAT_ICON_FALLBACK } from "@/lib/iconMap";
+import Image from "next/image"
 import { Heart, Star } from "lucide-react";
 
 interface SpaceCardProps {
@@ -22,11 +24,22 @@ export default function SpaceCard({
   const cat = space.category;
   const rating = space.rating;
   const CatIcon = CAT_ICON_COMPONENT[cat.id] ?? CAT_ICON_FALLBACK;
+  const cover = space.imageKeys?.[0];
 
   return (
     <article className="space-card" onClick={() => onOpen(space)}>
       <div className="sc-image-wrap">
-        <Placeholder />
+        {cover ? (
+          <Image
+            src={imageUrl(cover)}
+            alt={space.name}
+            fill
+            sizes="(max-width: 768px) 100vw, 360px"
+            style={{ objectFit: "cover" }}
+          />
+        ) : (
+          <Placeholder />
+        )}
         <div className="sc-id">{space.id}</div>
         <button
           className={`sc-save ${saved ? "saved" : ""}`}
