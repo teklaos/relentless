@@ -3,6 +3,7 @@ package com.project.relentless.feature.user;
 import com.project.relentless.feature.auth.details.CustomUserDetails;
 import com.project.relentless.feature.user.dto.request.UpdateUserRequest;
 import com.project.relentless.feature.user.dto.response.UserResponse;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -50,7 +51,10 @@ public class UserServiceImpl implements UserService {
     if (request.username() != null) {
       user.setUsername(request.username());
     }
-    if (request.email() != null) {
+    if (request.email() != null && !request.email().equals(user.getEmail())) {
+      if (userRepository.findByEmail(request.email()).isPresent()) {
+        throw new EntityExistsException("Email is already in use");
+      }
       user.setEmail(request.email());
     }
     if (request.dateOfBirth() != null) {

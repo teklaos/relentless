@@ -21,13 +21,23 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   public List<SpaceResponse> getAll() {
-    return spaceRepository.findAll().stream().map(spaceMapper::toSpaceResponse).toList();
+    return spaceRepository.findAllByIsDeletedFalse().stream()
+        .map(spaceMapper::toSpaceResponse)
+        .toList();
   }
 
   @Override
   public List<SpaceResponse> getSavedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
-    return spaceRepository.findSavedByUserId(userId).stream()
+    return spaceRepository.findBySavedByIdAndIsDeletedFalse(userId).stream()
+        .map(spaceMapper::toSpaceResponse)
+        .toList();
+  }
+
+  @Override
+  public List<SpaceResponse> getHostedByCurrentUser() {
+    Long userId = authService.getCurrentUserId();
+    return spaceRepository.findByHostIdAndIsDeletedFalse(userId).stream()
         .map(spaceMapper::toSpaceResponse)
         .toList();
   }
