@@ -18,9 +18,19 @@ public class ImageController {
 
   @GetMapping("/{key}")
   public ResponseEntity<InputStreamResource> getByKey(@PathVariable String key) {
+    String mediaType;
+
+    if (key.toLowerCase().endsWith(".png")) {
+      mediaType = "image/png";
+    } else if (key.toLowerCase().endsWith(".webp")) {
+      mediaType = "image/webp";
+    } else {
+      mediaType = "image/jpeg";
+    }
+
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
-        .contentType(MediaType.IMAGE_JPEG)
+        .contentType(MediaType.parseMediaType(mediaType))
         .body(new InputStreamResource(imageService.getByKey(key)));
   }
 

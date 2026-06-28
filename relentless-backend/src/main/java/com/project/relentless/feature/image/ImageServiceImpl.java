@@ -45,10 +45,19 @@ public class ImageServiceImpl implements ImageService {
   @SneakyThrows
   public UploadImageResponse upload(MultipartFile file) {
     String contentType = file.getContentType();
-    if (contentType == null || !contentType.startsWith("image/jpeg")) {
-      throw new InvalidContentTypeException("Invalid content type: " + contentType);
+    if (contentType == null) {
+      throw new InvalidContentTypeException("No content type");
     }
-    String key = UUID.randomUUID() + ".jpg";
+
+    String extension =
+        switch (contentType) {
+          case "image/jpeg" -> ".jpg";
+          case "image/png" -> ".png";
+          case "image/webp" -> ".webp";
+          default -> throw new InvalidContentTypeException("Invalid content type: " + contentType);
+        };
+
+    String key = UUID.randomUUID() + extension;
     try (InputStream in = file.getInputStream()) {
       minioClient.putObject(
           PutObjectArgs.builder().bucket(BUCKET).object(key).stream(in, file.getSize(), -1)
