@@ -56,7 +56,8 @@ public class Space {
 
   @NotNull(message = "Publication date is required.")
   @PastOrPresent(message = "Publication date must be in the past or present.")
-  private LocalDate publishedOn;
+  @Builder.Default
+  private LocalDate publishedOn = LocalDate.now();
 
   @ElementCollection
   @CollectionTable(name = "space_image", joinColumns = @JoinColumn(name = "space_id"))

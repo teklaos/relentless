@@ -1,9 +1,12 @@
 package com.project.relentless.feature.space.controller;
 
+import com.project.relentless.feature.space.dto.request.SpaceRequest;
 import com.project.relentless.feature.space.dto.response.SpaceResponse;
 import com.project.relentless.feature.space.service.SpaceService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,5 +47,16 @@ public class SpaceController {
   public ResponseEntity<Void> unsave(@PathVariable Long id) {
     spaceService.unsave(id);
     return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping
+  public ResponseEntity<SpaceResponse> create(@Valid @RequestBody SpaceRequest request) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(spaceService.create(request));
+  }
+
+  @PatchMapping("/{id}")
+  public ResponseEntity<SpaceResponse> edit(
+      @PathVariable Long id, @Valid @RequestBody SpaceRequest request) {
+    return ResponseEntity.ok(spaceService.edit(id, request));
   }
 }

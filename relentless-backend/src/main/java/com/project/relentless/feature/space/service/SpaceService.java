@@ -1,5 +1,6 @@
 package com.project.relentless.feature.space.service;
 
+import com.project.relentless.feature.space.dto.request.SpaceRequest;
 import com.project.relentless.feature.space.dto.response.SpaceResponse;
 import java.util.List;
 
@@ -15,4 +16,8 @@ public interface SpaceService {
   void save(Long id);
 
   void unsave(Long id);
+
+  SpaceResponse create(SpaceRequest request);
+
+  SpaceResponse edit(Long id, SpaceRequest request);
 }
