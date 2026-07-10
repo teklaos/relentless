@@ -1,6 +1,7 @@
 package com.project.relentless.feature.space.controller;
 
 import com.project.relentless.feature.space.dto.request.SpaceRequest;
+import com.project.relentless.feature.space.dto.request.SpaceStatusRequest;
 import com.project.relentless.feature.space.dto.response.SpaceResponse;
 import com.project.relentless.feature.space.service.SpaceService;
 import jakarta.validation.Valid;
@@ -58,5 +59,17 @@ public class SpaceController {
   public ResponseEntity<SpaceResponse> edit(
       @PathVariable Long id, @Valid @RequestBody SpaceRequest request) {
     return ResponseEntity.ok(spaceService.edit(id, request));
+  }
+
+  @PatchMapping("/{id}/status")
+  public ResponseEntity<SpaceResponse> changeStatus(
+      @PathVariable Long id, @Valid @RequestBody SpaceStatusRequest request) {
+    return ResponseEntity.ok(spaceService.changeStatus(id, request));
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
+    spaceService.delete(id);
+    return ResponseEntity.noContent().build();
   }
 }

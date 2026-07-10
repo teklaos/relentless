@@ -1,6 +1,7 @@
 package com.project.relentless.feature.space.entity;
 
 import com.project.relentless.feature.booking.entity.Booking;
+import com.project.relentless.feature.space.SpaceStatus;
 import com.project.relentless.feature.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -66,9 +67,10 @@ public class Space {
   @Builder.Default
   private List<String> imageKeys = new ArrayList<>();
 
-  @NotNull(message = "Is deleted flag is required.")
+  @NotNull(message = "Status is required.")
+  @Enumerated(EnumType.STRING)
   @Builder.Default
-  private boolean isDeleted = false;
+  private SpaceStatus status = SpaceStatus.ACTIVE;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "host_id", nullable = false)

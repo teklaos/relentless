@@ -1,7 +1,9 @@
 package com.project.relentless.feature.space.service;
 
 import com.project.relentless.feature.auth.AuthService;
+import com.project.relentless.feature.space.SpaceStatus;
 import com.project.relentless.feature.space.dto.request.SpaceRequest;
+import com.project.relentless.feature.space.dto.request.SpaceStatusRequest;
 import com.project.relentless.feature.space.dto.response.SpaceResponse;
 import com.project.relentless.feature.space.entity.Space;
 import com.project.relentless.feature.space.mapper.AddressMapper;
@@ -32,7 +34,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   public List<SpaceResponse> getAll() {
-    return spaceRepository.findAllByIsDeletedFalse().stream()
+    return spaceRepository.findAllByStatusNot(SpaceStatus.DELETED).stream()
         .map(spaceMapper::toSpaceResponse)
         .toList();
   }
@@ -40,7 +42,7 @@ public class SpaceServiceImpl implements SpaceService {
   @Override
   public List<SpaceResponse> getSavedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
-    return spaceRepository.findBySavedByIdAndIsDeletedFalse(userId).stream()
+    return spaceRepository.findBySavedByIdAndStatusNot(userId, SpaceStatus.DELETED).stream()
         .map(spaceMapper::toSpaceResponse)
         .toList();
   }
@@ -48,7 +50,7 @@ public class SpaceServiceImpl implements SpaceService {
   @Override
   public List<SpaceResponse> getHostedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
-    return spaceRepository.findByHostIdAndIsDeletedFalse(userId).stream()
+    return spaceRepository.findByHostIdAndStatusNot(userId, SpaceStatus.DELETED).stream()
         .map(spaceMapper::toSpaceResponse)
         .toList();
   }
@@ -133,20 +135,7 @@ public class SpaceServiceImpl implements SpaceService {
   @Override
   @Transactional
   public SpaceResponse edit(Long id, SpaceRequest request) {
-    var space =
-        spaceRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Space not found"));
-
-    Long userId = authService.getCurrentUserId();
-    var user =
-        userRepository
-            .findById(userId)
-            .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-    if (!space.getHost().getId().equals(user.getId())) {
-      throw new AuthorizationDeniedException("You are not allowed to edit this space");
-    }
+    var space = getOwnedSpaceByIdOrThrow(id, "You are not allowed to edit this space");
 
     if (request.name() != null) space.setName(request.name());
     if (request.description() != null) space.setDescription(request.description());
@@ -173,5 +162,45 @@ public class SpaceServiceImpl implements SpaceService {
     }
 
     return spaceMapper.toSpaceResponse(spaceRepository.save(space));
+  }
+
+  @Override
+  @Transactional
+  public SpaceResponse changeStatus(Long id, SpaceStatusRequest request) {
+    if (request.status() == SpaceStatus.DELETED) {
+      throw new IllegalArgumentException("Cannot change status to DELETED");
+    }
+
+    var space =
+        getOwnedSpaceByIdOrThrow(id, "You are not allowed to change the status of this space");
+    space.setStatus(request.status());
+    return spaceMapper.toSpaceResponse(spaceRepository.save(space));
+  }
+
+  @Override
+  @Transactional
+  public void delete(Long id) {
+    var space = getOwnedSpaceByIdOrThrow(id, "You are not allowed to delete this space");
+    space.setStatus(SpaceStatus.DELETED);
+    spaceRepository.save(space);
+  }
+
+  private Space getOwnedSpaceByIdOrThrow(Long id, String message) {
+    var space =
+        spaceRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Space not found"));
+
+    Long userId = authService.getCurrentUserId();
+    var user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+    if (!space.getHost().getId().equals(user.getId())) {
+      throw new AuthorizationDeniedException(message);
+    }
+
+    return space;
   }
 }
