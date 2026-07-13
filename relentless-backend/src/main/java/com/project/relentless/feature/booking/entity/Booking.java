@@ -41,7 +41,7 @@ public class Booking {
   @NotNull(message = "Booking status is required.")
   @Enumerated(EnumType.STRING)
   @Builder.Default
-  private BookingStatus status = BookingStatus.PENDING;
+  private BookingStatus status = BookingStatus.CONFIRMED;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false, updatable = false)

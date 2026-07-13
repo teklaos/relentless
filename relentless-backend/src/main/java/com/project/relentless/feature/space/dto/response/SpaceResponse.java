@@ -8,11 +8,13 @@ public record SpaceResponse(
     Long id,
     String name,
     String description,
-    BigDecimal pricePerHour,
-    List<String> imageKeys,
     AddressResponse address,
+    BigDecimal pricePerHour,
+    List<WorkingHoursResponse> workingHours,
+    String status,
+    double rating,
+    int reviewCount,
+    List<String> imageKeys,
     CategorySummaryResponse category,
     UserSummaryResponse host,
-    List<AmenityResponse> amenities,
-    double rating,
-    int reviewCount) {}
+    List<AmenityResponse> amenities) {}

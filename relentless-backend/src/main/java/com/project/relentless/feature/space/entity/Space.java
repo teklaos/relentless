@@ -45,6 +45,21 @@ public class Space {
       message = "Price per hour must be a valid number with up to 2 decimal places.")
   private BigDecimal pricePerHour;
 
+  @ElementCollection
+  @CollectionTable(name = "space_hours", joinColumns = @JoinColumn(name = "space_id"))
+  @Builder.Default
+  private List<WorkingHours> workingHours = new ArrayList<>();
+
+  @NotNull(message = "Publication date is required.")
+  @PastOrPresent(message = "Publication date must be in the past or present.")
+  @Builder.Default
+  private LocalDate publishedOn = LocalDate.now();
+
+  @NotNull(message = "Status is required.")
+  @Enumerated(EnumType.STRING)
+  @Builder.Default
+  private SpaceStatus status = SpaceStatus.ACTIVE;
+
   @NotNull(message = "Rating is required.")
   @PositiveOrZero(message = "Rating must be positive.")
   @Builder.Default
@@ -55,22 +70,12 @@ public class Space {
   @Builder.Default
   private int reviewCount = 0;
 
-  @NotNull(message = "Publication date is required.")
-  @PastOrPresent(message = "Publication date must be in the past or present.")
-  @Builder.Default
-  private LocalDate publishedOn = LocalDate.now();
-
   @ElementCollection
   @CollectionTable(name = "space_image", joinColumns = @JoinColumn(name = "space_id"))
   @Column(name = "image_key")
   @OrderColumn(name = "position")
   @Builder.Default
   private List<String> imageKeys = new ArrayList<>();
-
-  @NotNull(message = "Status is required.")
-  @Enumerated(EnumType.STRING)
-  @Builder.Default
-  private SpaceStatus status = SpaceStatus.ACTIVE;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "host_id", nullable = false)

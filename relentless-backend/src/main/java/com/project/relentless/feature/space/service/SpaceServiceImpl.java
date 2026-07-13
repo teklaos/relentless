@@ -1,19 +1,27 @@
 package com.project.relentless.feature.space.service;
 
 import com.project.relentless.feature.auth.AuthService;
+import com.project.relentless.feature.booking.BookingStatus;
+import com.project.relentless.feature.booking.repository.BookingRepository;
 import com.project.relentless.feature.space.SpaceStatus;
-import com.project.relentless.feature.space.dto.request.SpaceRequest;
+import com.project.relentless.feature.space.dto.request.CreateSpaceRequest;
+import com.project.relentless.feature.space.dto.request.EditSpaceRequest;
 import com.project.relentless.feature.space.dto.request.SpaceStatusRequest;
 import com.project.relentless.feature.space.dto.response.SpaceResponse;
+import com.project.relentless.feature.space.dto.response.TimeSlotResponse;
 import com.project.relentless.feature.space.entity.Space;
 import com.project.relentless.feature.space.mapper.AddressMapper;
 import com.project.relentless.feature.space.mapper.SpaceMapper;
+import com.project.relentless.feature.space.mapper.WorkingHoursMapper;
 import com.project.relentless.feature.space.repository.AmenityRepository;
 import com.project.relentless.feature.space.repository.CategoryRepository;
 import com.project.relentless.feature.space.repository.SpaceRepository;
 import com.project.relentless.feature.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +34,15 @@ public class SpaceServiceImpl implements SpaceService {
 
   private final SpaceRepository spaceRepository;
   private final SpaceMapper spaceMapper;
+  private final BookingRepository bookingRepository;
   private final UserRepository userRepository;
   private final CategoryRepository categoryRepository;
   private final AmenityRepository amenityRepository;
   private final AddressMapper addressMapper;
   private final AuthService authService;
+  private final WorkingHoursMapper workingHoursMapper;
+
+  private static final int SLOT_MINUTES = 30;
 
   @Override
   public List<SpaceResponse> getAll() {
@@ -63,6 +75,57 @@ public class SpaceServiceImpl implements SpaceService {
             .orElseThrow(() -> new EntityNotFoundException("Space not found"));
 
     return spaceMapper.toSpaceResponse(space);
+  }
+
+  @Override
+  public List<TimeSlotResponse> getAvailabilityById(Long id, LocalDate date) {
+    var space =
+        spaceRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Space not found"));
+
+    var hours =
+        space.getWorkingHours().stream()
+            .filter(wh -> wh.getDayOfWeek() == date.getDayOfWeek())
+            .findFirst()
+            .orElse(null);
+
+    if (hours == null) {
+      return List.of();
+    }
+
+    var openDateTime = date.atTime(hours.getOpenTime());
+    var closeDateTime = date.atTime(hours.getCloseTime());
+
+    if (hours.getCloseTime().equals(LocalTime.MIDNIGHT)) {
+      closeDateTime = date.plusDays(1).atStartOfDay();
+    }
+
+    var bookings =
+        bookingRepository.findAllBySpaceIdAndStatusNotAndStartTimeBeforeAndEndTimeAfter(
+            id, BookingStatus.CANCELLED, closeDateTime, openDateTime);
+
+    var availableSlots = new ArrayList<TimeSlotResponse>();
+    for (var start = openDateTime;
+        start.isBefore(closeDateTime);
+        start = start.plusMinutes(SLOT_MINUTES)) {
+      var slotStart = start;
+      var slotEnd = start.plusMinutes(SLOT_MINUTES);
+
+      if (slotEnd.isAfter(closeDateTime)) {
+        break;
+      }
+
+      boolean isAvailable =
+          bookings.stream()
+              .noneMatch(
+                  b -> b.getStartTime().isBefore(slotEnd) && b.getEndTime().isAfter(slotStart));
+
+      availableSlots.add(
+          new TimeSlotResponse(slotStart.toLocalTime(), slotEnd.toLocalTime(), isAvailable));
+    }
+
+    return availableSlots;
   }
 
   @Override
@@ -99,7 +162,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
-  public SpaceResponse create(SpaceRequest request) {
+  public SpaceResponse create(CreateSpaceRequest request) {
     Long userId = authService.getCurrentUserId();
     var user =
         userRepository
@@ -123,6 +186,7 @@ public class SpaceServiceImpl implements SpaceService {
             .description(request.description())
             .address(addressMapper.toAddress(request.address()))
             .pricePerHour(request.pricePerHour())
+            .workingHours(workingHoursMapper.toWorkingHours(request.workingHours()))
             .imageKeys(request.imageKeys())
             .host(user)
             .category(category)
@@ -134,14 +198,27 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
-  public SpaceResponse edit(Long id, SpaceRequest request) {
+  public SpaceResponse edit(Long id, EditSpaceRequest request) {
     var space = getOwnedSpaceByIdOrThrow(id, "You are not allowed to edit this space");
 
-    if (request.name() != null) space.setName(request.name());
-    if (request.description() != null) space.setDescription(request.description());
-    if (request.address() != null) space.setAddress(addressMapper.toAddress(request.address()));
-    if (request.pricePerHour() != null) space.setPricePerHour(request.pricePerHour());
-    if (request.imageKeys() != null) space.setImageKeys(request.imageKeys());
+    if (request.name() != null) {
+      space.setName(request.name());
+    }
+    if (request.description() != null) {
+      space.setDescription(request.description());
+    }
+    if (request.address() != null) {
+      space.setAddress(addressMapper.toAddress(request.address()));
+    }
+    if (request.pricePerHour() != null) {
+      space.setPricePerHour(request.pricePerHour());
+    }
+    if (request.workingHours() != null) {
+      space.setWorkingHours(workingHoursMapper.toWorkingHours(request.workingHours()));
+    }
+    if (request.imageKeys() != null) {
+      space.setImageKeys(request.imageKeys());
+    }
 
     if (request.categoryId() != null) {
       var category =

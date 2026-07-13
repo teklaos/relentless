@@ -22,6 +22,11 @@ public class BookingController {
     return ResponseEntity.ok(bookingService.getByCurrentUser());
   }
 
+  @GetMapping("/me/hosted")
+  public ResponseEntity<List<BookingResponse>> getHostedByCurrentUser() {
+    return ResponseEntity.ok(bookingService.getHostedByCurrentUser());
+  }
+
   @PostMapping
   public ResponseEntity<BookingResponse> create(@Valid @RequestBody CreateBookingRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.create(request));

@@ -9,6 +9,7 @@ import com.project.relentless.feature.space.entity.Address;
 import com.project.relentless.feature.space.entity.Amenity;
 import com.project.relentless.feature.space.entity.Category;
 import com.project.relentless.feature.space.entity.Space;
+import com.project.relentless.feature.space.entity.WorkingHours;
 import com.project.relentless.feature.space.repository.AmenityRepository;
 import com.project.relentless.feature.space.repository.CategoryRepository;
 import com.project.relentless.feature.space.repository.SpaceRepository;
@@ -17,9 +18,11 @@ import com.project.relentless.feature.user.User;
 import com.project.relentless.feature.user.UserRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -94,6 +97,11 @@ public class DataInitializer {
 
     categoryRepository.saveAll(List.of(category1, category2));
 
+    var workingHours =
+        Arrays.stream(DayOfWeek.values())
+            .map(day -> WorkingHours.builder().dayOfWeek(day).build())
+            .toList();
+
     var space1 =
         Space.builder()
             .name("MOVE DANCE STUDIO")
@@ -109,6 +117,7 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("50.00"))
             .publishedOn(LocalDate.of(2025, 12, 1))
+            .workingHours(workingHours)
             .build();
 
     var space2 =
@@ -126,6 +135,7 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("70.00"))
             .publishedOn(LocalDate.of(2025, 11, 15))
+            .workingHours(workingHours)
             .build();
 
     space1.setHost(host);

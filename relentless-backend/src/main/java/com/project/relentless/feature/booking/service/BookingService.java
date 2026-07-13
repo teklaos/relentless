@@ -7,5 +7,7 @@ import java.util.List;
 public interface BookingService {
   List<BookingResponse> getByCurrentUser();
 
+  List<BookingResponse> getHostedByCurrentUser();
+
   BookingResponse create(CreateBookingRequest request);
 }
