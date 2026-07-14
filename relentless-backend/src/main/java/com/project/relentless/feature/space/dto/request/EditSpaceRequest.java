@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public record EditSpaceRequest(
-    @NotBlank @Size(max = 50) String name,
+    @Size(max = 50) String name,
     @Size(max = 255) String description,
     @Valid AddressRequest address,
     @DecimalMin(value = "0.00") @Digits(integer = 10, fraction = 2) BigDecimal pricePerHour,

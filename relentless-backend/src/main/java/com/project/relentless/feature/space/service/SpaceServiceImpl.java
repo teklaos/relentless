@@ -24,6 +24,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   public List<SpaceResponse> getAll() {
-    return spaceRepository.findAllByStatusNot(SpaceStatus.DELETED).stream()
+    return spaceRepository.findAllByStatus(SpaceStatus.ACTIVE).stream()
         .map(spaceMapper::toSpaceResponse)
         .toList();
   }
@@ -54,7 +55,7 @@ public class SpaceServiceImpl implements SpaceService {
   @Override
   public List<SpaceResponse> getSavedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
-    return spaceRepository.findBySavedByIdAndStatusNot(userId, SpaceStatus.DELETED).stream()
+    return spaceRepository.findBySavedByIdAndStatus(userId, SpaceStatus.ACTIVE).stream()
         .map(spaceMapper::toSpaceResponse)
         .toList();
   }
@@ -140,6 +141,10 @@ public class SpaceServiceImpl implements SpaceService {
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Space not found"));
 
+    if (space.getStatus().equals(SpaceStatus.DELETED)) {
+      throw new EntityNotFoundException("Space not found");
+    }
+
     user.getSavedSpaces().add(space);
     userRepository.save(user);
   }
@@ -174,9 +179,13 @@ public class SpaceServiceImpl implements SpaceService {
             .findById(request.categoryId())
             .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
-    var amenities = amenityRepository.findAllById(request.amenityIds());
+    var amenityIds = request.amenityIds();
+    if (amenityIds == null) {
+      amenityIds = Set.of();
+    }
 
-    if (amenities.size() != request.amenityIds().size()) {
+    var amenities = amenityRepository.findAllById(amenityIds);
+    if (amenities.size() != amenityIds.size()) {
       throw new EntityNotFoundException("Amenity not found");
     }
 
@@ -200,6 +209,10 @@ public class SpaceServiceImpl implements SpaceService {
   @Transactional
   public SpaceResponse edit(Long id, EditSpaceRequest request) {
     var space = getOwnedSpaceByIdOrThrow(id, "You are not allowed to edit this space");
+
+    if (space.getStatus().equals(SpaceStatus.DELETED)) {
+      throw new EntityNotFoundException("Space not found");
+    }
 
     if (request.name() != null) {
       space.setName(request.name());
@@ -250,6 +263,11 @@ public class SpaceServiceImpl implements SpaceService {
 
     var space =
         getOwnedSpaceByIdOrThrow(id, "You are not allowed to change the status of this space");
+
+    if (space.getStatus().equals(SpaceStatus.DELETED)) {
+      throw new EntityNotFoundException("Space not found");
+    }
+
     space.setStatus(request.status());
     return spaceMapper.toSpaceResponse(spaceRepository.save(space));
   }

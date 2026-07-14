@@ -22,6 +22,7 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.ResourceAccessException;
@@ -45,7 +46,8 @@ public class GlobalExceptionHandler {
     MethodArgumentTypeMismatchException.class,
     HttpMessageNotReadableException.class,
     HttpMediaTypeNotSupportedException.class,
-    MultipartException.class
+    MultipartException.class,
+    MissingServletRequestParameterException.class
   })
   public ResponseEntity<ErrorResponse> handleBadRequest(Exception ex) {
     return buildResponse(HttpStatus.BAD_REQUEST, "Bad request", ex);

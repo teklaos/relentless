@@ -17,6 +17,7 @@ import javax.crypto.Mac;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -66,7 +67,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     String tokenHash = hmacSha256Hex(rawToken);
     return refreshTokenRepository
         .findByTokenHash(tokenHash)
-        .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+        .orElseThrow(
+            () -> new AuthenticationCredentialsNotFoundException("Refresh token not found"));
   }
 
   @Override

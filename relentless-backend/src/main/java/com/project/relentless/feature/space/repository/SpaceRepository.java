@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SpaceRepository extends JpaRepository<Space, Long> {
-  List<Space> findAllByStatusNot(SpaceStatus status);
+  List<Space> findAllByStatus(SpaceStatus status);
+
+  List<Space> findBySavedByIdAndStatus(Long userId, SpaceStatus status);
 
   List<Space> findByHostIdAndStatusNot(Long userId, SpaceStatus status);
-
-  List<Space> findBySavedByIdAndStatusNot(Long userId, SpaceStatus status);
 }
