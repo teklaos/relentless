@@ -1,17 +1,8 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Space, Booking, User } from "@/data";
+import { Space, Booking, User } from "@/data/types";
 import {
   fetchMe,
   fetchMyBookings,
@@ -24,14 +15,9 @@ import {
   login,
   register,
   logout,
-  setUnauthorizedHandler,
+  setUnauthorizedHandler
 } from "@/lib/api";
-import {
-  getAccessToken,
-  getRefreshToken,
-  setTokens,
-  clearTokens,
-} from "@/lib/auth";
+import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "@/lib/auth";
 
 interface AppContextValue {
   auth: boolean;
@@ -43,21 +29,10 @@ interface AppContextValue {
   reviewing: Booking | null;
   toast: string | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (payload: {
-    username: string;
-    email: string;
-    password: string;
-    dateOfBirth: string;
-  }) => Promise<void>;
+  signUp: (payload: { username: string; email: string; password: string; dateOfBirth: string }) => Promise<void>;
   onSignOut: () => void;
   onSave: (id: number) => void;
-  onBook: (params: {
-    space: Space;
-    startIso: string;
-    endIso: string;
-    total: number;
-    duration: number;
-  }) => void;
+  onBook: (params: { space: Space; startIso: string; endIso: string; total: number; duration: number }) => void;
   onOpen: (space: Space) => void;
   onOpenById: (id: number) => void;
   onClose: () => void;
@@ -80,10 +55,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const savedIds = useMemo(
-    () => new Set(savedSpaces.map((s) => s.id)),
-    [savedSpaces],
-  );
+  const savedIds = useMemo(() => new Set(savedSpaces.map((s) => s.id)), [savedSpaces]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -133,24 +105,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const tokens = await login({ email, password });
       setTokens(tokens.accessToken, tokens.refreshToken);
       setAuth(true);
-      router.push("/explore");
+      try {
+        const me = await fetchMe();
+        setUser(me);
+        router.push(me.role === "HOST" ? "/dashboard" : "/explore");
+      } catch {
+        router.push("/explore");
+      }
     },
-    [router],
+    [router]
   );
 
   const signUp = useCallback(
-    async (payload: {
-      username: string;
-      email: string;
-      password: string;
-      dateOfBirth: string;
-    }) => {
+    async (payload: { username: string; email: string; password: string; dateOfBirth: string }) => {
       const tokens = await register(payload);
       setTokens(tokens.accessToken, tokens.refreshToken);
       setAuth(true);
       router.push("/explore");
     },
-    [router],
+    [router]
   );
 
   const onSignOut = useCallback(() => {
@@ -181,7 +154,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showToast("COULD NOT UPDATE SAVED");
       }
     },
-    [savedSpaces, showToast],
+    [savedSpaces, showToast]
   );
 
   const onOpen = useCallback((space: Space) => setDetail(space), []);
@@ -191,13 +164,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .then(setDetail)
         .catch(() => showToast("COULD NOT OPEN SPACE"));
     },
-    [showToast],
+    [showToast]
   );
   const onClose = useCallback(() => setDetail(null), []);
-  const onLeaveReview = useCallback(
-    (booking: Booking) => setReviewing(booking),
-    [],
-  );
+  const onLeaveReview = useCallback((booking: Booking) => setReviewing(booking), []);
   const onCloseReview = useCallback(() => setReviewing(null), []);
 
   const onBook = useCallback(
@@ -205,7 +175,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       space,
       startIso,
       endIso,
-      duration,
+      duration
     }: {
       space: Space;
       startIso: string;
@@ -217,7 +187,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await createBooking({
           spaceId: space.id,
           startTime: startIso,
-          endTime: endIso,
+          endTime: endIso
         });
         setBookings(await fetchMyBookings());
         setDetail(null);
@@ -227,7 +197,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showToast("BOOKING FAILED");
       }
     },
-    [showToast, router],
+    [showToast, router]
   );
 
   const onSubmitReview = useCallback(
@@ -242,7 +212,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showToast("REVIEW FAILED");
       }
     },
-    [reviewing, showToast],
+    [reviewing, showToast]
   );
 
   return (
@@ -267,7 +237,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         onLeaveReview,
         onCloseReview,
         onSubmitReview,
-        showToast,
+        showToast
       }}
     >
       {children}

@@ -5,10 +5,6 @@
   background: var(--bg);
 }
 
-.app.compact {
-  font-size: 13px;
-}
-
 .main {
   min-width: 0;
   display: flex;

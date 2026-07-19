@@ -1,17 +1,18 @@
-import { Space, Category, Review, Booking, User } from "@/data";
 import {
-  getAccessToken,
-  getRefreshToken,
-  setTokens,
-  clearTokens,
-} from "./auth";
+  Space,
+  Category,
+  Review,
+  Booking,
+  User,
+  AmenitySummary,
+  TimeSlot,
+  AuthTokens,
+  CreateSpacePayload,
+  EditSpacePayload
+} from "@/data/types";
+import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "./auth";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
-
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
 
 export function imageUrl(key: string): string {
   return `${API_BASE}/api/images/${key}`;
@@ -34,7 +35,7 @@ function refreshAccessToken(): Promise<boolean> {
         const res = await fetch(`${API_BASE}/api/auth/refresh-token`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken }),
+          body: JSON.stringify({ refreshToken })
         });
         if (!res.ok) return false;
         const data: { accessToken: string } = await res.json();
@@ -50,19 +51,15 @@ function refreshAccessToken(): Promise<boolean> {
   return refreshInFlight;
 }
 
-async function request<T>(
-  path: string,
-  init?: RequestInit,
-  retry = true,
-): Promise<T> {
+async function request<T>(path: string, init?: RequestInit, retry = true): Promise<T> {
   const token = getAccessToken();
   const res = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init?.headers,
-    },
+      ...init?.headers
+    }
   });
 
   if (res.status === 401 && retry) {
@@ -81,14 +78,11 @@ async function request<T>(
   return (text ? JSON.parse(text) : undefined) as T;
 }
 
-export async function login(payload: {
-  email: string;
-  password: string;
-}): Promise<AuthTokens> {
+export async function login(payload: { email: string; password: string }): Promise<AuthTokens> {
   const res = await fetch(`${API_BASE}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(payload)
   });
   if (!res.ok) throw new Error(`Login failed: ${res.status}`);
   return res.json();
@@ -103,7 +97,7 @@ export async function register(payload: {
   const res = await fetch(`${API_BASE}/api/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(payload)
   });
   if (!res.ok) throw new Error(`Registration failed: ${res.status}`);
   return res.json();
@@ -113,7 +107,7 @@ export async function logout(refreshToken: string): Promise<void> {
   await fetch(`${API_BASE}/api/auth/logout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refreshToken }),
+    body: JSON.stringify({ refreshToken })
   }).catch(() => {});
 }
 
@@ -133,6 +127,10 @@ export function fetchSpace(id: number): Promise<Space> {
   return request<Space>(`/api/spaces/${id}`);
 }
 
+export function fetchAvailability(id: number, date: string): Promise<TimeSlot[]> {
+  return request<TimeSlot[]>(`/api/spaces/${id}/availability?date=${date}`);
+}
+
 export function fetchMe(): Promise<User> {
   return request<User>("/api/users/me");
 }
@@ -145,25 +143,17 @@ export function fetchSavedSpaces(): Promise<Space[]> {
   return request<Space[]>("/api/spaces/me/saved");
 }
 
-export function createBooking(params: {
-  spaceId: number;
-  startTime: string;
-  endTime: string;
-}): Promise<Booking> {
+export function createBooking(params: { spaceId: number; startTime: string; endTime: string }): Promise<Booking> {
   return request<Booking>("/api/bookings", {
     method: "POST",
-    body: JSON.stringify(params),
+    body: JSON.stringify(params)
   });
 }
 
-export function leaveReview(params: {
-  bookingId: number;
-  rating: number;
-  comment: string;
-}): Promise<Review> {
+export function leaveReview(params: { bookingId: number; rating: number; comment: string }): Promise<Review> {
   return request<Review>("/api/reviews", {
     method: "POST",
-    body: JSON.stringify(params),
+    body: JSON.stringify(params)
   });
 }
 
@@ -173,4 +163,45 @@ export function saveSpace(id: number): Promise<void> {
 
 export function unsaveSpace(id: number): Promise<void> {
   return request<void>(`/api/spaces/${id}/unsave`, { method: "DELETE" });
+}
+
+export function fetchHostedSpaces(): Promise<Space[]> {
+  return request<Space[]>("/api/spaces/me/hosted");
+}
+
+export function fetchHostedBookings(): Promise<Booking[]> {
+  return request<Booking[]>("/api/bookings/me/hosted");
+}
+
+export function fetchHostedReviews(): Promise<Review[]> {
+  return request<Review[]>("/api/reviews/me/hosted");
+}
+
+export function fetchAmenities(): Promise<AmenitySummary[]> {
+  return request<AmenitySummary[]>("/api/amenities");
+}
+
+export function createSpace(payload: CreateSpacePayload): Promise<Space> {
+  return request<Space>("/api/spaces", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function editSpace(id: number, payload: EditSpacePayload): Promise<Space> {
+  return request<Space>(`/api/spaces/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function changeSpaceStatus(id: number, status: string): Promise<Space> {
+  return request<Space>(`/api/spaces/${id}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ status })
+  });
+}
+
+export function deleteSpace(id: number): Promise<void> {
+  return request<void>(`/api/spaces/${id}`, { method: "DELETE" });
 }
