@@ -34,7 +34,16 @@ public class ReviewServiceImpl implements ReviewService {
       throw new EntityNotFoundException("Space not found");
     }
 
-    return reviewRepository.findBySpaceIdWithAuthor(spaceId).stream()
+    return reviewRepository.findBySpaceId(spaceId).stream()
+        .map(reviewMapper::toReviewResponse)
+        .toList();
+  }
+
+  @Override
+  public List<ReviewResponse> getHostedByCurrentUser() {
+    Long userId = authService.getCurrentUserId();
+
+    return reviewRepository.findByHostId(userId).stream()
         .map(reviewMapper::toReviewResponse)
         .toList();
   }

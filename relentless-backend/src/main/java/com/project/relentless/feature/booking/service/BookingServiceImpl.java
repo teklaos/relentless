@@ -7,6 +7,7 @@ import com.project.relentless.feature.booking.dto.response.BookingResponse;
 import com.project.relentless.feature.booking.entity.Booking;
 import com.project.relentless.feature.booking.mapper.BookingMapper;
 import com.project.relentless.feature.booking.repository.BookingRepository;
+import com.project.relentless.feature.space.SpaceStatus;
 import com.project.relentless.feature.space.repository.SpaceRepository;
 import com.project.relentless.feature.user.UserRepository;
 import jakarta.persistence.EntityExistsException;
@@ -60,6 +61,12 @@ public class BookingServiceImpl implements BookingService {
       throw new EntityExistsException("Space already booked for the chosen time");
     }
 
+    if (request.startTime().getMinute() % SLOT_MINUTES != 0
+        || request.endTime().getMinute() % SLOT_MINUTES != 0) {
+      throw new IllegalArgumentException(
+          "Start and end time must be within " + SLOT_MINUTES + "-minute slots");
+    }
+
     var userId = authService.getCurrentUserId();
     var user =
         userRepository
@@ -71,10 +78,8 @@ public class BookingServiceImpl implements BookingService {
             .findById(request.spaceId())
             .orElseThrow(() -> new EntityNotFoundException("Space not found"));
 
-    if (request.startTime().getMinute() % SLOT_MINUTES != 0
-        || request.endTime().getMinute() % SLOT_MINUTES != 0) {
-      throw new IllegalArgumentException(
-          "Start and end time must be within " + SLOT_MINUTES + "-minute slots");
+    if (!space.getStatus().equals(SpaceStatus.ACTIVE)) {
+      throw new IllegalArgumentException("Space is not available for booking");
     }
 
     var hours =

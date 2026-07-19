@@ -17,5 +17,16 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
       JOIN FETCH b.user
       WHERE b.space.id = :spaceId
       """)
-  List<Review> findBySpaceIdWithAuthor(@Param("spaceId") Long spaceId);
+  List<Review> findBySpaceId(@Param("spaceId") Long spaceId);
+
+  @Query(
+      """
+      SELECT r FROM Review r
+      JOIN FETCH r.booking b
+      JOIN FETCH b.user
+      JOIN FETCH b.space s
+      WHERE s.host.id = :userId
+      ORDER BY r.createdAt DESC
+      """)
+  List<Review> findByHostId(@Param("userId") Long userId);
 }

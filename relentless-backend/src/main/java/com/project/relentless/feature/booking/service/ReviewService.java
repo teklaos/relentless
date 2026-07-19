@@ -7,5 +7,7 @@ import java.util.List;
 public interface ReviewService {
   List<ReviewResponse> getBySpaceId(Long spaceId);
 
+  List<ReviewResponse> getHostedByCurrentUser();
+
   ReviewResponse leave(LeaveReviewRequest request);
 }
