@@ -1,5 +1,6 @@
 package com.project.relentless.feature.user;
 
+import com.project.relentless.feature.auth.AuthService;
 import com.project.relentless.feature.auth.details.CustomUserDetails;
 import com.project.relentless.feature.user.dto.request.UpdateUserRequest;
 import com.project.relentless.feature.user.dto.response.UserResponse;
@@ -8,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final UserMapper userMapper;
+  private final AuthService authService;
 
   @Override
   public UserResponse getCurrent() {
@@ -43,10 +46,15 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserResponse update(Long id, UpdateUserRequest request) {
+    Long userId = authService.getCurrentUserId();
     var user =
         userRepository
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+    if (!user.getId().equals(userId)) {
+      throw new AuthorizationDeniedException("You are not allowed to update this user");
+    }
 
     if (request.username() != null) {
       user.setUsername(request.username());
