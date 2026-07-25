@@ -3,6 +3,7 @@ package com.project.relentless.feature.user;
 import com.project.relentless.feature.auth.refresh.RefreshToken;
 import com.project.relentless.feature.booking.entity.Booking;
 import com.project.relentless.feature.space.entity.Space;
+import com.project.relentless.feature.wallet.Transaction;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -78,6 +79,12 @@ public class User {
   @EqualsAndHashCode.Exclude
   @Builder.Default
   private Set<RefreshToken> refreshTokens = new HashSet<>();
+
+  @OneToMany(mappedBy = "host")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @Builder.Default
+  private Set<Transaction> transactions = new HashSet<>();
 
   @ManyToMany
   @JoinTable(

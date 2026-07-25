@@ -2,7 +2,9 @@ package com.project.relentless.feature.payment;
 
 import com.project.relentless.feature.booking.BookingStatus;
 import com.project.relentless.feature.booking.repository.BookingRepository;
+import com.project.relentless.feature.wallet.WalletService;
 import com.stripe.model.checkout.Session;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ public class StripeController {
 
   private final StripeService stripeService;
   private final BookingRepository bookingRepository;
+  private final WalletService walletService;
 
   @PostMapping("/webhook")
   public ResponseEntity<String> handleStripeWebhook(
@@ -28,15 +31,16 @@ public class StripeController {
       }
 
       Long bookingId = Long.valueOf(session.getMetadata().get("bookingId"));
-      bookingRepository
-          .findById(bookingId)
-          .ifPresent(
-              b -> {
-                if (b.getStatus() == BookingStatus.PENDING) {
-                  b.setStatus(BookingStatus.CONFIRMED);
-                  bookingRepository.save(b);
-                }
-              });
+      var booking =
+          bookingRepository
+              .findById(bookingId)
+              .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+
+      if (booking.getStatus() == BookingStatus.PENDING) {
+        booking.setStatus(BookingStatus.CONFIRMED);
+        bookingRepository.save(booking);
+        walletService.recordCredit(bookingId);
+      }
     }
     return ResponseEntity.ok().build();
   }

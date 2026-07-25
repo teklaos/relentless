@@ -10,6 +10,7 @@ import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.impl.InvalidContentTypeException;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -57,7 +58,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
     String message =
         ex.getBindingResult().getFieldErrors().stream()
-            .map(err -> err.getField() + ": " + err.getDefaultMessage())
+            .map(err -> StringUtils.capitalize(err.getField()) + " " + err.getDefaultMessage())
             .collect(Collectors.joining(", "));
 
     if (message.isBlank()) {
