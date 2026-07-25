@@ -1,6 +1,7 @@
 package com.project.relentless;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.relentless.feature.payment.PaymentGatewayException;
 import io.jsonwebtoken.JwtException;
 import io.minio.errors.ErrorResponseException;
 import jakarta.persistence.EntityExistsException;
@@ -25,7 +26,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
@@ -111,7 +111,12 @@ public class GlobalExceptionHandler {
     return buildResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported media type", ex);
   }
 
-  @ExceptionHandler({ConnectException.class, ResourceAccessException.class})
+  @ExceptionHandler(PaymentGatewayException.class)
+  public ResponseEntity<ErrorResponse> handleBadGateway(Exception ex) {
+    return buildResponse(HttpStatus.BAD_GATEWAY, "Bad gateway", ex);
+  }
+
+  @ExceptionHandler(ConnectException.class)
   public ResponseEntity<ErrorResponse> handleServiceUnavailable(Exception ex) {
     return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, "Service unavailable", ex);
   }

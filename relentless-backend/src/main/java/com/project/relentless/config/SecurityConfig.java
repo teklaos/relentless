@@ -49,6 +49,8 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/images/**")
                     .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/payments/webhook")
+                    .permitAll()
                     .anyRequest()
                     .authenticated())
         .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))

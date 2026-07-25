@@ -1,5 +1,6 @@
 package com.project.relentless.feature.booking.mapper;
 
+import com.project.relentless.feature.booking.dto.response.BookingCheckoutResponse;
 import com.project.relentless.feature.booking.dto.response.BookingResponse;
 import com.project.relentless.feature.booking.entity.Booking;
 import com.project.relentless.feature.space.mapper.SpaceMapper;
@@ -14,4 +15,8 @@ public interface BookingMapper {
   @Mapping(target = "status", expression = "java(booking.getStatus().name())")
   @Mapping(target = "reviewed", expression = "java(booking.getReview() != null)")
   BookingResponse toBookingResponse(Booking booking);
+
+  @Mapping(target = "status", expression = "java(booking.getStatus().name())")
+  @Mapping(target = "reviewed", expression = "java(booking.getReview() != null)")
+  BookingCheckoutResponse toBookingCheckoutResponse(Booking booking, String checkoutSessionUrl);
 }

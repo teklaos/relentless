@@ -38,10 +38,15 @@ public class Booking {
       message = "Total price must be a valid number with up to 2 decimal places.")
   private BigDecimal totalPrice;
 
+  @NotNull(message = "Creation time is required.")
+  @PastOrPresent(message = "Creation time must be in the past or present.")
+  @Builder.Default
+  private LocalDateTime createdAt = LocalDateTime.now();
+
   @NotNull(message = "Booking status is required.")
   @Enumerated(EnumType.STRING)
   @Builder.Default
-  private BookingStatus status = BookingStatus.CONFIRMED;
+  private BookingStatus status = BookingStatus.PENDING;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false, updatable = false)

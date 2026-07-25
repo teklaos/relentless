@@ -3,10 +3,12 @@ package com.project.relentless.feature.booking.service;
 import com.project.relentless.feature.auth.AuthService;
 import com.project.relentless.feature.booking.BookingStatus;
 import com.project.relentless.feature.booking.dto.request.CreateBookingRequest;
+import com.project.relentless.feature.booking.dto.response.BookingCheckoutResponse;
 import com.project.relentless.feature.booking.dto.response.BookingResponse;
 import com.project.relentless.feature.booking.entity.Booking;
 import com.project.relentless.feature.booking.mapper.BookingMapper;
 import com.project.relentless.feature.booking.repository.BookingRepository;
+import com.project.relentless.feature.payment.StripeService;
 import com.project.relentless.feature.space.SpaceStatus;
 import com.project.relentless.feature.space.repository.SpaceRepository;
 import com.project.relentless.feature.user.UserRepository;
@@ -16,6 +18,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,7 @@ public class BookingServiceImpl implements BookingService {
   private final UserRepository userRepository;
   private final SpaceRepository spaceRepository;
   private final AuthService authService;
+  private final StripeService stripeService;
 
   private static final int SLOT_MINUTES = 30;
 
@@ -51,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
 
   @Override
   @Transactional
-  public BookingResponse create(CreateBookingRequest request) {
+  public BookingCheckoutResponse create(CreateBookingRequest request) {
     if (!request.startTime().isBefore(request.endTime())) {
       throw new IllegalArgumentException("Start time must be before end time");
     }
@@ -116,6 +120,21 @@ public class BookingServiceImpl implements BookingService {
             .totalPrice(totalPrice)
             .build();
 
-    return bookingMapper.toBookingResponse(bookingRepository.save(booking));
+    var saved = bookingRepository.save(booking);
+    var session = stripeService.createCheckoutSession(saved);
+
+    return bookingMapper.toBookingCheckoutResponse(saved, session.getUrl());
+  }
+
+  @Override
+  @Transactional
+  public void cancelPending() {
+    var bookings =
+        bookingRepository.findAllByStatusAndCreatedAtBefore(
+            BookingStatus.PENDING, LocalDateTime.now().minusMinutes(35));
+    for (var booking : bookings) {
+      booking.setStatus(BookingStatus.CANCELLED);
+      bookingRepository.save(booking);
+    }
   }
 }
