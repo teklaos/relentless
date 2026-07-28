@@ -9,17 +9,34 @@ import Sidebar from "@/components/shared/Sidebar";
 import BottomNav from "@/components/shared/BottomNav";
 import SpaceDetail from "@/components/user/SpaceDetail";
 import ReviewModal from "@/components/user/ReviewModal";
+import PaymentModal from "@/components/user/PaymentModal";
 
-const HOST_ONLY = ["/dashboard", "/listings", "/payouts", "/reviews"];
+const HOST_ONLY = ["/dashboard", "/listings", "/wallet", "/reviews"];
 const GUEST_ONLY = ["/explore", "/saved"];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { auth, user, detail, reviewing, toast, savedIds, onSave, onBook, onClose, onCloseReview, onSubmitReview } =
-    useApp();
+  const {
+    auth,
+    authReady,
+    user,
+    detail,
+    reviewing,
+    checkout,
+    toast,
+    savedIds,
+    onSave,
+    onBook,
+    onClose,
+    onCloseReview,
+    onSubmitReview,
+    onCloseCheckout,
+    onProceedPayment
+  } = useApp();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
+    if (!authReady) return;
     if (!auth) {
       router.replace("/login");
       return;
@@ -32,9 +49,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     } else if (!isHost && matches(HOST_ONLY)) {
       router.replace("/explore");
     }
-  }, [auth, user, pathname, router]);
+  }, [authReady, auth, user, pathname, router]);
 
-  if (!auth) {
+  if (!authReady || !auth) {
     return null;
   }
 
@@ -58,6 +75,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         )}
 
         {reviewing && <ReviewModal booking={reviewing} onClose={onCloseReview} onSubmit={onSubmitReview} />}
+
+        {checkout && <PaymentModal checkout={checkout} onClose={onCloseCheckout} onProceed={onProceedPayment} />}
 
         {toast && (
           <div className="toast">

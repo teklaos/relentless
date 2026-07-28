@@ -28,6 +28,8 @@ export function Dropdown<T extends string | number>({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -36,6 +38,15 @@ export function Dropdown<T extends string | number>({
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const menu = menuRef.current;
+    const active = activeRef.current;
+    if (menu && active) {
+      menu.scrollTop = active.offsetTop - menu.clientHeight / 2 + active.clientHeight / 2;
+    }
   }, [open]);
 
   const selected = options.find((o) => o.value === value);
@@ -53,11 +64,12 @@ export function Dropdown<T extends string | number>({
         <ChevronDown size={14} />
       </button>
       {open && (
-        <div className="ts-menu">
+        <div className="ts-menu" ref={menuRef}>
           {options.map((o) => (
             <button
               type="button"
               key={o.value}
+              ref={o.value === value ? activeRef : undefined}
               className={`ts-opt ${o.value === value ? "active" : ""}`}
               onClick={() => {
                 onChange(o.value);

@@ -117,8 +117,8 @@ export default function Explore({
             onChange={setSort}
             options={[
               { value: "RECOMMENDED", label: "Recommended" },
-              { value: "PRICE_LOW", label: "Price · Lowest first" },
-              { value: "PRICE_HIGH", label: "Price · Highest first" },
+              { value: "PRICE_LOW", label: "Price - Lowest first" },
+              { value: "PRICE_HIGH", label: "Price - Highest first" },
               { value: "RATING", label: "Top rated" }
             ]}
           />
@@ -194,8 +194,8 @@ export default function Explore({
       <div className="results-bar">
         <span>
           <span className="count-strong">{filtered.length}</span> results
-          {activeCat && <span> · {categories.find((c) => c.id === activeCat)?.name}</span>}
-          {city !== "ALL" && <span> · {city}</span>}
+          {activeCat && <span> - {categories.find((c) => c.id === activeCat)?.name}</span>}
+          {city !== "ALL" && <span> - {city}</span>}
         </span>
       </div>
 

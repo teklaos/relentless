@@ -1,0 +1,46 @@
+.pay-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4px 0 0;
+}
+
+.pay-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  color: var(--tone, var(--ink-3));
+  background: color-mix(in srgb, var(--tone, var(--ink-3)) 12%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--tone, var(--ink-3)) 35%, transparent);
+  margin-bottom: 22px;
+}
+
+.pay-status-title {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+}
+
+.pay-status-msg {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-3);
+  margin: 0 0 24px;
+  max-width: 34ch;
+}
+
+.pay-spin {
+  animation: pay-spin 0.9s linear infinite;
+}
+
+@keyframes pay-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

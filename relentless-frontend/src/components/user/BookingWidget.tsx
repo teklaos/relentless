@@ -197,9 +197,9 @@ export default function BookingWidget({ space, onBook }: BookingWidgetProps) {
           })}
         </div>
 
-        <div className="book-label">Start & end · {fmtDateShort(dateKey)}</div>
+        <div className="book-label">Start & end - {fmtDateShort(dateKey)}</div>
         {slots.length === 0 || startOptions.length === 0 ? (
-          <div className="time-empty">CLOSED · NO SLOTS THIS DAY</div>
+          <div className="time-empty">CLOSED - NO SLOTS THIS DAY</div>
         ) : (
           <div className="book-fields">
             <Dropdown

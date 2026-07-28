@@ -1,10 +1,14 @@
 "use client";
 
 import "./Profile.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Booking, User } from "@/data/types";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
-import { Edit2, ArrowRight } from "lucide-react";
+import Modal from "@/components/shared/ui/Modal";
+import DatePicker from "@/components/shared/ui/DatePicker";
+import { useApp } from "@/context/AppContext";
+import { uploadImage } from "@/lib/api";
+import { Edit2, ArrowRight, Camera } from "lucide-react";
 
 interface ProfileProps {
   user: User | null;
@@ -14,8 +18,72 @@ interface ProfileProps {
 }
 
 export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
+  const { onUpdateProfile, showToast } = useApp();
   const [twoFactor, setTwoFactor] = useState(true);
   const [notifications, setNotifications] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const [form, setForm] = useState({ username: "", email: "", dateOfBirth: "", profileImageKey: "" });
+  const avatarInput = useRef<HTMLInputElement | null>(null);
+
+  const startEdit = () => {
+    if (!user) return;
+    setForm({
+      username: user.username,
+      email: user.email,
+      dateOfBirth: user.dateOfBirth,
+      profileImageKey: user.profileImageKey ?? ""
+    });
+    setEditing(true);
+  };
+
+  const uploadAvatar = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      showToast("PICK AN IMAGE FILE");
+      return;
+    }
+    setUploading(true);
+    try {
+      const key = await uploadImage(file);
+      setForm((f) => ({ ...f, profileImageKey: key }));
+    } catch {
+      showToast("PHOTO UPLOAD FAILED");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onPickAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (file) uploadAvatar(file);
+  };
+
+  const onDropAvatar = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) uploadAvatar(file);
+  };
+
+  const saveEdit = async () => {
+    setSaving(true);
+    try {
+      await onUpdateProfile({
+        username: form.username,
+        email: form.email,
+        dateOfBirth: form.dateOfBirth,
+        ...(form.profileImageKey ? { profileImageKey: form.profileImageKey } : {})
+      });
+      setEditing(false);
+    } catch {
+      showToast("COULD NOT UPDATE PROFILE");
+    } finally {
+      setSaving(false);
+    }
+  };
   const completed = bookings.filter((b) => b.status === "COMPLETED").length;
   const totalSpent = bookings.filter((b) => b.status === "COMPLETED").reduce((a, b) => a + b.totalPrice, 0);
   const hoursBooked = bookings
@@ -40,16 +108,18 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
 
       <div className="profile-grid">
         <div className="profile-card">
-          <div className="profile-avatar">
-            <AvatarImg
-              imageKey={user.profileImageKey}
-              name={user.username}
-              size={88}
-              radius="inherit"
-              fallback={initials}
-            />
+          <div className="profile-head">
+            <div className="profile-avatar">
+              <AvatarImg
+                imageKey={user.profileImageKey}
+                name={user.username}
+                size={88}
+                radius="inherit"
+                fallback={initials}
+              />
+            </div>
+            <h2 className="profile-name">{user.username}</h2>
           </div>
-          <h2 className="profile-name">{user.username}</h2>
           <div className="profile-kv">
             <div className="k">USERNAME</div>
             <div className="v">{user.username}</div>
@@ -60,7 +130,7 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
             <div className="k">JOINED</div>
             <div className="v">{user.dateJoined}</div>
           </div>
-          <button className="btn block" style={{ marginTop: 24 }}>
+          <button className="btn block" style={{ marginTop: 24 }} onClick={startEdit}>
             <Edit2 size={13} /> EDIT DETAILS
           </button>
         </div>
@@ -73,7 +143,7 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
                 <div className="lbl">COMPLETED BOOKINGS</div>
               </div>
               <div className="profile-stat">
-                <div className="num">{hoursBooked.toFixed(0)}H</div>
+                <div className="num">{hoursBooked.toFixed(1).replace(/\.0$/, "")}H</div>
                 <div className="lbl">HOURS BOOKED</div>
               </div>
               <div className="profile-stat">
@@ -93,7 +163,7 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
             <div className="setting" onClick={() => setNotifications((v) => !v)} style={{ cursor: "pointer" }}>
               <div className="setting-l">
                 <span className="setting-t">Notifications</span>
-                <span className="setting-d">Receive email and in-app reminders</span>
+                <span className="setting-d">Receive email notifications</span>
               </div>
               <button className={`toggle ${notifications ? "on" : ""}`} aria-pressed={notifications}>
                 <span className="toggle-thumb" />
@@ -113,7 +183,7 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
             <div className="setting">
               <div className="setting-l">
                 <span className="setting-t">Data & privacy</span>
-                <span className="setting-d">Download or delete your data</span>
+                <span className="setting-d">Manage your personal data</span>
               </div>
               <span className="setting-v">
                 <ArrowRight size={12} />
@@ -134,6 +204,70 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
           </div>
         </div>
       </div>
+
+      {editing && (
+        <Modal
+          title="Edit details"
+          subtitle={`@${user.username}`}
+          onClose={() => !saving && setEditing(false)}
+          footer={
+            <>
+              <button className="btn" disabled={saving} onClick={() => setEditing(false)}>
+                CANCEL
+              </button>
+              <button className="btn primary" disabled={saving || uploading} onClick={saveEdit}>
+                {saving ? "SAVING…" : "SAVE"}
+              </button>
+            </>
+          }
+        >
+          <div className="profile-edit-form">
+            <button
+              type="button"
+              className={`profile-avatar-edit ${dragging ? "dragging" : ""}`}
+              onClick={() => avatarInput.current?.click()}
+              disabled={uploading}
+              aria-label="Change profile photo"
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={onDropAvatar}
+            >
+              <span className="profile-avatar-btn">
+                <AvatarImg
+                  imageKey={form.profileImageKey || null}
+                  name={form.username || user.username}
+                  size={72}
+                  radius="inherit"
+                  fallback={initials}
+                />
+                <span className="profile-avatar-overlay">
+                  <Camera size={16} />
+                </span>
+              </span>
+              <span className="profile-avatar-hint">{uploading ? "UPLOADING…" : "DROP IMAGE OR CLICK"}</span>
+              <input ref={avatarInput} type="file" accept="image/*" hidden onChange={onPickAvatar} />
+            </button>
+            <label className="k">USERNAME</label>
+            <input
+              className="profile-input"
+              value={form.username}
+              onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
+            />
+            <label className="k">EMAIL</label>
+            <input
+              className="profile-input"
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+            />
+            <label className="k">DOB</label>
+            <DatePicker value={form.dateOfBirth} onChange={(iso) => setForm((f) => ({ ...f, dateOfBirth: iso }))} />
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

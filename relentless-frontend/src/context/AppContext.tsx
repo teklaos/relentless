@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Space, Booking, User } from "@/data/types";
+import { Space, Booking, User, UpdateUserPayload } from "@/data/types";
 import {
   fetchMe,
   fetchMyBookings,
@@ -15,18 +15,30 @@ import {
   login,
   register,
   logout,
+  updateUser,
   setUnauthorizedHandler
 } from "@/lib/api";
 import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "@/lib/auth";
 
+export interface Checkout {
+  spaceId: number;
+  spaceName: string;
+  total: number;
+  duration: number;
+  startIso: string;
+  endIso: string;
+}
+
 interface AppContextValue {
   auth: boolean;
+  authReady: boolean;
   user: User | null;
   savedIds: Set<number>;
   savedSpaces: Space[];
   bookings: Booking[];
   detail: Space | null;
   reviewing: Booking | null;
+  checkout: Checkout | null;
   toast: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (payload: { username: string; email: string; password: string; dateOfBirth: string }) => Promise<void>;
@@ -39,6 +51,9 @@ interface AppContextValue {
   onLeaveReview: (booking: Booking) => void;
   onCloseReview: () => void;
   onSubmitReview: (params: { rating: number; comment: string }) => void;
+  onUpdateProfile: (payload: UpdateUserPayload) => Promise<void>;
+  onCloseCheckout: () => void;
+  onProceedPayment: () => void;
   showToast: (msg: string) => void;
 }
 
@@ -47,11 +62,13 @@ const AppContext = createContext<AppContextValue | null>(null);
 export function AppProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [auth, setAuth] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [savedSpaces, setSavedSpaces] = useState<Space[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [detail, setDetail] = useState<Space | null>(null);
   const [reviewing, setReviewing] = useState<Booking | null>(null);
+  const [checkout, setCheckout] = useState<Checkout | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -60,6 +77,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (getAccessToken()) setAuth(true);
+    setAuthReady(true);
   }, []);
 
   useEffect(() => {
@@ -171,10 +189,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const onCloseReview = useCallback(() => setReviewing(null), []);
 
   const onBook = useCallback(
-    async ({
+    ({
       space,
       startIso,
       endIso,
+      total,
       duration
     }: {
       space: Space;
@@ -183,22 +202,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
       total: number;
       duration: number;
     }) => {
-      try {
-        await createBooking({
-          spaceId: space.id,
-          startTime: startIso,
-          endTime: endIso
-        });
-        setBookings(await fetchMyBookings());
-        setDetail(null);
-        showToast(`BOOKED · ${space.name} · ${duration}H`);
-        setTimeout(() => router.push("/bookings"), 400);
-      } catch {
-        showToast("BOOKING FAILED");
-      }
+      setCheckout({ spaceId: space.id, spaceName: space.name, total, duration, startIso, endIso });
     },
-    [showToast, router]
+    []
   );
+
+  const onCloseCheckout = useCallback(() => setCheckout(null), []);
+
+  const onProceedPayment = useCallback(async () => {
+    if (!checkout) return;
+    try {
+      const booking = await createBooking({
+        spaceId: checkout.spaceId,
+        startTime: checkout.startIso,
+        endTime: checkout.endIso
+      });
+      localStorage.setItem("pendingBookingId", String(booking.id));
+      window.location.href = booking.checkoutSessionUrl;
+    } catch {
+      showToast("BOOKING FAILED");
+      setCheckout(null);
+    }
+  }, [checkout, showToast]);
 
   const onSubmitReview = useCallback(
     async ({ rating, comment }: { rating: number; comment: string }) => {
@@ -207,7 +232,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await leaveReview({ bookingId: reviewing.id, rating, comment });
         setBookings(await fetchMyBookings());
         setReviewing(null);
-        showToast(`REVIEW SUBMITTED · ${rating}★`);
+        showToast(`REVIEW SUBMITTED - ${rating}★`);
       } catch {
         showToast("REVIEW FAILED");
       }
@@ -215,16 +240,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [reviewing, showToast]
   );
 
+  const onUpdateProfile = useCallback(
+    async (payload: UpdateUserPayload) => {
+      if (!user) return;
+      const updated = await updateUser(user.id, payload);
+      setUser(updated);
+      showToast("PROFILE UPDATED");
+    },
+    [user, showToast]
+  );
+
   return (
     <AppContext.Provider
       value={{
         auth,
+        authReady,
         user,
         savedIds,
         savedSpaces,
         bookings,
         detail,
         reviewing,
+        checkout,
         toast,
         signIn,
         signUp,
@@ -237,6 +274,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         onLeaveReview,
         onCloseReview,
         onSubmitReview,
+        onUpdateProfile,
+        onCloseCheckout,
+        onProceedPayment,
         showToast
       }}
     >

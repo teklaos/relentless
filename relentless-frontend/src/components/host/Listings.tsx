@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Star, Activity, Mic, Camera, Music, Headphones, Target, type LucideIcon } from "lucide-react";
 import { useHost } from "@/context/HostContext";
 import Placeholder from "@/components/shared/ui/Placeholder";
+import { imageUrl } from "@/lib/api";
 import { fmtPrice, statusMeta } from "@/data/format";
 
 const chipDefs: [string, string][] = [
@@ -62,13 +63,25 @@ export default function Listings() {
           const isDeleted = s.status === "DELETED";
           const isActive = s.status === "ACTIVE";
           const loc = [`${s.address.street} ${s.address.streetNumber}`, s.address.city, s.address.country]
-            .join(" · ")
+            .join(" - ")
             .toUpperCase();
           const CatIcon = CAT_ICON[s.category.name] ?? Activity;
+          const cover = s.imageKeys?.[0];
           return (
             <div key={s.id} className="h-card h-card-hover h-list-card">
-              <div className="h-list-media">
-                <Placeholder />
+              <div
+                className="h-list-media"
+                style={
+                  cover
+                    ? {
+                        backgroundImage: `url(${imageUrl(cover)})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center"
+                      }
+                    : undefined
+                }
+              >
+                {!cover && <Placeholder />}
                 <span className="mono h-list-tag h-list-badge" style={{ color: sm.fg }}>
                   <span className="h-list-dot" style={{ background: sm.dot }} />
                   {s.status}

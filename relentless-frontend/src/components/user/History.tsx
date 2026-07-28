@@ -2,7 +2,9 @@
 
 import "./History.css";
 import { useState } from "react";
+import Image from "next/image";
 import Placeholder from "@/components/shared/ui/Placeholder";
+import { imageUrl } from "@/lib/api";
 import { Booking } from "@/data/types";
 import { fmtDateLong, fmtTimeRange, fmtPrice } from "@/data/format";
 import { Calendar, Star, Check } from "lucide-react";
@@ -79,11 +81,21 @@ export default function History({ bookings, onLeaveReview, onOpenSpace }: Histor
                 <span className="br-id">#{b.id}</span>
                 <div className="br-thumb">
                   <Placeholder />
+                  {sp.coverImageKey && (
+                    <Image
+                      src={imageUrl(sp.coverImageKey)}
+                      alt=""
+                      fill
+                      sizes="64px"
+                      className="br-thumb-img"
+                      onError={(e) => (e.currentTarget.style.display = "none")}
+                    />
+                  )}
                 </div>
                 <div>
                   <div className="br-title">{sp.name}</div>
                   <div className="br-cat">
-                    {sp.categoryName} · {sp.city}
+                    {sp.categoryName} - {sp.city}
                   </div>
                 </div>
                 <div className="br-when">
@@ -121,11 +133,6 @@ export default function History({ bookings, onLeaveReview, onOpenSpace }: Histor
                     >
                       <Check size={11} /> REVIEWED
                     </span>
-                  )}
-                  {b.status === "CONFIRMED" && (
-                    <button className="btn sm" onClick={(e) => e.stopPropagation()}>
-                      VIEW
-                    </button>
                   )}
                   {b.status === "CANCELLED" && (
                     <button className="btn sm ghost" disabled>

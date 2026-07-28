@@ -1,0 +1,57 @@
+.pay-rows {
+  border: 1px solid var(--hairline);
+}
+
+.pay-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.pay-row:last-child {
+  border-bottom: none;
+}
+
+.pay-k {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-3);
+}
+
+.pay-v {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 13px;
+}
+
+.pay-row.total .pay-v {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  color: var(--accent-ink);
+}
+
+.pay-spin {
+  animation: pay-spin 0.9s linear infinite;
+}
+
+@keyframes pay-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pay-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10.5px;
+  color: var(--ink-3);
+  line-height: 1.4;
+}

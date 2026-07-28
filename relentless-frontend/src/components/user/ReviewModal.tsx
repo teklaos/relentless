@@ -4,6 +4,7 @@ import "./ReviewModal.css";
 import { useState } from "react";
 import { Booking } from "@/data/types";
 import { fmtDateShort } from "@/data/format";
+import Modal from "@/components/shared/ui/Modal";
 import { Star, Check } from "lucide-react";
 
 interface ReviewModalProps {
@@ -19,14 +20,23 @@ export default function ReviewModal({ booking, onClose, onSubmit }: ReviewModalP
   const sp = booking.space;
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h3 className="modal-h">Leave a review</h3>
-        <div className="modal-sub">
-          {sp.name} · {fmtDateShort(booking.startTime)}
-        </div>
-
-        <div className="book-label">RATING · 1 TO 5</div>
+    <Modal
+      title="Leave a review"
+      subtitle={`${sp.name} - ${fmtDateShort(booking.startTime)}`}
+      onClose={onClose}
+      footer={
+        <>
+          <button className="btn" onClick={onClose}>
+            CANCEL
+          </button>
+          <button className="btn primary" disabled={!comment.trim()} onClick={() => onSubmit({ rating, comment })}>
+            <Check size={14} /> SUBMIT REVIEW
+          </button>
+        </>
+      }
+    >
+      <div className="review-modal">
+        <div className="book-label">RATING - 1 TO 5</div>
         <div className="rating-pick">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
@@ -53,7 +63,7 @@ export default function ReviewModal({ booking, onClose, onSubmit }: ReviewModalP
         </div>
 
         <div className="book-label" style={{ marginTop: 12 }}>
-          COMMENT · {comment.length} / 255
+          COMMENT - {comment.length} / 255
         </div>
         <textarea
           maxLength={255}
@@ -61,16 +71,7 @@ export default function ReviewModal({ booking, onClose, onSubmit }: ReviewModalP
           onChange={(e) => setComment(e.target.value)}
           placeholder="What was good? What could be better? Be specific — future renters rely on this."
         />
-
-        <div className="modal-foot">
-          <button className="btn" onClick={onClose}>
-            CANCEL
-          </button>
-          <button className="btn primary" disabled={!comment.trim()} onClick={() => onSubmit({ rating, comment })}>
-            <Check size={14} /> SUBMIT REVIEW
-          </button>
-        </div>
       </div>
-    </div>
+    </Modal>
   );
 }

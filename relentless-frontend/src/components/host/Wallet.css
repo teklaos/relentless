@@ -46,7 +46,7 @@
   border-radius: 2px 2px 0 0;
 }
 
-.h-payout-grid {
+.h-wallet-grid {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr);
   gap: 18px;
@@ -54,7 +54,7 @@
 }
 
 @media (max-width: 768px) {
-  .h-payout-grid {
+  .h-wallet-grid {
     grid-template-columns: 1fr;
   }
 }

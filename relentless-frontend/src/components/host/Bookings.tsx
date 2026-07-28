@@ -90,7 +90,7 @@ export default function Bookings() {
           <div>
             <div className="mono h-led-grid h-led-head">
               <span>Ref</span>
-              <span>Guest · Space</span>
+              <span>Guest - Space</span>
               <span>When</span>
               <span>Earned</span>
               <span>Status</span>

@@ -81,7 +81,7 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
                   display: "inline-block"
                 }}
               />
-              {cat.name.toUpperCase()} · HOSTED BY{" "}
+              {cat.name.toUpperCase()} - HOSTED BY{" "}
               <AvatarImg
                 imageKey={host.profileImageKey}
                 name={host.username}
@@ -117,23 +117,25 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
               )}
             </div>
 
-            <div className="detail-thumbs">
-              {thumbs.map((key, i) => (
-                <div key={i} className="detail-thumb">
-                  {key ? (
-                    <Image
-                      src={imageUrl(key)}
-                      alt={`${space.name} ${i + 1}`}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 180px"
-                      style={{ objectFit: "cover" }}
-                    />
-                  ) : (
-                    <Placeholder />
-                  )}
-                </div>
-              ))}
-            </div>
+            {images.length > 0 && (
+              <div className="detail-thumbs">
+                {thumbs.map((key, i) => (
+                  <div key={i} className="detail-thumb">
+                    {key ? (
+                      <Image
+                        src={imageUrl(key)}
+                        alt={`${space.name} ${i + 1}`}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 180px"
+                        style={{ objectFit: "cover" }}
+                      />
+                    ) : (
+                      <Placeholder />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="detail-section">
               <div className="detail-section-h">DESCRIPTION</div>
@@ -141,7 +143,7 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
             </div>
 
             <div className="detail-section">
-              <div className="detail-section-h">AMENITIES · {amens.length} ITEMS</div>
+              <div className="detail-section-h">AMENITIES - {amens.length} ITEMS</div>
               <div className="amenity-grid">
                 {amens.map((a) => {
                   if (!a) return null;
@@ -160,7 +162,7 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
 
             <div className="detail-section">
               <div className="detail-section-h">
-                REVIEWS · {rating.toFixed(2)} / 5.00 · {reviews.length} ENTRIES
+                REVIEWS - {rating.toFixed(2)} / 5.00 - {reviews.length} ENTRIES
               </div>
               {reviews.length === 0 ? (
                 <div
@@ -176,29 +178,31 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
               ) : (
                 reviews.map((r) => (
                   <div key={r.id} className="review">
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <AvatarImg
-                        imageKey={r.user.profileImageKey}
-                        name={r.user.username}
-                        size={28}
-                        style={{ flexShrink: 0 }}
-                      />
-                      <div>
-                        <div className="review-author">@{r.user.username}</div>
-                        <div className="review-date">{fmtDateShort(r.createdAt)}</div>
+                    <div className="review-head">
+                      <div className="review-who">
+                        <AvatarImg
+                          imageKey={r.user.profileImageKey}
+                          name={r.user.username}
+                          size={28}
+                          style={{ flexShrink: 0 }}
+                        />
+                        <div>
+                          <div className="review-author">@{r.user.username}</div>
+                          <div className="review-date">{fmtDateShort(r.createdAt)}</div>
+                        </div>
+                      </div>
+                      <div className="review-rating">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            size={11}
+                            fill={i < r.rating ? "currentColor" : "none"}
+                            strokeWidth={i < r.rating ? 0 : 1.5}
+                          />
+                        ))}
                       </div>
                     </div>
                     <div className="review-body">{r.comment}</div>
-                    <div className="review-rating">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          size={11}
-                          fill={i < r.rating ? "currentColor" : "none"}
-                          strokeWidth={i < r.rating ? 0 : 1.5}
-                        />
-                      ))}
-                    </div>
                   </div>
                 ))
               )}

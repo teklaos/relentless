@@ -5,6 +5,7 @@ import "./CreateListing.css";
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import { useHost } from "@/context/HostContext";
+import { imageUrl } from "@/lib/api";
 import Placeholder from "@/components/shared/ui/Placeholder";
 import { HOST_KEEP_RATE, fmtPrice, net } from "@/data/format";
 
@@ -27,6 +28,13 @@ export default function CreateListing() {
   const priceNum = Number(d.price) || 0;
   const isLast = step === 5;
   const dragIdx = useRef<number | null>(null);
+  const fileInput = useRef<HTMLInputElement | null>(null);
+
+  const onPickFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    for (const f of files) await host.addPhoto(f);
+    e.target.value = "";
+  };
 
   let canContinue = true;
   if (step === 0) canContinue = d.name.trim().length > 0;
@@ -34,7 +42,7 @@ export default function CreateListing() {
   else if (step === 2) canContinue = priceNum > 0;
   else if (step === 4) canContinue = d.photos.length >= 1;
 
-  const amenSummary = d.amenities.length ? d.amenities.join(" · ") : "None selected";
+  const amenSummary = d.amenities.length ? d.amenities.join(" - ") : "None selected";
   const addrSummary = ((d.street || "—") + " " + (d.streetNumber || "")).trim() + ", " + (d.city || "—");
   const pvName = d.name.trim() || "Your space name";
   const pvCity = [
@@ -42,7 +50,7 @@ export default function CreateListing() {
     d.city.trim() || "City",
     d.country.trim() || "Country"
   ]
-    .join(" · ")
+    .join(" - ")
     .toUpperCase();
   const pvPrice = fmtPrice(priceNum);
 
@@ -224,7 +232,7 @@ export default function CreateListing() {
           {step === 3 && (
             <div>
               <label className="mono h-field-label" style={{ marginBottom: 14 }}>
-                Amenities · select all that apply
+                Amenities - select all that apply
               </label>
               <div className="h-chip-wrap">
                 {host.amenities.map((a) => (
@@ -243,7 +251,7 @@ export default function CreateListing() {
           {step === 4 && (
             <div>
               <label className="mono h-field-label" style={{ marginBottom: 14 }}>
-                Photos · add at least one
+                Photos - add at least one
               </label>
               <div className="h-photos">
                 {d.photos.map((id, i) => (
@@ -256,7 +264,12 @@ export default function CreateListing() {
                       if (dragIdx.current !== null) host.movePhoto(dragIdx.current, i);
                       dragIdx.current = null;
                     }}
-                    className="h-hatch h-photo"
+                    className="h-photo"
+                    style={{
+                      backgroundImage: `url(${imageUrl(id)})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center"
+                    }}
                   >
                     <span className="mono h-photo-label">PHOTO {i + 1}</span>
                     <button
@@ -269,10 +282,13 @@ export default function CreateListing() {
                   </div>
                 ))}
                 {d.photos.length < 6 && (
-                  <button onClick={host.addPhoto} className="h-add-photo">
-                    <Plus size={16} />
-                    <span className="mono h-add-photo-t">ADD PHOTO</span>
-                  </button>
+                  <>
+                    <button onClick={() => fileInput.current?.click()} className="h-add-photo">
+                      <Plus size={16} />
+                      <span className="mono h-add-photo-t">ADD PHOTO</span>
+                    </button>
+                    <input ref={fileInput} type="file" accept="image/*" multiple hidden onChange={onPickFiles} />
+                  </>
                 )}
               </div>
             </div>
@@ -319,8 +335,19 @@ export default function CreateListing() {
         <div className="h-preview">
           <div className="mono h-preview-eyebrow">Live preview</div>
           <div className="h-card" style={{ overflow: "hidden" }}>
-            <div className="h-preview-media">
-              <Placeholder />
+            <div
+              className="h-preview-media"
+              style={
+                d.photos[0]
+                  ? {
+                      backgroundImage: `url(${imageUrl(d.photos[0])})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center"
+                    }
+                  : undefined
+              }
+            >
+              {!d.photos[0] && <Placeholder />}
               <span className="mono h-list-tag h-list-cat">{d.category}</span>
             </div>
             <div className="h-preview-body">

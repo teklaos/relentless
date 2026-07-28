@@ -11,6 +11,30 @@ export interface Booking {
   reviewed: boolean;
 }
 
+export interface BookingCheckout extends Booking {
+  checkoutSessionUrl: string;
+}
+
+export interface WalletBalance {
+  balance: number;
+}
+
+export interface WalletTransaction {
+  id: number;
+  amount: number;
+  type: string;
+  createdAt: string;
+  bookingId: number | null;
+  space: SpaceSummary | null;
+}
+
+export interface UpdateUserPayload {
+  username?: string;
+  email?: string;
+  dateOfBirth?: string;
+  profileImageKey?: string;
+}
+
 export type SpaceStatus = "ACTIVE" | "INACTIVE" | "DELETED";
 
 export interface Space {
@@ -43,6 +67,7 @@ export interface SpaceSummary {
   city: string;
   country: string;
   categoryName: string;
+  coverImageKey: string | null;
 }
 
 export interface AmenitySummary {

@@ -77,7 +77,7 @@ export default function SpaceCard({ space, saved, onSave, onOpen }: SpaceCardPro
             }}
           >
             {[`${space.address.street} ${space.address.streetNumber}`, space.address.city, space.address.country]
-              .join(" · ")
+              .join(" - ")
               .toUpperCase()}
           </span>
           <span className="sc-rating" style={{ flexShrink: 0 }}>

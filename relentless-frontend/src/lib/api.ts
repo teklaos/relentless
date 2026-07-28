@@ -8,7 +8,11 @@ import {
   TimeSlot,
   AuthTokens,
   CreateSpacePayload,
-  EditSpacePayload
+  EditSpacePayload,
+  BookingCheckout,
+  WalletBalance,
+  WalletTransaction,
+  UpdateUserPayload
 } from "@/data/types";
 import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "./auth";
 
@@ -143,11 +147,51 @@ export function fetchSavedSpaces(): Promise<Space[]> {
   return request<Space[]>("/api/spaces/me/saved");
 }
 
-export function createBooking(params: { spaceId: number; startTime: string; endTime: string }): Promise<Booking> {
-  return request<Booking>("/api/bookings", {
+export function createBooking(params: {
+  spaceId: number;
+  startTime: string;
+  endTime: string;
+}): Promise<BookingCheckout> {
+  return request<BookingCheckout>("/api/bookings", {
     method: "POST",
     body: JSON.stringify(params)
   });
+}
+
+export function fetchWalletBalance(): Promise<WalletBalance> {
+  return request<WalletBalance>("/api/wallet/me");
+}
+
+export function fetchWalletTransactions(): Promise<WalletTransaction[]> {
+  return request<WalletTransaction[]>("/api/wallet/me/transactions");
+}
+
+export function debitWallet(amount: number): Promise<void> {
+  return request<void>("/api/wallet/me/debit", {
+    method: "POST",
+    body: JSON.stringify({ amount })
+  });
+}
+
+export function updateUser(id: number, payload: UpdateUserPayload): Promise<User> {
+  return request<User>(`/api/users/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function uploadImage(file: File): Promise<string> {
+  const token = getAccessToken();
+  const body = new FormData();
+  body.append("file", file);
+  const res = await fetch(`${API_BASE}/api/images`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body
+  });
+  if (!res.ok) throw new Error(`Image upload failed: ${res.status}`);
+  const data: { key: string } = await res.json();
+  return data.key;
 }
 
 export function leaveReview(params: { bookingId: number; rating: number; comment: string }): Promise<Review> {

@@ -1,8 +1,26 @@
-import { Draft } from "./types";
+import { Draft, WalletTransaction } from "./types";
 
 export const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 export const HOST_KEEP_RATE = 0.95;
+
+export function earningsByMonth(txs: WalletTransaction[]) {
+  const now = new Date();
+  const buckets: { m: string; total: number }[] = [];
+  const idx = new Map<string, number>();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    idx.set(`${d.getFullYear()}-${d.getMonth()}`, buckets.length);
+    buckets.push({ m: MONTHS[d.getMonth()], total: 0 });
+  }
+  for (const t of txs) {
+    if (t.type !== "CREDIT") continue;
+    const d = new Date(t.createdAt);
+    const i = idx.get(`${d.getFullYear()}-${d.getMonth()}`);
+    if (i != null) buckets[i].total += t.amount;
+  }
+  return buckets;
+}
 
 export function fmtDate(iso: string) {
   const d = new Date(iso);

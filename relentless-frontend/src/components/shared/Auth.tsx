@@ -4,7 +4,8 @@ import "./Auth.css";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
-import { User, Mail, Lock, Calendar, ArrowRight } from "lucide-react";
+import DatePicker from "@/components/shared/ui/DatePicker";
+import { User, Mail, Lock, ArrowRight } from "lucide-react";
 
 interface AuthProps {
   mode: "login" | "register";
@@ -171,10 +172,7 @@ export default function Auth({ mode }: AuthProps) {
                 <span>Date of birth</span>
                 {err.dob && <span style={{ color: "var(--danger)" }}>{err.dob}</span>}
               </div>
-              <div className="field-input">
-                <Calendar size={15} />
-                <input type="date" value={form.dob} onChange={(e) => set("dob", e.target.value)} />
-              </div>
+              <DatePicker value={form.dob} onChange={(iso) => set("dob", iso)} placeholder="Date of birth" />
             </div>
           )}
 

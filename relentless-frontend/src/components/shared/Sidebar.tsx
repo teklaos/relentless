@@ -29,7 +29,7 @@ const HOST_ITEMS: NavItem[] = [
   { path: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { path: "/listings", label: "Listings", Icon: LayoutGrid },
   { path: "/bookings", label: "Bookings", Icon: History },
-  { path: "/payouts", label: "Payouts", Icon: Wallet },
+  { path: "/wallet", label: "Wallet", Icon: Wallet },
   { path: "/reviews", label: "Reviews", Icon: Star },
   { path: "/profile", label: "Profile", Icon: User }
 ];

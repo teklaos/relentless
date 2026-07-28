@@ -2,7 +2,17 @@
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useApp } from "@/context/AppContext";
-import { Booking, Category, Review, Space, AmenitySummary, EditSpacePayload, Draft, HostBooking } from "@/data/types";
+import {
+  Booking,
+  Category,
+  Review,
+  Space,
+  AmenitySummary,
+  EditSpacePayload,
+  Draft,
+  HostBooking,
+  WalletTransaction
+} from "@/data/types";
 import { blankDraft } from "@/data/format";
 import {
   changeSpaceStatus,
@@ -12,7 +22,10 @@ import {
   fetchCategories,
   fetchHostedBookings,
   fetchHostedReviews,
-  fetchHostedSpaces
+  fetchHostedSpaces,
+  fetchWalletBalance,
+  fetchWalletTransactions,
+  uploadImage
 } from "@/lib/api";
 
 const WEEK_DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
@@ -48,6 +61,9 @@ export interface HostContextValue {
   reviews: Review[];
   categories: Category[];
   amenities: AmenitySummary[];
+  walletBalance: number;
+  walletTransactions: WalletTransaction[];
+  refreshWallet: () => void;
   draft: Draft;
   step: number;
   editingId: number | null;
@@ -69,7 +85,7 @@ export interface HostContextValue {
   beginEdit: (id: number) => void;
   setDraft: (field: keyof Draft, val: string) => void;
   toggleAmenity: (a: string) => void;
-  addPhoto: () => void;
+  addPhoto: (file: File) => Promise<void>;
   removePhotoAt: (index: number) => void;
   movePhoto: (from: number, to: number) => void;
   setStep: (n: number) => void;
@@ -77,7 +93,6 @@ export interface HostContextValue {
   prevStep: () => void;
   publishDraft: () => void;
 
-  withdraw: (amount: number) => void;
   setReviewFilter: (id: number) => void;
 }
 
@@ -92,6 +107,8 @@ export function HostProvider({ children }: { children: ReactNode }) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [amenities, setAmenities] = useState<AmenitySummary[]>([]);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [walletTransactions, setWalletTransactions] = useState<WalletTransaction[]>([]);
   const [draft, setDraftState] = useState<Draft>(blankDraft());
   const [step, setStep] = useState(0);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -108,9 +125,19 @@ export function HostProvider({ children }: { children: ReactNode }) {
     return () => mq.removeEventListener("change", upd);
   }, []);
 
+  const refreshWallet = useCallback(() => {
+    fetchWalletBalance()
+      .then((b) => setWalletBalance(b.balance))
+      .catch(() => setWalletBalance(0));
+    fetchWalletTransactions()
+      .then(setWalletTransactions)
+      .catch(() => setWalletTransactions([]));
+  }, []);
+
   useEffect(() => {
     if (!auth) return;
     let active = true;
+    refreshWallet();
     fetchHostedSpaces()
       .then((d) => active && setSpaces(d))
       .catch(() => active && setSpaces([]));
@@ -129,7 +156,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [auth]);
+  }, [auth, refreshWallet]);
 
   const space = useCallback((id: number) => spaces.find((s) => s.id === id), [spaces]);
   const spaceName = useCallback((id: number) => space(id)?.name ?? "—", [space]);
@@ -178,8 +205,8 @@ export function HostProvider({ children }: { children: ReactNode }) {
         price: String(sp.pricePerHour),
         openTime: "09:00",
         closeTime: "17:00",
-        amenities: [],
-        photos: ["p-edit-1", "p-edit-2", "p-edit-3"]
+        amenities: sp.amenities.map((a) => a.name),
+        photos: sp.imageKeys ?? []
       });
     },
     [spaces]
@@ -195,16 +222,16 @@ export function HostProvider({ children }: { children: ReactNode }) {
     []
   );
   const addPhoto = useCallback(
-    () =>
-      setDraftState((d) =>
-        d.photos.length >= 6
-          ? d
-          : {
-              ...d,
-              photos: [...d.photos, `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`]
-            }
-      ),
-    []
+    async (file: File) => {
+      if (draft.photos.length >= 6) return;
+      try {
+        const key = await uploadImage(file);
+        setDraftState((d) => (d.photos.length >= 6 ? d : { ...d, photos: [...d.photos, key] }));
+      } catch {
+        showToast("PHOTO UPLOAD FAILED");
+      }
+    },
+    [draft.photos.length, showToast]
   );
   const removePhotoAt = useCallback(
     (index: number) =>
@@ -283,11 +310,6 @@ export function HostProvider({ children }: { children: ReactNode }) {
     }
   }, [draft, editingId, categories, amenities, showToast]);
 
-  const withdraw = useCallback(
-    (amount: number) => showToast(`WITHDRAWAL OF €${Math.round(amount).toLocaleString("en-US")} INITIATED`),
-    [showToast]
-  );
-
   const value = useMemo<HostContextValue>(
     () => ({
       isMobile,
@@ -296,6 +318,9 @@ export function HostProvider({ children }: { children: ReactNode }) {
       reviews,
       categories,
       amenities,
+      walletBalance,
+      walletTransactions,
+      refreshWallet,
       draft,
       step,
       editingId,
@@ -320,7 +345,6 @@ export function HostProvider({ children }: { children: ReactNode }) {
       nextStep,
       prevStep,
       publishDraft,
-      withdraw,
       setReviewFilter
     }),
     [
@@ -330,6 +354,9 @@ export function HostProvider({ children }: { children: ReactNode }) {
       reviews,
       categories,
       amenities,
+      walletBalance,
+      walletTransactions,
+      refreshWallet,
       draft,
       step,
       editingId,
@@ -349,8 +376,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
       movePhoto,
       nextStep,
       prevStep,
-      publishDraft,
-      withdraw
+      publishDraft
     ]
   );
 
