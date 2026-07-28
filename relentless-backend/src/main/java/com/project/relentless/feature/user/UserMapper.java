@@ -1,5 +1,6 @@
 package com.project.relentless.feature.user;
 
+import com.project.relentless.feature.auth.dto.request.RegisterHostRequest;
 import com.project.relentless.feature.auth.dto.request.RegisterUserRequest;
 import com.project.relentless.feature.user.dto.response.UserResponse;
 import org.mapstruct.BeanMapping;
@@ -12,4 +13,7 @@ public interface UserMapper {
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
   User toUser(RegisterUserRequest request);
+
+  @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+  User toUser(RegisterHostRequest request);
 }

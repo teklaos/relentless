@@ -3,17 +3,21 @@ package com.project.relentless.feature.auth;
 import com.project.relentless.feature.auth.details.CustomUserDetails;
 import com.project.relentless.feature.auth.dto.request.LoginRequest;
 import com.project.relentless.feature.auth.dto.request.RefreshTokenRequest;
+import com.project.relentless.feature.auth.dto.request.RegisterHostRequest;
 import com.project.relentless.feature.auth.dto.request.RegisterUserRequest;
 import com.project.relentless.feature.auth.dto.response.AccessTokenResponse;
 import com.project.relentless.feature.auth.dto.response.AuthResponse;
 import com.project.relentless.feature.auth.jwt.JwtService;
 import com.project.relentless.feature.auth.refresh.RefreshTokenService;
+import com.project.relentless.feature.user.Role;
 import com.project.relentless.feature.user.UserMapper;
 import com.project.relentless.feature.user.UserRepository;
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -40,9 +44,35 @@ public class AuthServiceImpl implements AuthService {
     if (userRepository.findByEmail(request.email()).isPresent()) {
       throw new EntityExistsException("Email is already in use");
     }
+    if (Period.between(request.dateOfBirth(), LocalDate.now()).getYears() < 14) {
+      throw new IllegalArgumentException("You must be at least 14 years old.");
+    }
 
     var user = userMapper.toUser(request);
     user.setPasswordHash(passwordEncoder.encode(request.password()));
+
+    var savedUser = userRepository.save(user);
+
+    String accessToken = jwtService.generateAccessToken(savedUser.getId());
+    String refreshToken = refreshTokenService.generateRefreshToken(savedUser.getId());
+
+    return new AuthResponse(accessToken, refreshToken);
+  }
+
+  @Override
+  @Transactional
+  public AuthResponse registerHost(RegisterHostRequest request) {
+    if (userRepository.findByEmail(request.email()).isPresent()) {
+      throw new EntityExistsException("Email is already in use");
+    }
+    if (Period.between(request.dateOfBirth(), LocalDate.now()).getYears() < 18) {
+      throw new IllegalArgumentException("You must be at least 18 years old to be a host.");
+    }
+
+    var user = userMapper.toUser(request);
+    user.setPasswordHash(passwordEncoder.encode(request.password()));
+    user.setRole(Role.HOST);
+    user.setDateAcceptedTerms(LocalDate.now());
 
     var savedUser = userRepository.save(user);
 

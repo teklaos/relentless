@@ -14,12 +14,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {})
 @Pattern(
-    regexp =
-        "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()\\-_=+\\[\\]{}])[a-zA-Z0-9!@#$%^&*()\\-_=+\\[\\]{}]{8,64}$",
+    regexp = "^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$",
     message =
-        "Password must be 8-64 characters long, include uppercase and lowercase letters, at least one digit, at least one special character, and contain no whitespaces.")
-public @interface Password {
-  String message() default "Invalid password";
+        "IBAN must be 15-34 characters long, start with two uppercase letters and two digits, followed by uppercase letters or digits, and contain no whitespaces.")
+public @interface Iban {
+  String message() default "Invalid IBAN";
 
   Class<?>[] groups() default {};
 

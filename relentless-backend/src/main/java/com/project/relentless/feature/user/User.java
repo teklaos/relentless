@@ -3,6 +3,8 @@ package com.project.relentless.feature.user;
 import com.project.relentless.feature.auth.refresh.RefreshToken;
 import com.project.relentless.feature.booking.entity.Booking;
 import com.project.relentless.feature.space.entity.Space;
+import com.project.relentless.feature.user.validation.Iban;
+import com.project.relentless.feature.user.validation.PhoneNumber;
 import com.project.relentless.feature.wallet.Transaction;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -41,14 +43,29 @@ public class User {
   @Email(message = "Invalid email format.")
   private String email;
 
+  @Size(min = 2, max = 255, message = "First name must be between 2 and 255 characters.")
+  private String firstName;
+
+  @Size(min = 2, max = 255, message = "Last name must be between 2 and 255 characters.")
+  private String lastName;
+
+  @PhoneNumber(message = "Invalid phone number format.")
+  private String phoneNumber;
+
+  @Iban(message = "Invalid IBAN format.")
+  private String iban;
+
   @NotNull(message = "Date of birth is required.")
   @PastOrPresent(message = "Date of birth must be in the past or present.")
   private LocalDate dateOfBirth;
 
-  @NotNull(message = "Date joined is required.")
-  @PastOrPresent(message = "Date joined must be in the past or present.")
+  @NotNull(message = "Date of joining is required.")
+  @PastOrPresent(message = "Date of joining must be in the past or present.")
   @Builder.Default
   private LocalDate dateJoined = LocalDate.now();
+
+  @PastOrPresent(message = "Date of accepting terms must be in the past or present.")
+  private LocalDate dateAcceptedTerms;
 
   @Size(min = 3, max = 255, message = "Profile image key must be between 3 and 255 characters.")
   private String profileImageKey;
