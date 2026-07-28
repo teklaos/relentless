@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = SpaceMapper.class)
 public interface TransactionMapper {
+
   @Mapping(target = "bookingId", source = "booking.id")
   @Mapping(target = "space", source = "booking.space")
   TransactionResponse toTransactionResponse(Transaction transaction);

@@ -12,11 +12,9 @@ import org.mapstruct.Mapping;
     uses = {SpaceMapper.class})
 public interface BookingMapper {
 
-  @Mapping(target = "status", expression = "java(booking.getStatus().name())")
   @Mapping(target = "reviewed", expression = "java(booking.getReview() != null)")
   BookingResponse toBookingResponse(Booking booking);
 
-  @Mapping(target = "status", expression = "java(booking.getStatus().name())")
   @Mapping(target = "reviewed", expression = "java(booking.getReview() != null)")
   BookingCheckoutResponse toBookingCheckoutResponse(Booking booking, String checkoutSessionUrl);
 }
