@@ -20,6 +20,7 @@ import com.project.relentless.feature.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,6 +45,7 @@ public class SpaceServiceImpl implements SpaceService {
   private final WorkingHoursMapper workingHoursMapper;
 
   private static final int SLOT_MINUTES = 30;
+  private static final int MIN_BOOKING_LEAD_HOURS = 2;
 
   @Override
   public List<SpaceResponse> getAll() {
@@ -106,6 +108,7 @@ public class SpaceServiceImpl implements SpaceService {
         bookingRepository.findAllBySpaceIdAndStatusNotAndStartTimeBeforeAndEndTimeAfter(
             id, BookingStatus.CANCELLED, closeDateTime, openDateTime);
 
+    var earliestStart = LocalDateTime.now().plusHours(MIN_BOOKING_LEAD_HOURS);
     var availableSlots = new ArrayList<TimeSlotResponse>();
     for (var start = openDateTime;
         start.isBefore(closeDateTime);
@@ -118,9 +121,10 @@ public class SpaceServiceImpl implements SpaceService {
       }
 
       boolean isAvailable =
-          bookings.stream()
-              .noneMatch(
-                  b -> b.getStartTime().isBefore(slotEnd) && b.getEndTime().isAfter(slotStart));
+          !slotStart.isBefore(earliestStart)
+              && bookings.stream()
+                  .noneMatch(
+                      b -> b.getStartTime().isBefore(slotEnd) && b.getEndTime().isAfter(slotStart));
 
       availableSlots.add(
           new TimeSlotResponse(slotStart.toLocalTime(), slotEnd.toLocalTime(), isAvailable));
