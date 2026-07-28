@@ -4,6 +4,21 @@ export const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 export const HOST_KEEP_RATE = 0.95;
 
+export const HOST_MIN_AGE = 18;
+export const USER_MIN_AGE = 14;
+export const maxDobIso = (minAge: number): string => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - minAge);
+  return d.toISOString().slice(0, 10);
+};
+
+export const EMAIL_RE = /.+@.+\..+/;
+export const PHONE_RE = /^\+[0-9]{7,15}$/;
+export const IBAN_RE = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/;
+export const PASSWORD_RE =
+  /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()\-_=+[\]{}])[a-zA-Z0-9!@#$%^&*()\-_=+[\]{}]{8,64}$/;
+export const PASSWORD_HINT = "Min 8 chars: upper, lower, number & symbol";
+
 export function earningsByMonth(txs: WalletTransaction[]) {
   const now = new Date();
   const buckets: { m: string; total: number }[] = [];

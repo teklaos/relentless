@@ -5,7 +5,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import DatePicker from "@/components/shared/ui/DatePicker";
-import { User, Mail, Lock, ArrowRight } from "lucide-react";
+import { User, Mail, ArrowRight } from "lucide-react";
+import PasswordField from "@/components/shared/ui/PasswordField";
+import { EMAIL_RE, PASSWORD_RE, PASSWORD_HINT, USER_MIN_AGE, maxDobIso } from "@/data/format";
 
 interface AuthProps {
   mode: "login" | "register";
@@ -25,13 +27,33 @@ export default function Auth({ mode }: AuthProps) {
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  const fieldErr = (k: string): string => {
+    if (k === "username" && mode === "register") {
+      if (!form.username) return "required";
+      if (form.username.length < 3) return "min 3 chars";
+    }
+    if (k === "email") {
+      if (!form.email) return "required";
+      if (!EMAIL_RE.test(form.email)) return "invalid email";
+    }
+    if (k === "password") {
+      if (!form.password) return "required";
+      if (mode === "register" && !PASSWORD_RE.test(form.password)) return PASSWORD_HINT;
+    }
+    if (k === "dob" && mode === "register" && !form.dob) return "required";
+    return "";
+  };
+
+  const blur = (k: string) => setErr((e) => ({ ...e, [k]: fieldErr(k) }));
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const keys = mode === "register" ? ["username", "email", "password", "dob"] : ["email", "password"];
     const errs: Record<string, string> = {};
-    if (mode === "register" && (!form.username || form.username.length < 3)) errs.username = "min 3 chars";
-    if (!form.email || !/.+@.+\..+/.test(form.email)) errs.email = "invalid email";
-    if (!form.password || form.password.length < 4) errs.password = "required";
-    if (mode === "register" && !form.dob) errs.dob = "required";
+    for (const k of keys) {
+      const msg = fieldErr(k);
+      if (msg) errs[k] = msg;
+    }
     setErr(errs);
     if (Object.keys(errs).length) return;
     setLoading(true);
@@ -71,27 +93,12 @@ export default function Auth({ mode }: AuthProps) {
             <br />
             <em>Make the work</em>
           </h1>
-          <p className="auth-pitch-p">Studios, courts and halls — one to five hours. No membership.</p>
-        </div>
-
-        <div className="auth-stats">
-          <div className="auth-stat">
-            <div className="num">1,247</div>
-            <div className="lbl">SPACES / 18 CITIES</div>
-          </div>
-          <div className="auth-stat">
-            <div className="num">€28</div>
-            <div className="lbl">AVG / HOUR</div>
-          </div>
-          <div className="auth-stat">
-            <div className="num">4.92</div>
-            <div className="lbl">MEDIAN RATING</div>
-          </div>
+          <p className="auth-pitch-p">Studios, courts and halls. No membership.</p>
         </div>
       </div>
 
       <div className="auth-right">
-        <form className="auth-form" onSubmit={submit}>
+        <form className="auth-form" onSubmit={submit} noValidate>
           <div className="auth-tabs">
             <button
               type="button"
@@ -125,6 +132,7 @@ export default function Auth({ mode }: AuthProps) {
                 <input
                   value={form.username}
                   onChange={(e) => set("username", e.target.value)}
+                  onBlur={() => blur("username")}
                   placeholder="your.handle"
                   autoComplete="username"
                 />
@@ -143,6 +151,7 @@ export default function Auth({ mode }: AuthProps) {
                 type="email"
                 value={form.email}
                 onChange={(e) => set("email", e.target.value)}
+                onBlur={() => blur("email")}
                 placeholder="you@studio.com"
                 autoComplete="email"
               />
@@ -154,16 +163,12 @@ export default function Auth({ mode }: AuthProps) {
               <span>Password</span>
               {err.password && <span style={{ color: "var(--danger)" }}>{err.password}</span>}
             </div>
-            <div className="field-input">
-              <Lock size={15} />
-              <input
-                type="password"
-                value={form.password}
-                onChange={(e) => set("password", e.target.value)}
-                placeholder="••••••••"
-                autoComplete="current-password"
-              />
-            </div>
+            <PasswordField
+              value={form.password}
+              onChange={(v) => set("password", v)}
+              onBlur={() => blur("password")}
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
+            />
           </div>
 
           {mode === "register" && (
@@ -172,7 +177,12 @@ export default function Auth({ mode }: AuthProps) {
                 <span>Date of birth</span>
                 {err.dob && <span style={{ color: "var(--danger)" }}>{err.dob}</span>}
               </div>
-              <DatePicker value={form.dob} onChange={(iso) => set("dob", iso)} placeholder="Date of birth" />
+              <DatePicker
+                value={form.dob}
+                onChange={(iso) => set("dob", iso)}
+                placeholder="Date of birth"
+                maxDate={maxDobIso(USER_MIN_AGE)}
+              />
             </div>
           )}
 
@@ -193,13 +203,9 @@ export default function Auth({ mode }: AuthProps) {
             {!loading && <ArrowRight size={15} />}
           </button>
 
-          <div className="auth-meta auth-host">
-            <div className="auth-host-l">
-              <span className="auth-host-eyebrow">For hosts</span>
-              <span className="auth-host-line">Own a studio, court or hall?</span>
-            </div>
-            <button type="button" className="auth-host-cta" onClick={() => alert("Host onboarding — coming soon.")}>
-              BECOME A HOST <ArrowRight size={12} />
+          <div className="auth-host-row">
+            <button type="button" className="auth-link" onClick={() => router.push("/register/host")}>
+              Own a space? <b>Become a host</b> <ArrowRight size={12} />
             </button>
           </div>
         </form>

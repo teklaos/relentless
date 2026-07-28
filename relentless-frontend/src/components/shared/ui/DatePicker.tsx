@@ -23,6 +23,7 @@ interface DatePickerProps {
   placeholder?: string;
   minYear?: number;
   maxYear?: number;
+  maxDate?: string;
 }
 
 export default function DatePicker({
@@ -30,9 +31,18 @@ export default function DatePicker({
   onChange,
   placeholder = "Select a date",
   minYear = 1920,
-  maxYear = new Date().getFullYear() - 14
+  maxYear = new Date().getFullYear() - 14,
+  maxDate
 }: DatePickerProps) {
   const selected = parse(value);
+  const max = maxDate ? parse(maxDate) : null;
+  const effMaxYear = max ? max.y : maxYear;
+  const afterMax = (day: number) => {
+    if (!max) return false;
+    if (view.y !== max.y) return view.y > max.y;
+    if (view.m !== max.m) return view.m > max.m;
+    return day > max.d;
+  };
   const [open, setOpen] = useState(false);
   const [view, setView] = useState(() => {
     const base = selected ?? { y: Math.min(2000, maxYear), m: 0 };
@@ -55,7 +65,7 @@ export default function DatePicker({
   }, [open]);
 
   const years: number[] = [];
-  for (let y = maxYear; y >= minYear; y--) years.push(y);
+  for (let y = effMaxYear; y >= minYear; y--) years.push(y);
 
   const firstDow = (new Date(view.y, view.m, 1).getDay() + 6) % 7;
   const daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
@@ -125,6 +135,7 @@ export default function DatePicker({
                 <button
                   key={i}
                   type="button"
+                  disabled={afterMax(day)}
                   className={`dp-day ${
                     selected && selected.y === view.y && selected.m === view.m && selected.d === day ? "on" : ""
                   }`}

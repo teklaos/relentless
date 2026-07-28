@@ -14,6 +14,7 @@ import {
   unsaveSpace,
   login,
   register,
+  registerHost,
   logout,
   updateUser,
   setUnauthorizedHandler
@@ -42,6 +43,17 @@ interface AppContextValue {
   toast: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (payload: { username: string; email: string; password: string; dateOfBirth: string }) => Promise<void>;
+  signUpHost: (payload: {
+    username: string;
+    email: string;
+    password: string;
+    dateOfBirth: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    iban: string;
+    acceptedTerms: boolean;
+  }) => Promise<void>;
   onSignOut: () => void;
   onSave: (id: number) => void;
   onBook: (params: { space: Space; startIso: string; endIso: string; total: number; duration: number }) => void;
@@ -140,6 +152,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setTokens(tokens.accessToken, tokens.refreshToken);
       setAuth(true);
       router.push("/explore");
+    },
+    [router]
+  );
+
+  const signUpHost = useCallback(
+    async (payload: {
+      username: string;
+      email: string;
+      password: string;
+      dateOfBirth: string;
+      firstName: string;
+      lastName: string;
+      phoneNumber: string;
+      iban: string;
+      acceptedTerms: boolean;
+    }) => {
+      const tokens = await registerHost(payload);
+      setTokens(tokens.accessToken, tokens.refreshToken);
+      setAuth(true);
+      try {
+        setUser(await fetchMe());
+      } catch {
+        console.log("Fetching user...");
+      }
+      router.push("/dashboard");
     },
     [router]
   );
@@ -265,6 +302,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toast,
         signIn,
         signUp,
+        signUpHost,
         onSignOut,
         onSave,
         onBook,

@@ -116,6 +116,15 @@
   background: var(--bg-sunken);
 }
 
+.dp-day:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.dp-day:disabled:hover {
+  background: transparent;
+}
+
 .dp-day.on {
   background: var(--ink);
   color: var(--bg);

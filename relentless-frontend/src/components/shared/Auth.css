@@ -46,6 +46,7 @@
   position: relative;
   z-index: 1;
   max-width: 460px;
+  margin-block: auto;
 }
 
 .auth-pitch-h {
@@ -67,31 +68,6 @@
   font-size: 15px;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.65);
-}
-
-.auth-stats {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  padding-top: 24px;
-  gap: 24px;
-}
-
-.auth-stat .num {
-  font-family: var(--font-geist-mono), "Geist Mono", monospace;
-  font-size: 22px;
-  font-weight: 500;
-}
-
-.auth-stat .lbl {
-  font-family: var(--font-geist-mono), "Geist Mono", monospace;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 4px;
 }
 
 .auth-right {
@@ -183,46 +159,56 @@
   font-size: 15px;
 }
 
-.auth-meta {
+.pw-toggle {
   display: flex;
-  justify-content: space-between;
-  margin-top: 28px;
-  font-family: var(--font-geist-mono), "Geist Mono", monospace;
-  font-size: 10px;
-  color: var(--ink-4);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.auth-host {
-  margin-top: 36px;
-  padding: 16px;
-  border: 1px solid var(--hairline);
-  border-radius: 2px;
-  background: var(--bg);
   align-items: center;
-  position: relative;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: color 0.15s;
 }
 
-.auth-host::before {
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  width: 32px;
-  height: 3px;
-  background: var(--accent);
+.pw-toggle:hover {
+  color: var(--ink);
 }
 
-.auth-host-l {
+.auth-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.auth-link b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.auth-link:hover {
+  color: var(--accent-ink);
+}
+
+.auth-host-row {
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--hairline);
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  text-transform: none;
-  letter-spacing: normal;
+  justify-content: center;
 }
 
-.auth-host-eyebrow {
+.auth-alt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.auth-eyebrow-accent {
   font-family: var(--font-geist-mono), "Geist Mono", monospace;
   font-size: 9.5px;
   text-transform: uppercase;
@@ -230,33 +216,33 @@
   color: var(--accent-ink);
 }
 
-.auth-host-line {
-  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
-  font-size: 13.5px;
-  color: var(--ink);
-  letter-spacing: -0.01em;
+.host-progress {
+  display: flex;
+  gap: 5px;
+  margin: 20px 0 26px;
 }
 
-.auth-host-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-geist-mono), "Geist Mono", monospace;
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--ink);
-  border-bottom: 1px solid var(--ink);
-  padding-bottom: 2px;
-  transition:
-    color 0.15s,
-    border-color 0.15s;
-  cursor: pointer;
+.host-progress span {
+  flex: 1;
+  height: 2px;
+  background: var(--hairline-strong);
+  transition: background 0.25s;
 }
 
-.auth-host-cta:hover {
-  color: var(--accent-ink);
-  border-color: var(--accent);
+.host-progress span.on {
+  background: var(--accent);
+}
+
+.host-foot {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.host-next,
+.host-back {
+  flex: 1 1 0;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {

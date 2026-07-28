@@ -107,6 +107,26 @@ export async function register(payload: {
   return res.json();
 }
 
+export async function registerHost(payload: {
+  username: string;
+  email: string;
+  password: string;
+  dateOfBirth: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  iban: string;
+  acceptedTerms: boolean;
+}): Promise<AuthTokens> {
+  const res = await fetch(`${API_BASE}/api/auth/register/host`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error(`Host registration failed: ${res.status}`);
+  return res.json();
+}
+
 export async function logout(refreshToken: string): Promise<void> {
   await fetch(`${API_BASE}/api/auth/logout`, {
     method: "POST",
