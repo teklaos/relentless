@@ -21,11 +21,13 @@ export default function Dashboard() {
   ];
 
   const buckets = earningsByMonth(host.walletTransactions);
+  const hasEarnings = buckets.some((b) => b.total > 0);
   const maxE = Math.max(1, ...buckets.map((b) => b.total));
+  const ghost = [22, 34, 30, 52, 68, 90];
   const earningsBars = buckets.map((b, i) => ({
     m: b.m,
     full: money(b.total),
-    h: Math.round((b.total / maxE) * 100) + "%",
+    h: (hasEarnings ? Math.round((b.total / maxE) * 100) : ghost[i]) + "%",
     fill: i === buckets.length - 1 ? "var(--accent)" : "var(--hairline-strong)"
   }));
 
@@ -61,13 +63,24 @@ export default function Dashboard() {
               Details →
             </span>
           </div>
-          <div className="h-bars" style={{ height: 96, gap: 9 }}>
-            {earningsBars.map((b) => (
-              <div key={b.m} className="h-bar-col" style={{ gap: 7 }}>
-                <div title={b.full} className="h-bar" style={{ height: b.h, background: b.fill }} />
-                <div className="mono h-bar-m">{b.m}</div>
+          <div className="h-chart-wrap">
+            <div className="h-bars" style={{ height: 96, gap: 9 }}>
+              {earningsBars.map((b) => (
+                <div key={b.m} className="h-bar-col" style={{ gap: 7 }}>
+                  <div
+                    title={hasEarnings ? b.full : undefined}
+                    className={hasEarnings ? "h-bar" : "h-bar h-bar-ghost"}
+                    style={{ height: b.h, background: hasEarnings ? b.fill : undefined }}
+                  />
+                  <div className="mono h-bar-m">{b.m}</div>
+                </div>
+              ))}
+            </div>
+            {!hasEarnings && (
+              <div className="h-chart-empty">
+                <span>Your first booking starts the climb.</span>
               </div>
-            ))}
+            )}
           </div>
         </div>
 

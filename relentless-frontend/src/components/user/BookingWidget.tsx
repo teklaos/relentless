@@ -53,6 +53,8 @@ const ymd = (d: Date) =>
 const sameDay = (a: Date, b: Date) =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
+const DAY_NAME = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+
 interface BookingWidgetProps {
   space: Space;
   onBook: (params: { space: Space; startIso: string; endIso: string; total: number; duration: number }) => void;
@@ -100,6 +102,9 @@ export default function BookingWidget({ space, onBook }: BookingWidgetProps) {
     for (let d = 1; d <= days; d++) cells.push(new Date(month.getFullYear(), month.getMonth(), d));
     return cells;
   }, [month]);
+
+  const openDows = useMemo(() => new Set((space.workingHours ?? []).map((h) => h.dayOfWeek)), [space.workingHours]);
+  const isClosed = (d: Date) => !openDows.has(DAY_NAME[d.getDay()]);
 
   const atCurrentMonth = month.getFullYear() === today.getFullYear() && month.getMonth() === today.getMonth();
 
@@ -184,12 +189,16 @@ export default function BookingWidget({ space, onBook }: BookingWidgetProps) {
           {monthCells.map((d, i) => {
             if (!d) return <div key={`b${i}`} className="cal-blank" />;
             const past = d < today;
+            const closed = isClosed(d);
+            const blocked = past || closed;
             return (
               <button
                 key={d.getDate()}
-                disabled={past}
-                className={`cal-cell ${sameDay(d, selectedDate) ? "active" : ""} ${past ? "past" : ""}`}
-                onClick={() => !past && setSelectedDate(d)}
+                disabled={blocked}
+                className={`cal-cell ${sameDay(d, selectedDate) ? "active" : ""} ${past ? "past" : ""} ${
+                  closed ? "closed" : ""
+                }`}
+                onClick={() => !blocked && setSelectedDate(d)}
               >
                 {d.getDate()}
               </button>

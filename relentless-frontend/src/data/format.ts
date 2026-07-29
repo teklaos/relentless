@@ -1,6 +1,18 @@
-import { Draft, WalletTransaction } from "./types";
+import { DayHours, Draft, WalletTransaction, WorkingHoursPayload } from "./types";
 
 export const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+export const WEEK_DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
+
+export const defaultHours = (): DayHours[] =>
+  WEEK_DAYS.map((dayOfWeek) => ({ dayOfWeek, open: "09:00", close: "22:00", on: true }));
+
+export const hoursFromSpace = (wh: WorkingHoursPayload[]): DayHours[] =>
+  WEEK_DAYS.map((dayOfWeek) => {
+    const saved = wh.find((h) => h.dayOfWeek === dayOfWeek);
+    return saved
+      ? { dayOfWeek, open: saved.openTime.slice(0, 5), close: saved.closeTime.slice(0, 5), on: true }
+      : { dayOfWeek, open: "09:00", close: "22:00", on: false };
+  });
 const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 export const HOST_KEEP_RATE = 0.95;
 
@@ -94,8 +106,7 @@ export function blankDraft(): Draft {
     postalCode: "",
     country: "Poland",
     price: "",
-    openTime: "09:00",
-    closeTime: "22:00",
+    hours: defaultHours(),
     amenities: [],
     photos: []
   };

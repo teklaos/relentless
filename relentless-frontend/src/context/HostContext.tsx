@@ -13,7 +13,7 @@ import {
   HostBooking,
   WalletTransaction
 } from "@/data/types";
-import { blankDraft } from "@/data/format";
+import { blankDraft, defaultHours, hoursFromSpace } from "@/data/format";
 import {
   changeSpaceStatus,
   createSpace,
@@ -28,10 +28,8 @@ import {
   uploadImage
 } from "@/lib/api";
 
-const WEEK_DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
-
-const weekHours = (openTime: string, closeTime: string) =>
-  WEEK_DAYS.map((dayOfWeek) => ({ dayOfWeek, openTime, closeTime }));
+const draftWorkingHours = (hours: Draft["hours"]) =>
+  hours.filter((h) => h.on).map((h) => ({ dayOfWeek: h.dayOfWeek, openTime: h.open, closeTime: h.close }));
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
@@ -85,6 +83,9 @@ export interface HostContextValue {
   beginEdit: (id: number) => void;
   setDraft: (field: keyof Draft, val: string) => void;
   toggleAmenity: (a: string) => void;
+  setDayHour: (index: number, key: "open" | "close", val: string) => void;
+  toggleDay: (index: number) => void;
+  copyDayToAll: (index: number) => void;
   addPhoto: (file: File) => Promise<void>;
   removePhotoAt: (index: number) => void;
   movePhoto: (from: number, to: number) => void;
@@ -203,8 +204,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
         postalCode: sp.address.postalCode,
         country: sp.address.country,
         price: String(sp.pricePerHour),
-        openTime: "09:00",
-        closeTime: "17:00",
+        hours: sp.workingHours?.length ? hoursFromSpace(sp.workingHours) : defaultHours(),
         amenities: sp.amenities.map((a) => a.name),
         photos: sp.imageKeys ?? []
       });
@@ -219,6 +219,44 @@ export function HostProvider({ children }: { children: ReactNode }) {
         ...d,
         amenities: d.amenities.includes(a) ? d.amenities.filter((x) => x !== a) : [...d.amenities, a]
       })),
+    []
+  );
+  const setDayHour = useCallback(
+    (index: number, key: "open" | "close", val: string) =>
+      setDraftState((d) => ({
+        ...d,
+        hours: d.hours.map((h, i) => {
+          if (i !== index) return h;
+          const next = { ...h, [key]: val };
+          if (key === "open") {
+            const [oh, om] = val.split(":").map(Number);
+            const [ch, cm] = next.close.split(":").map(Number);
+            const openMin = oh * 60 + om;
+            const closeMin = ch * 60 + cm || 1440;
+            if (closeMin < openMin + 30) {
+              const end = openMin + 30;
+              next.close = `${String(Math.floor((end % 1440) / 60)).padStart(2, "0")}:${String(end % 60).padStart(2, "0")}`;
+            }
+          }
+          return next;
+        })
+      })),
+    []
+  );
+  const toggleDay = useCallback(
+    (index: number) =>
+      setDraftState((d) => ({
+        ...d,
+        hours: d.hours.map((h, i) => (i === index ? { ...h, on: !h.on } : h))
+      })),
+    []
+  );
+  const copyDayToAll = useCallback(
+    (index: number) =>
+      setDraftState((d) => {
+        const src = d.hours[index];
+        return { ...d, hours: d.hours.map((h) => ({ ...h, open: src.open, close: src.close, on: true })) };
+      }),
     []
   );
   const addPhoto = useCallback(
@@ -252,7 +290,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
       }),
     []
   );
-  const nextStep = useCallback(() => setStep((s) => Math.min(s + 1, 5)), []);
+  const nextStep = useCallback(() => setStep((s) => Math.min(s + 1, 6)), []);
   const prevStep = useCallback(() => setStep((s) => Math.max(s - 1, 0)), []);
 
   const publishDraft = useCallback(async () => {
@@ -277,7 +315,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
           description: d.description || undefined,
           address,
           pricePerHour: d.price ? Number(d.price) : undefined,
-          workingHours: weekHours(d.openTime, d.closeTime),
+          workingHours: draftWorkingHours(d.hours),
           imageKeys: d.photos,
           categoryId,
           amenityIds
@@ -297,7 +335,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
         description: d.description || undefined,
         address,
         pricePerHour: Number(d.price) || 0,
-        workingHours: weekHours(d.openTime, d.closeTime),
+        workingHours: draftWorkingHours(d.hours),
         imageKeys: d.photos,
         categoryId,
         amenityIds
@@ -338,6 +376,9 @@ export function HostProvider({ children }: { children: ReactNode }) {
       beginEdit,
       setDraft,
       toggleAmenity,
+      setDayHour,
+      toggleDay,
+      copyDayToAll,
       addPhoto,
       removePhotoAt,
       movePhoto,
@@ -371,6 +412,9 @@ export function HostProvider({ children }: { children: ReactNode }) {
       beginEdit,
       setDraft,
       toggleAmenity,
+      setDayHour,
+      toggleDay,
+      copyDayToAll,
       addPhoto,
       removePhotoAt,
       movePhoto,

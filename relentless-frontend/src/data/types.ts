@@ -50,6 +50,7 @@ export interface Space {
   host: UserSummary;
   category: CategorySummary;
   amenities: AmenitySummary[];
+  workingHours: WorkingHoursPayload[];
 }
 
 export interface SpaceAddress {
@@ -182,8 +183,14 @@ export interface Draft {
   postalCode: string;
   country: string;
   price: string;
-  openTime: string;
-  closeTime: string;
+  hours: DayHours[];
   amenities: string[];
   photos: string[];
+}
+
+export interface DayHours {
+  dayOfWeek: string;
+  open: string;
+  close: string;
+  on: boolean;
 }

@@ -111,7 +111,8 @@ export default function HostRegister() {
           noValidate
           onSubmit={(e) => {
             e.preventDefault();
-            step === 3 ? submit() : next();
+            if (step === 3) submit();
+            else next();
           }}
         >
           <div className="auth-alt">

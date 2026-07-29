@@ -1,15 +1,37 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import "./CreateListing.css";
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import { useHost } from "@/context/HostContext";
 import { imageUrl } from "@/lib/api";
 import Placeholder from "@/components/shared/ui/Placeholder";
+import { Dropdown } from "@/components/shared/ui/Dropdown";
 import { HOST_KEEP_RATE, fmtPrice, net } from "@/data/format";
 
-const STEP_LABELS = ["Basics", "Location", "Pricing", "Amenities", "Photos", "Review"];
+const STEP_LABELS = ["Basics", "Location", "Pricing", "Working hours", "Amenities", "Photos", "Review"];
+
+const toMin = (t: string) => {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+};
+const fmtMin = (m: number) => {
+  const x = m % 1440;
+  return `${String(Math.floor(x / 60)).padStart(2, "0")}:${String(x % 60).padStart(2, "0")}`;
+};
+
+const OPEN_OPTIONS = Array.from({ length: 48 }, (_, i) => {
+  const t = fmtMin(i * 30);
+  return { value: t, label: t };
+});
+const closeOptions = (open: string) => {
+  const start = toMin(open) + 30;
+  return Array.from({ length: (1440 - start) / 30 + 1 }, (_, i) => {
+    const t = fmtMin(start + i * 30);
+    return { value: t, label: t };
+  });
+};
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -26,8 +48,9 @@ export default function CreateListing() {
   const d = host.draft;
   const step = host.step;
   const priceNum = Number(d.price) || 0;
-  const isLast = step === 5;
-  const dragIdx = useRef<number | null>(null);
+  const isLast = step === 6;
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [dropIdx, setDropIdx] = useState<number | null>(null);
   const fileInput = useRef<HTMLInputElement | null>(null);
 
   const onPickFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +63,8 @@ export default function CreateListing() {
   if (step === 0) canContinue = d.name.trim().length > 0;
   else if (step === 1) canContinue = d.city.trim().length > 0;
   else if (step === 2) canContinue = priceNum > 0;
-  else if (step === 4) canContinue = d.photos.length >= 1;
+  else if (step === 3) canContinue = d.hours.some((h) => h.on);
+  else if (step === 5) canContinue = d.photos.length >= 1;
 
   const amenSummary = d.amenities.length ? d.amenities.join(" - ") : "None selected";
   const addrSummary = ((d.street || "—") + " " + (d.streetNumber || "")).trim() + ", " + (d.city || "—");
@@ -53,6 +77,14 @@ export default function CreateListing() {
     .join(" - ")
     .toUpperCase();
   const pvPrice = fmtPrice(priceNum);
+  const openDays = d.hours.filter((h) => h.on);
+  const sameHours = openDays.every((h) => h.open === openDays[0]?.open && h.close === openDays[0]?.close);
+  const hoursSummary =
+    openDays.length === 0
+      ? "Closed"
+      : sameHours
+        ? `${openDays.length} days · ${openDays[0].open}–${openDays[0].close}`
+        : `${openDays.length} days · custom`;
 
   const cancel = () => router.push(host.editingId ? "/listings" : "/dashboard");
   const onPrimary = () => {
@@ -75,15 +107,19 @@ export default function CreateListing() {
 
       <div className="h-stepper">
         {STEP_LABELS.map((label, i) => {
-          const done = i < step;
           const active = i === step;
-          const numState = done ? "done" : active ? "active" : "";
+          const canJump = host.editingId != null || i <= step;
+          const numState = active ? "active" : canJump ? "done" : "";
           return (
             <div key={label} className="h-step">
-              {i > 0 && <div className={`h-step-line ${i <= step ? "active" : ""}`} />}
-              <button onClick={() => (i <= step ? host.setStep(i) : undefined)} className="h-step-btn">
+              {i > 0 && <div className={`h-step-line ${canJump ? "active" : ""}`} />}
+              <button
+                onClick={() => (canJump ? host.setStep(i) : undefined)}
+                disabled={!canJump}
+                className="h-step-btn"
+              >
                 <span className={`mono h-step-num ${numState}`}>{i + 1}</span>
-                <span className={`h-step-label ${done || active ? "on" : ""}`}>{label}</span>
+                <span className={`h-step-label ${canJump ? "on" : ""}`}>{label}</span>
               </button>
             </div>
           );
@@ -191,24 +227,6 @@ export default function CreateListing() {
                   <span className="mono h-price-suf">/ HR</span>
                 </div>
               </Field>
-              <div className="h-grid-2" style={{ maxWidth: 320 }}>
-                <Field label="Opens at">
-                  <input
-                    type="time"
-                    className="h-input"
-                    value={d.openTime}
-                    onChange={(e) => host.setDraft("openTime", e.target.value)}
-                  />
-                </Field>
-                <Field label="Closes at">
-                  <input
-                    type="time"
-                    className="h-input"
-                    value={d.closeTime}
-                    onChange={(e) => host.setDraft("closeTime", e.target.value)}
-                  />
-                </Field>
-              </div>
               <div className="h-breakdown">
                 <div className="mono h-field-label" style={{ marginBottom: 14 }}>
                   Per booked hour
@@ -230,6 +248,53 @@ export default function CreateListing() {
           )}
 
           {step === 3 && (
+            <div className="h-form-stack" style={{ gap: 16 }}>
+              <div className="h-sched-head">
+                <label className="mono h-field-label" style={{ marginBottom: 0 }}>
+                  Working hours
+                </label>
+                <button type="button" onClick={() => host.copyDayToAll(0)} className="mono h-sched-copy">
+                  Copy Monday to all
+                </button>
+              </div>
+              <div className="h-sched">
+                {d.hours.map((h, i) => (
+                  <div key={h.dayOfWeek} className={`h-sched-row ${h.on ? "on" : ""}`}>
+                    <button
+                      type="button"
+                      onClick={() => host.toggleDay(i)}
+                      aria-pressed={h.on}
+                      className={`h-sched-day ${h.on ? "active" : ""}`}
+                    >
+                      <span className="h-switch" aria-hidden="true">
+                        <span className="h-switch-knob" />
+                      </span>
+                      <span className="mono h-sched-day-lbl">{h.dayOfWeek.slice(0, 3)}</span>
+                    </button>
+                    {h.on ? (
+                      <div className="h-sched-times">
+                        <Dropdown
+                          value={h.open}
+                          options={OPEN_OPTIONS}
+                          onChange={(v) => host.setDayHour(i, "open", v)}
+                        />
+                        <span className="h-sched-dash">–</span>
+                        <Dropdown
+                          value={h.close}
+                          options={closeOptions(h.open)}
+                          onChange={(v) => host.setDayHour(i, "close", v)}
+                        />
+                      </div>
+                    ) : (
+                      <span className="mono h-sched-closed">Closed</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
             <div>
               <label className="mono h-field-label" style={{ marginBottom: 14 }}>
                 Amenities - select all that apply
@@ -248,39 +313,50 @@ export default function CreateListing() {
             </div>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <div>
               <label className="mono h-field-label" style={{ marginBottom: 14 }}>
                 Photos - add at least one
               </label>
               <div className="h-photos">
-                {d.photos.map((id, i) => (
-                  <div
-                    key={id}
-                    draggable
-                    onDragStart={() => (dragIdx.current = i)}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={() => {
-                      if (dragIdx.current !== null) host.movePhoto(dragIdx.current, i);
-                      dragIdx.current = null;
-                    }}
-                    className="h-photo"
-                    style={{
-                      backgroundImage: `url(${imageUrl(id)})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center"
-                    }}
-                  >
-                    <span className="mono h-photo-label">PHOTO {i + 1}</span>
-                    <button
-                      onClick={() => host.removePhotoAt(i)}
-                      aria-label={`Remove photo ${i + 1}`}
-                      className="h-photo-x"
+                {d.photos.map((id, i) => {
+                  const showDrop = dropIdx === i && dragIdx !== null && dragIdx !== i;
+                  const dropSide = showDrop ? (dragIdx < i ? "drop-after" : "drop-before") : "";
+                  return (
+                    <div
+                      key={id}
+                      draggable
+                      onDragStart={() => setDragIdx(i)}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        if (dropIdx !== i) setDropIdx(i);
+                      }}
+                      onDrop={() => {
+                        if (dragIdx !== null) host.movePhoto(dragIdx, i);
+                        setDragIdx(null);
+                        setDropIdx(null);
+                      }}
+                      onDragEnd={() => {
+                        setDragIdx(null);
+                        setDropIdx(null);
+                      }}
+                      className={`h-photo ${dropSide}`}
+                      style={{
+                        backgroundImage: `url(${imageUrl(id)})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center"
+                      }}
                     >
-                      <X size={12} />
-                    </button>
-                  </div>
-                ))}
+                      <button
+                        onClick={() => host.removePhotoAt(i)}
+                        aria-label={`Remove photo ${i + 1}`}
+                        className="h-photo-x"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  );
+                })}
                 {d.photos.length < 6 && (
                   <>
                     <button onClick={() => fileInput.current?.click()} className="h-add-photo">
@@ -294,7 +370,7 @@ export default function CreateListing() {
             </div>
           )}
 
-          {step === 5 && (
+          {step === 6 && (
             <div className="h-review">
               <div className="mono h-field-label" style={{ marginBottom: 16 }}>
                 Review &amp; publish
@@ -305,7 +381,7 @@ export default function CreateListing() {
                   ["Category", d.category, false],
                   ["Location", addrSummary, false],
                   ["Price", `${pvPrice}/HR`, true],
-                  ["Hours", `${d.openTime}–${d.closeTime}`, true],
+                  ["Hours", hoursSummary, true],
                   ["Amenities", amenSummary, false],
                   ["Photos", `${d.photos.length} added`, true]
                 ] as [string, string, boolean][]

@@ -29,11 +29,13 @@ export default function Wallet() {
   };
 
   const buckets = earningsByMonth(txs);
+  const hasEarnings = buckets.some((b) => b.total > 0);
   const maxE = Math.max(1, ...buckets.map((b) => b.total));
+  const ghost = [22, 34, 30, 52, 68, 90];
   const earningsBars = buckets.map((b, i) => ({
     m: b.m,
     full: money(b.total),
-    h: Math.round((b.total / maxE) * 100) + "%",
+    h: (hasEarnings ? Math.round((b.total / maxE) * 100) : ghost[i]) + "%",
     fill: i === buckets.length - 1 ? "var(--accent)" : "var(--hairline-strong)"
   }));
 
@@ -46,7 +48,7 @@ export default function Wallet() {
       <div className="h-wallet-grid">
         <div className="h-withdraw">
           <div>
-            <div className="mono h-withdraw-label">Available to withdraw</div>
+            <div className="mono h-withdraw-label">Balance</div>
             <div className="h-withdraw-amt">{fmtPrice(balance)}</div>
           </div>
           <button onClick={withdraw} disabled={balance <= 0 || withdrawing} className="h-withdraw-btn">
@@ -55,17 +57,26 @@ export default function Wallet() {
         </div>
         <div className="h-card" style={{ padding: 22 }}>
           <div className="h-flex-between" style={{ marginBottom: 20 }}>
-            <span className="h-panel-title-lg">Earnings</span>
-            <span className="eyebrow">Last 6 months</span>
+            <span className="eyebrow">Earnings - 6 months</span>
           </div>
-          <div className="h-bars" style={{ height: 130, gap: 14 }}>
-            {earningsBars.map((b) => (
-              <div key={b.m} className="h-bar-col" style={{ gap: 9 }}>
-                <div className="mono h-bar-v">{b.full}</div>
-                <div className="h-bar" style={{ height: b.h, background: b.fill }} />
-                <div className="mono h-bar-mon">{b.m}</div>
+          <div className="h-chart-wrap">
+            <div className="h-bars" style={{ height: 130, gap: 14 }}>
+              {earningsBars.map((b) => (
+                <div key={b.m} className="h-bar-col" style={{ gap: 9 }}>
+                  {hasEarnings && <div className="mono h-bar-v">{b.full}</div>}
+                  <div
+                    className={hasEarnings ? "h-bar" : "h-bar h-bar-ghost"}
+                    style={{ height: b.h, background: hasEarnings ? b.fill : undefined }}
+                  />
+                  <div className="mono h-bar-mon">{b.m}</div>
+                </div>
+              ))}
+            </div>
+            {!hasEarnings && (
+              <div className="h-chart-empty">
+                <span>Your first booking starts the climb.</span>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

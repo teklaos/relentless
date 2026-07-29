@@ -133,7 +133,7 @@
   transition: all 0.12s;
 }
 
-.cal-cell:hover:not(.past) {
+.cal-cell:hover:not(.past):not(.closed) {
   border-color: var(--hairline-strong);
 }
 
@@ -145,6 +145,12 @@
 
 .cal-cell.past {
   opacity: 0.3;
+  cursor: default;
+}
+
+.cal-cell.closed:not(.active) {
+  color: var(--ink-4);
+  background: var(--bg-sunken);
   cursor: default;
 }
 
