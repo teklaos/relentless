@@ -52,7 +52,7 @@ export default function Wallet() {
             <div className="h-withdraw-amt">{fmtPrice(balance)}</div>
           </div>
           <button onClick={withdraw} disabled={balance <= 0 || withdrawing} className="h-withdraw-btn">
-            {withdrawing ? "Processing…" : "Withdraw to bank"}
+            {withdrawing ? "Processing…" : "Withdraw"}
           </button>
         </div>
         <div className="h-card" style={{ padding: 22 }}>

@@ -50,7 +50,6 @@ const toHostBooking = (b: Booking): HostBooking => {
 };
 
 export type BookingTab = "upcoming" | "past";
-export type BookingView = "list" | "calendar";
 
 export interface HostContextValue {
   isMobile: boolean;
@@ -68,13 +67,11 @@ export interface HostContextValue {
   listingFilter: string;
   reviewFilter: number;
   bookingTab: BookingTab;
-  bookingView: BookingView;
 
   space: (id: number) => Space | undefined;
   spaceName: (id: number) => string;
 
   setBookingTab: (t: BookingTab) => void;
-  setBookingView: (v: BookingView) => void;
 
   setListingFilter: (f: string) => void;
   toggleStatus: (id: number) => void;
@@ -116,7 +113,6 @@ export function HostProvider({ children }: { children: ReactNode }) {
   const [listingFilter, setListingFilter] = useState("ALL");
   const [reviewFilter, setReviewFilter] = useState(0);
   const [bookingTab, setBookingTab] = useState<BookingTab>("upcoming");
-  const [bookingView, setBookingView] = useState<BookingView>("list");
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 880px)");
@@ -365,11 +361,9 @@ export function HostProvider({ children }: { children: ReactNode }) {
       listingFilter,
       reviewFilter,
       bookingTab,
-      bookingView,
       space,
       spaceName,
       setBookingTab,
-      setBookingView,
       setListingFilter,
       toggleStatus,
       beginCreate,
@@ -404,7 +398,6 @@ export function HostProvider({ children }: { children: ReactNode }) {
       listingFilter,
       reviewFilter,
       bookingTab,
-      bookingView,
       space,
       spaceName,
       toggleStatus,

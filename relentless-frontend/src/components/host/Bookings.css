@@ -62,30 +62,6 @@
   border-radius: 9px;
 }
 
-.h-seg {
-  display: flex;
-  padding: 3px;
-  background: var(--bg-sunken);
-  border: 1px solid var(--hairline);
-  border-radius: 3px;
-  margin-bottom: 8px;
-}
-
-.h-seg-btn {
-  padding: 6px 14px;
-  border-radius: 2px;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  transition: all 0.15s;
-}
-
-.h-seg-btn.active {
-  background: var(--ink);
-  color: #fff;
-}
-
 .h-led-empty {
   padding: 60px 18px;
   text-align: center;
@@ -170,73 +146,4 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-}
-
-.h-cal-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
-  background: var(--hairline);
-  border: 1px solid var(--hairline);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.h-cal-day {
-  background: var(--bg-elevated);
-  min-height: 180px;
-  display: flex;
-  flex-direction: column;
-}
-
-.h-cal-day-head {
-  padding: 10px 10px 8px;
-  border-bottom: 1px solid var(--hairline);
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.h-cal-dow {
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  color: var(--ink-4);
-}
-
-.h-cal-daynum {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.h-cal-day-body {
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
-}
-
-.h-cal-ev {
-  background: var(--accent-softer);
-  border-left: 2px solid var(--accent);
-  border-radius: 2px;
-  padding: 6px 7px;
-}
-
-.h-cal-ev-time {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--accent-ink);
-}
-
-.h-cal-ev-space {
-  font-size: 10.5px;
-  font-weight: 500;
-  margin-top: 2px;
-}
-
-.h-cal-ev-guest {
-  font-size: 9px;
-  color: var(--ink-3);
-  margin-top: 1px;
 }
