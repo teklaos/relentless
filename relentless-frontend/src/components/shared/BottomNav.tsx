@@ -33,11 +33,13 @@ const HOST_ITEMS: NavItem[] = [
   { path: "/profile", label: "Profile", Icon: User }
 ];
 
+const ANON_ITEMS: NavItem[] = [{ path: "/explore", label: "Explore", Icon: Compass }];
+
 export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useApp();
-  const items = user?.role === "HOST" ? HOST_ITEMS : GUEST_ITEMS;
+  const { user, auth } = useApp();
+  const items = !auth ? ANON_ITEMS : user?.role === "HOST" ? HOST_ITEMS : GUEST_ITEMS;
 
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
@@ -52,6 +54,12 @@ export default function BottomNav() {
           </button>
         );
       })}
+      {!auth && (
+        <button className="bn-item" onClick={() => router.push("/login")}>
+          <User size={20} strokeWidth={1.5} />
+          <span>LOG IN</span>
+        </button>
+      )}
     </nav>
   );
 }

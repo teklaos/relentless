@@ -2,6 +2,7 @@ relentless-backend/HELP.md
 relentless-backend/target/
 relentless-backend/.mvn/wrapper/maven-wrapper.jar
 relentless-backend/.mvn/maven.config
+relentless-backend/.env
 !relentless-backend/**/src/main/**/target/
 !relentless-backend/**/src/test/**/target/
 

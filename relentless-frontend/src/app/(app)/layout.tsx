@@ -10,9 +10,12 @@ import BottomNav from "@/components/shared/BottomNav";
 import SpaceDetail from "@/components/user/SpaceDetail";
 import ReviewModal from "@/components/user/ReviewModal";
 import PaymentModal from "@/components/user/PaymentModal";
+import AuthGateModal from "@/components/shared/AuthGateModal";
 
 const HOST_ONLY = ["/dashboard", "/listings", "/wallet", "/reviews"];
 const GUEST_ONLY = ["/explore", "/saved"];
+const PUBLIC_PATHS = ["/explore"];
+const isPublic = (p: string) => PUBLIC_PATHS.some((x) => p === x || p.startsWith(x + "/"));
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const {
@@ -23,6 +26,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     reviewing,
     checkout,
     toast,
+    authGate,
     savedIds,
     onSave,
     onBook,
@@ -30,7 +34,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     onCloseReview,
     onSubmitReview,
     onCloseCheckout,
-    onProceedPayment
+    onProceedPayment,
+    onCloseAuthGate,
+    onAuthGateContinue
   } = useApp();
   const router = useRouter();
   const pathname = usePathname();
@@ -38,7 +44,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!authReady) return;
     if (!auth) {
-      router.replace("/login");
+      if (!isPublic(pathname)) router.replace("/login");
       return;
     }
     if (!user) return;
@@ -51,9 +57,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [authReady, auth, user, pathname, router]);
 
-  if (!authReady || !auth) {
-    return null;
-  }
+  if (!authReady) return null;
+  if (!auth && !isPublic(pathname)) return null;
 
   return (
     <HostProvider>
@@ -77,6 +82,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {reviewing && <ReviewModal booking={reviewing} onClose={onCloseReview} onSubmit={onSubmitReview} />}
 
         {checkout && <PaymentModal checkout={checkout} onClose={onCloseCheckout} onProceed={onProceedPayment} />}
+
+        {authGate && (
+          <AuthGateModal action={authGate.action} onClose={onCloseAuthGate} onContinue={onAuthGateContinue} />
+        )}
 
         {toast && (
           <div className="toast">

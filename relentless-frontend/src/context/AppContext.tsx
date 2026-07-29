@@ -30,6 +30,13 @@ export interface Checkout {
   endIso: string;
 }
 
+export interface AuthGate {
+  action: "save" | "book";
+  spaceId: number;
+}
+
+const PENDING_SPACE_KEY = "relentless.pendingSpaceId";
+
 interface AppContextValue {
   auth: boolean;
   authReady: boolean;
@@ -41,6 +48,7 @@ interface AppContextValue {
   reviewing: Booking | null;
   checkout: Checkout | null;
   toast: string | null;
+  authGate: AuthGate | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (payload: { username: string; email: string; password: string; dateOfBirth: string }) => Promise<void>;
   signUpHost: (payload: {
@@ -66,6 +74,8 @@ interface AppContextValue {
   onUpdateProfile: (payload: UpdateUserPayload) => Promise<void>;
   onCloseCheckout: () => void;
   onProceedPayment: () => void;
+  onCloseAuthGate: () => void;
+  onAuthGateContinue: (mode: "login" | "register") => void;
   showToast: (msg: string) => void;
 }
 
@@ -82,6 +92,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [reviewing, setReviewing] = useState<Booking | null>(null);
   const [checkout, setCheckout] = useState<Checkout | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [authGate, setAuthGate] = useState<AuthGate | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const savedIds = useMemo(() => new Set(savedSpaces.map((s) => s.id)), [savedSpaces]);
@@ -130,6 +141,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, [auth]);
 
+  const resumePendingSpace = useCallback(() => {
+    const id = sessionStorage.getItem(PENDING_SPACE_KEY);
+    if (!id) return;
+    sessionStorage.removeItem(PENDING_SPACE_KEY);
+    fetchSpace(Number(id))
+      .then(setDetail)
+      .catch(() => {});
+  }, []);
+
   const signIn = useCallback(
     async (email: string, password: string) => {
       const tokens = await login({ email, password });
@@ -138,12 +158,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         const me = await fetchMe();
         setUser(me);
-        router.push(me.role === "HOST" ? "/dashboard" : "/explore");
+        if (me.role === "HOST") {
+          sessionStorage.removeItem(PENDING_SPACE_KEY);
+          router.push("/dashboard");
+        } else {
+          router.push("/explore");
+          resumePendingSpace();
+        }
       } catch {
         router.push("/explore");
+        resumePendingSpace();
       }
     },
-    [router]
+    [router, resumePendingSpace]
   );
 
   const signUp = useCallback(
@@ -152,8 +179,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setTokens(tokens.accessToken, tokens.refreshToken);
       setAuth(true);
       router.push("/explore");
+      resumePendingSpace();
     },
-    [router]
+    [router, resumePendingSpace]
   );
 
   const signUpHost = useCallback(
@@ -195,6 +223,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const onSave = useCallback(
     async (id: number) => {
+      if (!auth) {
+        setAuthGate({ action: "save", spaceId: id });
+        return;
+      }
       const wasSaved = savedSpaces.some((s) => s.id === id);
       try {
         if (wasSaved) {
@@ -209,7 +241,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showToast("COULD NOT UPDATE SAVED");
       }
     },
-    [savedSpaces, showToast]
+    [auth, savedSpaces, showToast]
   );
 
   const onOpen = useCallback((space: Space) => setDetail(space), []);
@@ -239,12 +271,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
       total: number;
       duration: number;
     }) => {
+      if (!auth) {
+        setAuthGate({ action: "book", spaceId: space.id });
+        return;
+      }
       setCheckout({ spaceId: space.id, spaceName: space.name, total, duration, startIso, endIso });
     },
-    []
+    [auth]
   );
 
   const onCloseCheckout = useCallback(() => setCheckout(null), []);
+
+  const onCloseAuthGate = useCallback(() => setAuthGate(null), []);
+
+  const onAuthGateContinue = useCallback(
+    (mode: "login" | "register") => {
+      if (authGate?.action === "book") {
+        sessionStorage.setItem(PENDING_SPACE_KEY, String(authGate.spaceId));
+      }
+      setAuthGate(null);
+      router.push(mode === "login" ? "/login" : "/register");
+    },
+    [authGate, router]
+  );
 
   const onProceedPayment = useCallback(async () => {
     if (!checkout) return;
@@ -300,6 +349,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         reviewing,
         checkout,
         toast,
+        authGate,
         signIn,
         signUp,
         signUpHost,
@@ -315,6 +365,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         onUpdateProfile,
         onCloseCheckout,
         onProceedPayment,
+        onCloseAuthGate,
+        onAuthGateContinue,
         showToast
       }}
     >

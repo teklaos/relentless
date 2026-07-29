@@ -34,12 +34,14 @@ const HOST_ITEMS: NavItem[] = [
   { path: "/profile", label: "Profile", Icon: User }
 ];
 
+const ANON_ITEMS: NavItem[] = [{ path: "/explore", label: "Explore", Icon: Compass }];
+
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useApp();
+  const { user, auth } = useApp();
   const isHost = user?.role === "HOST";
-  const items = isHost ? HOST_ITEMS : GUEST_ITEMS;
+  const items = !auth ? ANON_ITEMS : isHost ? HOST_ITEMS : GUEST_ITEMS;
   const initials = user
     ? user.username
         .split(".")
@@ -75,21 +77,32 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="sb-footer">
-        <div className="sb-avatar">
-          <AvatarImg
-            imageKey={user?.profileImageKey}
-            name={user?.username ?? ""}
-            size={32}
-            radius="inherit"
-            fallback={initials}
-          />
+      {auth ? (
+        <div className="sb-footer">
+          <div className="sb-avatar">
+            <AvatarImg
+              imageKey={user?.profileImageKey}
+              name={user?.username ?? ""}
+              size={32}
+              radius="inherit"
+              fallback={initials}
+            />
+          </div>
+          <div className="sb-user-meta">
+            <span className="sb-user-name">{user?.username ?? "—"}</span>
+            <span className="sb-user-email">{user?.email ?? ""}</span>
+          </div>
         </div>
-        <div className="sb-user-meta">
-          <span className="sb-user-name">{user?.username ?? "—"}</span>
-          <span className="sb-user-email">{user?.email ?? ""}</span>
+      ) : (
+        <div className="sb-footer">
+          <button className="btn" onClick={() => router.push("/login")}>
+            LOG IN
+          </button>
+          <button className="btn accent" onClick={() => router.push("/register")}>
+            SIGN UP
+          </button>
         </div>
-      </div>
+      )}
     </aside>
   );
 }
