@@ -1,6 +1,7 @@
 package com.project.relentless.feature.user.dto.request;
 
 import com.project.relentless.feature.user.validation.Password;
+import jakarta.validation.constraints.NotNull;
 
 public record ChangePasswordRequest(
-    @Password String currentPassword, @Password String newPassword) {}
+    @NotNull @Password String currentPassword, @NotNull @Password String newPassword) {}

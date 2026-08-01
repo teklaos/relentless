@@ -74,6 +74,21 @@ public class UserServiceImpl implements UserService {
       user.setProfileImageKey(request.profileImageKey());
     }
 
+    if (user.getRole().equals(Role.HOST)) {
+      if (request.firstName() != null) {
+        user.setFirstName(request.firstName());
+      }
+      if (request.lastName() != null) {
+        user.setLastName(request.lastName());
+      }
+      if (request.phoneNumber() != null) {
+        user.setPhoneNumber(request.phoneNumber());
+      }
+      if (request.iban() != null) {
+        user.setIban(request.iban());
+      }
+    }
+
     return userMapper.toUserResponse(userRepository.save(user));
   }
 

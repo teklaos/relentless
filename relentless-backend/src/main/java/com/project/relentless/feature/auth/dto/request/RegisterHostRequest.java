@@ -8,11 +8,11 @@ import java.time.LocalDate;
 
 public record RegisterHostRequest(
     @NotBlank @Size(min = 3, max = 50) String username,
-    @Password String password,
+    @NotNull @Password String password,
     @NotBlank @Size(min = 3, max = 100) @Email String email,
     @NotNull @PastOrPresent LocalDate dateOfBirth,
     @NotBlank @Size(min = 2, max = 255) String firstName,
     @NotBlank @Size(min = 2, max = 255) String lastName,
-    @PhoneNumber String phoneNumber,
-    @Iban String iban,
+    @NotNull @PhoneNumber String phoneNumber,
+    @NotNull @Iban String iban,
     @AssertTrue boolean acceptedTerms) {}

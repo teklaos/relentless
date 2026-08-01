@@ -6,6 +6,6 @@ import java.time.LocalDate;
 
 public record RegisterUserRequest(
     @NotBlank @Size(min = 3, max = 50) String username,
-    @Password String password,
+    @NotNull @Password String password,
     @NotBlank @Size(min = 3, max = 100) @Email String email,
     @NotNull @PastOrPresent LocalDate dateOfBirth) {}
