@@ -33,6 +33,10 @@ export interface UpdateUserPayload {
   email?: string;
   dateOfBirth?: string;
   profileImageKey?: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  iban?: string;
 }
 
 export type SpaceStatus = "ACTIVE" | "INACTIVE" | "DELETED";
@@ -91,10 +95,14 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  firstName: string | null;
+  lastName: string | null;
+  phoneNumber: string | null;
+  iban: string | null;
   dateOfBirth: string;
   dateJoined: string;
   profileImageKey: string | null;
-  role: "HOST" | "GUEST";
+  role: "HOST" | "USER" | "ADMIN";
 }
 
 export interface UserSummary {

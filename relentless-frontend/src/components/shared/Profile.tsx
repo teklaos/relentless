@@ -27,7 +27,16 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
-  const [form, setForm] = useState({ username: "", email: "", dateOfBirth: "", profileImageKey: "" });
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    dateOfBirth: "",
+    profileImageKey: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    iban: ""
+  });
   const avatarInput = useRef<HTMLInputElement | null>(null);
 
   const startEdit = () => {
@@ -36,7 +45,11 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
       username: user.username,
       email: user.email,
       dateOfBirth: user.dateOfBirth,
-      profileImageKey: user.profileImageKey ?? ""
+      profileImageKey: user.profileImageKey ?? "",
+      firstName: user.firstName ?? "",
+      lastName: user.lastName ?? "",
+      phoneNumber: user.phoneNumber ?? "",
+      iban: user.iban ?? ""
     });
     setEditing(true);
   };
@@ -77,7 +90,15 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
         username: form.username,
         email: form.email,
         dateOfBirth: form.dateOfBirth,
-        ...(form.profileImageKey ? { profileImageKey: form.profileImageKey } : {})
+        ...(form.profileImageKey ? { profileImageKey: form.profileImageKey } : {}),
+        ...(user?.role === "HOST"
+          ? {
+              firstName: form.firstName,
+              lastName: form.lastName,
+              phoneNumber: form.phoneNumber,
+              iban: form.iban
+            }
+          : {})
       });
       setEditing(false);
     } catch {
@@ -120,6 +141,18 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
             <div className="v">{user.dateOfBirth}</div>
             <div className="k">JOINED</div>
             <div className="v">{user.dateJoined}</div>
+            {user.role === "HOST" && (
+              <>
+                <div className="k">NAME</div>
+                <div className="v">
+                  {user.firstName} {user.lastName}
+                </div>
+                <div className="k">PHONE</div>
+                <div className="v">{user.phoneNumber}</div>
+                <div className="k">IBAN</div>
+                <div className="v">{user.iban}</div>
+              </>
+            )}
           </div>
           <button className="btn block" style={{ marginTop: 24 }} onClick={startEdit}>
             <Edit2 size={13} /> EDIT DETAILS
@@ -253,6 +286,40 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
             />
             <label className="k">DOB</label>
             <DatePicker value={form.dateOfBirth} onChange={(iso) => setForm((f) => ({ ...f, dateOfBirth: iso }))} />
+            {user.role === "HOST" && (
+              <>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <div style={{ flex: 1 }}>
+                    <label className="k">FIRST NAME</label>
+                    <input
+                      className="profile-input"
+                      value={form.firstName}
+                      onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label className="k">LAST NAME</label>
+                    <input
+                      className="profile-input"
+                      value={form.lastName}
+                      onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
+                    />
+                  </div>
+                </div>
+                <label className="k">PHONE</label>
+                <input
+                  className="profile-input"
+                  value={form.phoneNumber}
+                  onChange={(e) => setForm((f) => ({ ...f, phoneNumber: e.target.value }))}
+                />
+                <label className="k">IBAN</label>
+                <input
+                  className="profile-input"
+                  value={form.iban}
+                  onChange={(e) => setForm((f) => ({ ...f, iban: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "") }))}
+                />
+              </>
+            )}
           </div>
         </Modal>
       )}
