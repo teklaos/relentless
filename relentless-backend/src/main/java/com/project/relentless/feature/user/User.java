@@ -33,7 +33,6 @@ public class User {
   @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters.")
   private String username;
 
-  @NotBlank(message = "Password hash is required.")
   @Size(min = 1, max = 255, message = "Password hash must be between 1 and 255 characters.")
   private String passwordHash;
 
@@ -55,7 +54,6 @@ public class User {
   @Iban(message = "Invalid IBAN format.")
   private String iban;
 
-  @NotNull(message = "Date of birth is required.")
   @PastOrPresent(message = "Date of birth must be in the past or present.")
   private LocalDate dateOfBirth;
 

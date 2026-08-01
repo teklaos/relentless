@@ -134,6 +134,7 @@ public class SpaceServiceImpl implements SpaceService {
   }
 
   @Override
+  @Transactional
   public void save(Long id) {
     Long userId = authService.getCurrentUserId();
     var user =
@@ -154,6 +155,7 @@ public class SpaceServiceImpl implements SpaceService {
   }
 
   @Override
+  @Transactional
   public void unsave(Long id) {
     Long userId = authService.getCurrentUserId();
     var user =

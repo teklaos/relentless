@@ -33,9 +33,9 @@ public class AuthServiceImpl implements AuthService {
 
   private final UserRepository userRepository;
   private final UserMapper userMapper;
-  private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final RefreshTokenService refreshTokenService;
+  private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
 
   @Override
@@ -114,11 +114,13 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  @Transactional
   public void logout(RefreshTokenRequest request) {
     refreshTokenService.deleteByRawToken(request.refreshToken());
   }
 
   @Override
+  @Transactional
   public void logoutEverywhere(RefreshTokenRequest request) {
     var refreshToken = refreshTokenService.findByRawToken(request.refreshToken());
     Long userId = refreshToken.getUser().getId();
