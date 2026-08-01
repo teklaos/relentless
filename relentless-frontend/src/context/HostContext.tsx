@@ -80,7 +80,8 @@ export interface HostContextValue {
 const HostContext = createContext<HostContextValue | null>(null);
 
 export function HostProvider({ children }: { children: ReactNode }) {
-  const { auth, showToast } = useApp();
+  const { auth, user, showToast } = useApp();
+  const isHost = user?.role === "HOST";
 
   const [isMobile, setIsMobile] = useState(false);
   const [spaces, setSpaces] = useState<Space[]>([]);
@@ -115,7 +116,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!auth) return;
+    if (!auth || !isHost) return;
     let active = true;
     refreshWallet();
     fetchHostedSpaces()
@@ -136,14 +137,15 @@ export function HostProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [auth, refreshWallet]);
+  }, [auth, isHost, refreshWallet]);
 
-  const space = useCallback((id: number) => spaces.find((s) => s.id === id), [spaces]);
+  const spaceMap = useMemo(() => new Map(spaces.map((s) => [s.id, s])), [spaces]);
+  const space = useCallback((id: number) => spaceMap.get(id), [spaceMap]);
   const spaceName = useCallback((id: number) => space(id)?.name ?? "—", [space]);
 
   const toggleStatus = useCallback(
     async (id: number) => {
-      const sp = spaces.find((s) => s.id === id);
+      const sp = space(id);
       if (!sp) return;
       const next = sp.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
       try {
@@ -154,7 +156,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
         showToast("COULD NOT UPDATE STATUS");
       }
     },
-    [spaces, showToast]
+    [space, showToast]
   );
 
   const removeSpace = useCallback(
@@ -178,7 +180,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
 
   const beginEdit = useCallback(
     (id: number) => {
-      const sp = spaces.find((s) => s.id === id);
+      const sp = space(id);
       setEditingId(id);
       setStep(0);
       if (!sp) {
@@ -201,7 +203,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
         photos: sp.imageKeys ?? []
       });
     },
-    [spaces]
+    [space]
   );
 
   const setDraft = useCallback((field: keyof Draft, val: string) => setDraftState((d) => ({ ...d, [field]: val })), []);

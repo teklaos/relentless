@@ -22,7 +22,7 @@ export interface WalletBalance {
 export interface WalletTransaction {
   id: number;
   amount: number;
-  type: string;
+  type: "CREDIT" | "DEBIT";
   createdAt: string;
   bookingId: number | null;
   space: SpaceSummary | null;
@@ -94,7 +94,7 @@ export interface User {
   dateOfBirth: string;
   dateJoined: string;
   profileImageKey: string | null;
-  role: string;
+  role: "HOST" | "GUEST";
 }
 
 export interface UserSummary {

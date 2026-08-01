@@ -47,7 +47,6 @@ export default function ExplorePage() {
       savedIds={savedIds}
       onSave={onSave}
       onOpen={onOpen}
-      initialFilter={null}
     />
   );
 }

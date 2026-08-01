@@ -2,27 +2,11 @@
 
 import "./BookingWidget.css";
 import { useState, useMemo, useEffect } from "react";
-import { fmtPrice, fmtDateShort, todayStart } from "@/data/format";
+import { fmtPrice, fmtDateShort, todayStart, DOW, MONTHS_FULL, DAY_NAME } from "@/data/format";
 import { fetchAvailability } from "@/lib/api";
 import { Space, TimeSlot } from "@/data/types";
 import { Dropdown } from "@/components/shared/ui/Dropdown";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
-
-const DOW = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
-const MONTHS = [
-  "JANUARY",
-  "FEBRUARY",
-  "MARCH",
-  "APRIL",
-  "MAY",
-  "JUNE",
-  "JULY",
-  "AUGUST",
-  "SEPTEMBER",
-  "OCTOBER",
-  "NOVEMBER",
-  "DECEMBER"
-];
 
 const toMinutes = (t: string) => {
   const [h, m] = t.split(":").map(Number);
@@ -52,8 +36,6 @@ const ymd = (d: Date) =>
 
 const sameDay = (a: Date, b: Date) =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-
-const DAY_NAME = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 
 interface BookingWidgetProps {
   space: Space;
@@ -170,7 +152,7 @@ export default function BookingWidget({ space, onBook }: BookingWidgetProps) {
             <ChevronLeft size={16} />
           </button>
           <div className="cal-title">
-            {MONTHS[month.getMonth()]} {month.getFullYear()}
+            {MONTHS_FULL[month.getMonth()]} {month.getFullYear()}
           </div>
           <button className="cal-nav" onClick={() => shiftMonth(1)} aria-label="Next month">
             <ChevronRight size={16} />

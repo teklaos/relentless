@@ -16,33 +16,15 @@ interface ExploreProps {
   savedIds: Set<number>;
   onSave: (id: number) => void;
   onOpen: (space: Space) => void;
-  initialFilter?: { category?: number } | null;
 }
 
-export default function Explore({
-  spaces,
-  categories,
-  loading,
-  error,
-  savedIds,
-  onSave,
-  onOpen,
-  initialFilter
-}: ExploreProps) {
+export default function Explore({ spaces, categories, loading, error, savedIds, onSave, onOpen }: ExploreProps) {
   const [q, setQ] = useState("");
   const [city, setCity] = useState("ALL");
   const [sort, setSort] = useState("RECOMMENDED");
-  const [activeCat, setActiveCat] = useState<number | null>(initialFilter?.category ?? null);
+  const [activeCat, setActiveCat] = useState<number | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [prevInitialFilter, setPrevInitialFilter] = useState(initialFilter);
   const filtersRef = useRef<HTMLDivElement>(null);
-
-  if (prevInitialFilter !== initialFilter) {
-    setPrevInitialFilter(initialFilter);
-    if (initialFilter?.category) {
-      setActiveCat(initialFilter.category);
-    }
-  }
 
   useEffect(() => {
     const close = (e: MouseEvent) => {

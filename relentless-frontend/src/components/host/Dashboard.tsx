@@ -4,7 +4,7 @@ import "./Dashboard.css";
 import { useRouter } from "next/navigation";
 import { Plus, Calendar } from "lucide-react";
 import { useHost } from "@/context/HostContext";
-import { dayNum, fmtTimeRange, money, monShort, earningsByMonth } from "@/data/format";
+import { dayNum, fmtTimeRange, fmtPrice, monShort, buildEarningsBars } from "@/data/format";
 
 export default function Dashboard() {
   const host = useHost();
@@ -15,21 +15,12 @@ export default function Dashboard() {
   const avgR = (rated.reduce((a, s) => a + s.rating, 0) / Math.max(rated.length, 1)).toFixed(1);
 
   const kpis = [
-    { label: "Balance", value: money(host.walletBalance) },
+    { label: "Balance", value: fmtPrice(host.walletBalance) },
     { label: "Live listings", value: String(live.length) },
     { label: "Avg rating", value: avgR }
   ];
 
-  const buckets = earningsByMonth(host.walletTransactions);
-  const hasEarnings = buckets.some((b) => b.total > 0);
-  const maxE = Math.max(1, ...buckets.map((b) => b.total));
-  const ghost = [22, 34, 30, 52, 68, 90];
-  const earningsBars = buckets.map((b, i) => ({
-    m: b.m,
-    full: money(b.total),
-    h: (hasEarnings ? Math.round((b.total / maxE) * 100) : ghost[i]) + "%",
-    fill: i === buckets.length - 1 ? "var(--accent)" : "var(--hairline-strong)"
-  }));
+  const { hasEarnings, earningsBars } = buildEarningsBars(host.walletTransactions);
 
   const confirmed = host.bookings
     .filter((b) => b.status === "CONFIRMED")

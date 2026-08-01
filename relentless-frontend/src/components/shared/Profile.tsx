@@ -97,11 +97,6 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
 
   if (!user) return null;
 
-  const initials = user.username
-    .split(".")
-    .map((p: string) => p[0].toUpperCase())
-    .join("");
-
   return (
     <div>
       <div className="page-header">
@@ -112,13 +107,7 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
         <div className="profile-card">
           <div className="profile-head">
             <div className="profile-avatar">
-              <AvatarImg
-                imageKey={user.profileImageKey}
-                name={user.username}
-                size={88}
-                radius="inherit"
-                fallback={initials}
-              />
+              <AvatarImg imageKey={user.profileImageKey} name={user.username} size={88} radius="inherit" />
             </div>
             <h2 className="profile-name">{user.username}</h2>
           </div>
@@ -194,12 +183,10 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
 
             <div className="setting" onClick={onSignOut} style={{ cursor: "pointer" }}>
               <div className="setting-l">
-                <span className="setting-t" style={{ color: "var(--danger)" }}>
-                  Sign out
-                </span>
+                <span className="setting-t field-err">Sign out</span>
                 <span className="setting-d">End session on this device</span>
               </div>
-              <span className="setting-v" style={{ color: "var(--danger)" }}>
+              <span className="setting-v field-err">
                 <ArrowRight size={12} />
               </span>
             </div>
@@ -243,7 +230,6 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
                   name={form.username || user.username}
                   size={72}
                   radius="inherit"
-                  fallback={initials}
                 />
                 <span className="profile-avatar-overlay">
                   <Camera size={16} />

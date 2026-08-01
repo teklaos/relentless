@@ -4,7 +4,7 @@ import "./Reviews.css";
 import { Star } from "lucide-react";
 import { useHost } from "@/context/HostContext";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
-import { fmtDate, initials } from "@/data/format";
+import { fmtDate } from "@/data/format";
 import Stars from "@/components/shared/ui/Stars";
 
 export default function Reviews() {
@@ -78,17 +78,7 @@ export default function Reviews() {
           {filtered.map((r) => (
             <div key={r.id} className="h-card h-rev-card">
               <div className="h-rev-head">
-                <AvatarImg
-                  imageKey={r.user.profileImageKey}
-                  name={r.user.username}
-                  size={36}
-                  radius={3}
-                  fallback={
-                    <div className="mono h-avatar-box" style={{ width: 36, height: 36, fontSize: 12 }}>
-                      {initials(r.user.username)}
-                    </div>
-                  }
-                />
+                <AvatarImg imageKey={r.user.profileImageKey} name={r.user.username} size={36} radius={3} />
                 <div className="h-rev-meta">
                   <div className="h-rev-guest">{r.user.username}</div>
                   <div className="mono h-rev-space">{r.space.name}</div>

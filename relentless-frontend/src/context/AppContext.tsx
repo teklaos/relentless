@@ -2,13 +2,12 @@
 
 import { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Space, Booking, User, UpdateUserPayload, WalletTransaction } from "@/data/types";
+import { Space, Booking, User, UpdateUserPayload } from "@/data/types";
 import {
   fetchMe,
   fetchMyBookings,
   fetchSavedSpaces,
   fetchSpace,
-  fetchWalletTransactions,
   createBooking,
   leaveReview,
   saveSpace,
@@ -21,7 +20,7 @@ import {
   deleteAccount,
   setUnauthorizedHandler
 } from "@/lib/api";
-import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "@/lib/auth";
+import { getAccessToken, getRefreshToken, setTokens, clearTokens, setPendingBookingId } from "@/lib/auth";
 
 export interface Checkout {
   spaceId: number;
@@ -46,7 +45,6 @@ interface AppContextValue {
   savedIds: Set<number>;
   savedSpaces: Space[];
   bookings: Booking[];
-  payments: WalletTransaction[];
   detail: Space | null;
   reviewing: Booking | null;
   checkout: Checkout | null;
@@ -92,7 +90,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [savedSpaces, setSavedSpaces] = useState<Space[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [payments, setPayments] = useState<WalletTransaction[]>([]);
   const [detail, setDetail] = useState<Space | null>(null);
   const [reviewing, setReviewing] = useState<Booking | null>(null);
   const [checkout, setCheckout] = useState<Checkout | null>(null);
@@ -114,7 +111,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setAuth(false);
       setUser(null);
       setBookings([]);
-      setPayments([]);
       setSavedSpaces([]);
       setDetail(null);
       router.push("/login");
@@ -139,9 +135,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     fetchMyBookings()
       .then((b) => active && setBookings(b))
       .catch(() => active && setBookings([]));
-    fetchWalletTransactions()
-      .then((p) => active && setPayments(p))
-      .catch(() => active && setPayments([]));
     fetchSavedSpaces()
       .then((s) => active && setSavedSpaces(s))
       .catch(() => active && setSavedSpaces([]));
@@ -211,7 +204,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         setUser(await fetchMe());
       } catch {
-        console.log("Fetching user...");
+        // best-effort refresh; user stays authed either way
       }
       router.push("/dashboard");
     },
@@ -226,7 +219,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setDetail(null);
     setUser(null);
     setBookings([]);
-    setPayments([]);
     setSavedSpaces([]);
     router.push("/login");
   }, [router]);
@@ -318,7 +310,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         startTime: checkout.startIso,
         endTime: checkout.endIso
       });
-      localStorage.setItem("pendingBookingId", String(booking.id));
+      setPendingBookingId(booking.id);
       window.location.href = booking.checkoutSessionUrl;
     } catch {
       showToast("BOOKING FAILED");
@@ -360,7 +352,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         savedIds,
         savedSpaces,
         bookings,
-        payments,
         detail,
         reviewing,
         checkout,

@@ -5,12 +5,13 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/shared/ui/Modal";
 import { XCircle } from "lucide-react";
+import { clearPendingBookingId } from "@/lib/auth";
 
 export default function PaymentCancelPage() {
   const router = useRouter();
 
   useEffect(() => {
-    localStorage.removeItem("pendingBookingId");
+    clearPendingBookingId();
   }, []);
 
   const back = () => router.push("/explore");

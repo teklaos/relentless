@@ -1,0 +1,9 @@
+.avatar-fallback {
+  background: var(--bg-sunken);
+  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  flex-shrink: 0;
+}

@@ -4,7 +4,7 @@ import "./Bookings.css";
 import { Calendar } from "lucide-react";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import { BookingTab, useHost } from "@/context/HostContext";
-import { fmtDate, fmtTimeRange, initials, fmtPrice, net, statusMeta } from "@/data/format";
+import { fmtDate, fmtTimeRange, fmtPrice, net, statusMeta } from "@/data/format";
 
 const tabDefs: [BookingTab, string][] = [
   ["upcoming", "Upcoming"],
@@ -82,11 +82,6 @@ export default function Bookings() {
                     size={30}
                     radius={3}
                     style={{ flexShrink: 0 }}
-                    fallback={
-                      <div className="mono h-avatar-box" style={{ width: 30, height: 30, fontSize: 10 }}>
-                        {initials(b.user.username)}
-                      </div>
-                    }
                   />
                   <div style={{ minWidth: 0 }}>
                     <div className="h-led-guest h-truncate">{b.user.username}</div>

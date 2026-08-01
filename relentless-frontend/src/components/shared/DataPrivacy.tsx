@@ -120,7 +120,7 @@ export default function DataPrivacy() {
             <div className="field">
               <div className="field-label">
                 <span>CURRENT PASSWORD</span>
-                {pwErr.current && <span style={{ color: "var(--danger)" }}>{pwErr.current}</span>}
+                {pwErr.current && <span className="field-err">{pwErr.current}</span>}
               </div>
               <PasswordField
                 value={pw.current}
@@ -133,7 +133,7 @@ export default function DataPrivacy() {
             <div className="field">
               <div className="field-label">
                 <span>NEW PASSWORD</span>
-                {pwErr.next && <span style={{ color: "var(--danger)" }}>{pwErr.next}</span>}
+                {pwErr.next && <span className="field-err">{pwErr.next}</span>}
               </div>
               <PasswordField
                 value={pw.next}
@@ -146,7 +146,7 @@ export default function DataPrivacy() {
             <div className="field">
               <div className="field-label">
                 <span>CONFIRM NEW PASSWORD</span>
-                {pwErr.confirm && <span style={{ color: "var(--danger)" }}>{pwErr.confirm}</span>}
+                {pwErr.confirm && <span className="field-err">{pwErr.confirm}</span>}
               </div>
               <PasswordField
                 value={pw.confirm}
@@ -179,7 +179,7 @@ export default function DataPrivacy() {
           </div>
 
           <div style={{ marginBottom: 12 }}>
-            <div className="eyebrow" style={{ marginBottom: 10, color: "var(--danger)" }}>
+            <div className="eyebrow field-err" style={{ marginBottom: 10 }}>
               DELETE ACCOUNT
             </div>
           </div>

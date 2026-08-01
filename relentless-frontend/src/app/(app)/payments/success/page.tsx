@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { fetchMyBookings } from "@/lib/api";
 import Modal from "@/components/shared/ui/Modal";
 import { CheckCircle2, Loader, Clock, HelpCircle } from "lucide-react";
+import { getPendingBookingId, clearPendingBookingId } from "@/lib/auth";
 
 type State = "checking" | "confirmed" | "pending" | "unknown";
 const MAX_TRIES = 15;
@@ -13,12 +14,10 @@ const MAX_TRIES = 15;
 export default function PaymentSuccessPage() {
   const router = useRouter();
   const [state, setState] = useState<State>("checking");
-  const [, setAmount] = useState<number | null>(null);
   const tries = useRef(0);
 
   useEffect(() => {
-    const raw = localStorage.getItem("pendingBookingId");
-    const id = raw ? Number(raw) : null;
+    const id = getPendingBookingId();
     if (!id) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setState("unknown");
@@ -32,14 +31,13 @@ export default function PaymentSuccessPage() {
         const bookings = await fetchMyBookings();
         const booking = bookings.find((b) => b.id === id);
         if (!active) return;
-        if (booking) setAmount(booking.totalPrice);
         if (booking?.status === "CONFIRMED") {
-          localStorage.removeItem("pendingBookingId");
+          clearPendingBookingId();
           setState("confirmed");
           return;
         }
       } catch {
-        console.log("Fetching status...");
+        // transient fetch failure; next poll retries
       }
       if (!active) return;
       if (tries.current >= MAX_TRIES) {

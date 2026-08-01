@@ -12,17 +12,6 @@
   text-overflow: ellipsis;
 }
 
-.h-avatar-box {
-  border-radius: 3px;
-  background: var(--bg-sunken);
-  color: var(--ink-3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 500;
-  flex-shrink: 0;
-}
-
 .h-book-bar {
   display: flex;
   align-items: center;

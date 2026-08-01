@@ -4,52 +4,15 @@ import "./Sidebar.css";
 import { usePathname, useRouter } from "next/navigation";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import { useApp } from "@/context/AppContext";
-import {
-  Compass,
-  Bookmark,
-  History,
-  User,
-  LayoutDashboard,
-  LayoutGrid,
-  Wallet,
-  Star,
-  type LucideIcon
-} from "lucide-react";
-
-type NavItem = { path: string; label: string; Icon: LucideIcon };
-
-const GUEST_ITEMS: NavItem[] = [
-  { path: "/explore", label: "Explore", Icon: Compass },
-  { path: "/saved", label: "Saved", Icon: Bookmark },
-  { path: "/bookings", label: "Bookings", Icon: History },
-  { path: "/profile", label: "Profile", Icon: User }
-];
-
-const HOST_ITEMS: NavItem[] = [
-  { path: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
-  { path: "/listings", label: "Listings", Icon: LayoutGrid },
-  { path: "/bookings", label: "Bookings", Icon: History },
-  { path: "/wallet", label: "Wallet", Icon: Wallet },
-  { path: "/reviews", label: "Reviews", Icon: Star },
-  { path: "/profile", label: "Profile", Icon: User }
-];
-
-const ANON_ITEMS: NavItem[] = [{ path: "/explore", label: "Explore", Icon: Compass }];
+import { navItemsFor, isActivePath } from "@/lib/navItems";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, auth } = useApp();
-  const isHost = user?.role === "HOST";
-  const items = !auth ? ANON_ITEMS : isHost ? HOST_ITEMS : GUEST_ITEMS;
-  const initials = user
-    ? user.username
-        .split(".")
-        .map((p) => p[0].toUpperCase())
-        .join("")
-    : "";
+  const items = navItemsFor(auth, user?.role);
 
-  const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
+  const isActive = (path: string) => isActivePath(pathname, path);
 
   return (
     <aside className="sidebar">
@@ -80,13 +43,7 @@ export default function Sidebar() {
       {auth ? (
         <div className="sb-footer">
           <div className="sb-avatar">
-            <AvatarImg
-              imageKey={user?.profileImageKey}
-              name={user?.username ?? ""}
-              size={32}
-              radius="inherit"
-              fallback={initials}
-            />
+            <AvatarImg imageKey={user?.profileImageKey} name={user?.username ?? ""} size={32} radius="inherit" />
           </div>
           <div className="sb-user-meta">
             <span className="sb-user-name">{user?.username ?? "—"}</span>

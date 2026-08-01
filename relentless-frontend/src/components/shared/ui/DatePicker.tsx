@@ -4,9 +4,7 @@ import "./DatePicker.css";
 import { useEffect, useRef, useState } from "react";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { Dropdown } from "@/components/shared/ui/Dropdown";
-
-const DOW = ["M", "T", "W", "T", "F", "S", "S"];
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+import { DOW_INITIAL, MONTHS_SHORT_TITLE } from "@/data/format";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const toIso = (y: number, m: number, d: number) => `${y}-${pad(m + 1)}-${pad(d)}`;
@@ -106,7 +104,7 @@ export default function DatePicker({
             <div className="dp-selects">
               <Dropdown
                 value={view.m}
-                options={MONTHS.map((name, i) => ({ value: i, label: name }))}
+                options={MONTHS_SHORT_TITLE.map((name, i) => ({ value: i, label: name }))}
                 onChange={(m) => setView((v) => ({ ...v, m }))}
               />
               <Dropdown
@@ -121,7 +119,7 @@ export default function DatePicker({
           </div>
 
           <div className="dp-grid dp-dow">
-            {DOW.map((d, i) => (
+            {DOW_INITIAL.map((d, i) => (
               <span key={i} className="dp-dow-cell">
                 {d}
               </span>

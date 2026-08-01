@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import DatePicker from "@/components/shared/ui/DatePicker";
+import AuthBrandPanel from "@/components/shared/ui/AuthBrandPanel";
 import { User, Mail, ArrowRight } from "lucide-react";
 import PasswordField from "@/components/shared/ui/PasswordField";
 import { EMAIL_RE, PASSWORD_RE, PASSWORD_HINT, USER_MIN_AGE, maxDobIso } from "@/data/format";
@@ -78,24 +79,7 @@ export default function Auth({ mode }: AuthProps) {
 
   return (
     <div className="auth-wrap">
-      <div className="auth-left">
-        <div className="auth-brand">
-          <div className="auth-mark">
-            <div className="auth-mark-text">
-              RELENT<span style={{ color: "var(--accent)" }}>LESS</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="auth-pitch">
-          <h1 className="auth-pitch-h">
-            Book the space
-            <br />
-            <em>Make the work</em>
-          </h1>
-          <p className="auth-pitch-p">Studios, courts and halls. No membership.</p>
-        </div>
-      </div>
+      <AuthBrandPanel />
 
       <div className="auth-right">
         <form className="auth-form" onSubmit={submit} noValidate>
@@ -125,7 +109,7 @@ export default function Auth({ mode }: AuthProps) {
             <div className="field">
               <div className="field-label">
                 <span>Username</span>
-                {err.username && <span style={{ color: "var(--danger)" }}>{err.username}</span>}
+                {err.username && <span className="field-err">{err.username}</span>}
               </div>
               <div className="field-input">
                 <User size={15} />
@@ -143,7 +127,7 @@ export default function Auth({ mode }: AuthProps) {
           <div className="field">
             <div className="field-label">
               <span>Email</span>
-              {err.email && <span style={{ color: "var(--danger)" }}>{err.email}</span>}
+              {err.email && <span className="field-err">{err.email}</span>}
             </div>
             <div className="field-input">
               <Mail size={15} />
@@ -161,7 +145,7 @@ export default function Auth({ mode }: AuthProps) {
           <div className="field">
             <div className="field-label">
               <span>Password</span>
-              {err.password && <span style={{ color: "var(--danger)" }}>{err.password}</span>}
+              {err.password && <span className="field-err">{err.password}</span>}
             </div>
             <PasswordField
               value={form.password}
@@ -175,7 +159,7 @@ export default function Auth({ mode }: AuthProps) {
             <div className="field">
               <div className="field-label">
                 <span>Date of birth</span>
-                {err.dob && <span style={{ color: "var(--danger)" }}>{err.dob}</span>}
+                {err.dob && <span className="field-err">{err.dob}</span>}
               </div>
               <DatePicker
                 value={form.dob}
@@ -187,13 +171,7 @@ export default function Auth({ mode }: AuthProps) {
           )}
 
           {err.form && (
-            <div
-              style={{
-                color: "var(--danger)",
-                fontSize: 12,
-                marginTop: 16
-              }}
-            >
+            <div className="field-err" style={{ fontSize: 12, marginTop: 16 }}>
               {err.form}
             </div>
           )}

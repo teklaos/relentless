@@ -12,7 +12,8 @@ import {
   BookingCheckout,
   WalletBalance,
   WalletTransaction,
-  UpdateUserPayload
+  UpdateUserPayload,
+  SpaceStatus
 } from "@/data/types";
 import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "./auth";
 
@@ -77,39 +78,32 @@ async function request<T>(path: string, init?: RequestInit, retry = true): Promi
 
   if (!res.ok) {
     const text = await res.text();
-    const message = text ? (JSON.parse(text) as { message?: string }).message : undefined;
+    let message: string | undefined;
+    try {
+      message = text ? (JSON.parse(text) as { message?: string }).message : undefined;
+    } catch {
+      message = undefined;
+    }
     throw new Error(message || `${init?.method ?? "GET"} ${path} failed: ${res.status}`);
   }
   const text = await res.text();
   return (text ? JSON.parse(text) : undefined) as T;
 }
 
-export async function login(payload: { email: string; password: string }): Promise<AuthTokens> {
-  const res = await fetch(`${API_BASE}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  if (!res.ok) throw new Error(`Login failed: ${res.status}`);
-  return res.json();
+export function login(payload: { email: string; password: string }): Promise<AuthTokens> {
+  return request<AuthTokens>("/api/auth/login", { method: "POST", body: JSON.stringify(payload) }, false);
 }
 
-export async function register(payload: {
+export function register(payload: {
   username: string;
   email: string;
   password: string;
   dateOfBirth: string;
 }): Promise<AuthTokens> {
-  const res = await fetch(`${API_BASE}/api/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  if (!res.ok) throw new Error(`Registration failed: ${res.status}`);
-  return res.json();
+  return request<AuthTokens>("/api/auth/register", { method: "POST", body: JSON.stringify(payload) }, false);
 }
 
-export async function registerHost(payload: {
+export function registerHost(payload: {
   username: string;
   email: string;
   password: string;
@@ -120,13 +114,7 @@ export async function registerHost(payload: {
   iban: string;
   acceptedTerms: boolean;
 }): Promise<AuthTokens> {
-  const res = await fetch(`${API_BASE}/api/auth/register/host`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  if (!res.ok) throw new Error(`Host registration failed: ${res.status}`);
-  return res.json();
+  return request<AuthTokens>("/api/auth/register/host", { method: "POST", body: JSON.stringify(payload) }, false);
 }
 
 export async function logout(refreshToken: string): Promise<void> {
@@ -272,7 +260,7 @@ export function editSpace(id: number, payload: EditSpacePayload): Promise<Space>
   });
 }
 
-export function changeSpaceStatus(id: number, status: string): Promise<Space> {
+export function changeSpaceStatus(id: number, status: SpaceStatus): Promise<Space> {
   return request<Space>(`/api/spaces/${id}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status })

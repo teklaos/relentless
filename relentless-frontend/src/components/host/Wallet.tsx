@@ -2,11 +2,11 @@
 
 import "./Wallet.css";
 import { useState } from "react";
-import { Receipt } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { useHost } from "@/context/HostContext";
 import { debitWallet } from "@/lib/api";
-import { fmtDate, money, fmtPrice, earningsByMonth } from "@/data/format";
+import { fmtPrice, buildEarningsBars } from "@/data/format";
+import TransactionTable from "@/components/shared/ui/TransactionTable";
 
 export default function Wallet() {
   const { showToast } = useApp();
@@ -29,16 +29,7 @@ export default function Wallet() {
     }
   };
 
-  const buckets = earningsByMonth(txs);
-  const hasEarnings = buckets.some((b) => b.total > 0);
-  const maxE = Math.max(1, ...buckets.map((b) => b.total));
-  const ghost = [22, 34, 30, 52, 68, 90];
-  const earningsBars = buckets.map((b, i) => ({
-    m: b.m,
-    full: money(b.total),
-    h: (hasEarnings ? Math.round((b.total / maxE) * 100) : ghost[i]) + "%",
-    fill: i === buckets.length - 1 ? "var(--accent)" : "var(--hairline-strong)"
-  }));
+  const { hasEarnings, earningsBars } = buildEarningsBars(txs);
 
   return (
     <div>
@@ -85,43 +76,11 @@ export default function Wallet() {
       <div className="eyebrow" style={{ marginBottom: 12 }}>
         Transactions
       </div>
-      {txs.length === 0 ? (
-        <div className="empty">
-          <div className="empty-icon">
-            <Receipt size={20} />
-          </div>
-          <div className="empty-h">No transactions yet</div>
-          <div className="empty-p">Payouts and charges show up here.</div>
-        </div>
-      ) : (
-        <>
-          <div className="mono h-tx-grid h-tx-head">
-            <span>Ref</span>
-            <span>Date</span>
-            <span>Space</span>
-            <span className="h-tx-net-h">Amount</span>
-          </div>
-          {txs.map((t) => {
-            const credit = t.type === "CREDIT";
-            return (
-              <div key={t.id} className="h-row h-tx-grid h-tx-row">
-                <span className="mono h-tx-ref">#{t.id}</span>
-                <span className="mono h-tx-date">{fmtDate(t.createdAt)}</span>
-                <div style={{ minWidth: 0 }}>
-                  <div className="h-tx-space h-truncate">{t.space?.name ?? "—"}</div>
-                  <div className="mono h-tx-status" style={{ color: credit ? "var(--ok)" : "var(--ink-3)" }}>
-                    {t.type}
-                  </div>
-                </div>
-                <span className="mono h-tx-net">
-                  {credit ? "+" : "−"}
-                  {fmtPrice(Math.abs(t.amount))}
-                </span>
-              </div>
-            );
-          })}
-        </>
-      )}
+      <TransactionTable
+        transactions={txs}
+        emptyHeading="No transactions yet"
+        emptyText="Payouts and charges show up here."
+      />
     </div>
   );
 }

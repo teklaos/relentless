@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import DatePicker from "@/components/shared/ui/DatePicker";
+import AuthBrandPanel from "@/components/shared/ui/AuthBrandPanel";
 import { User, Mail, Phone, Landmark, ArrowRight, ArrowLeft } from "lucide-react";
 import PasswordField from "@/components/shared/ui/PasswordField";
 import { EMAIL_RE, PHONE_RE, IBAN_RE, PASSWORD_RE, PASSWORD_HINT, HOST_MIN_AGE, maxDobIso } from "@/data/format";
@@ -86,24 +87,7 @@ export default function HostRegister() {
 
   return (
     <div className="auth-wrap">
-      <div className="auth-left">
-        <div className="auth-brand">
-          <div className="auth-mark">
-            <div className="auth-mark-text">
-              RELENT<span style={{ color: "var(--accent)" }}>LESS</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="auth-pitch">
-          <h1 className="auth-pitch-h">
-            Book the space
-            <br />
-            <em>Make the work</em>
-          </h1>
-          <p className="auth-pitch-p">Studios, courts and halls. No membership.</p>
-        </div>
-      </div>
+      <AuthBrandPanel />
 
       <div className="auth-right">
         <form
@@ -134,9 +118,7 @@ export default function HostRegister() {
               <div className="field">
                 <div className="field-label">
                   <span>Username</span>
-                  {touched.username && form.username.length < 3 && (
-                    <span style={{ color: "var(--danger)" }}>min 3 chars</span>
-                  )}
+                  {touched.username && form.username.length < 3 && <span className="field-err">min 3 chars</span>}
                 </div>
                 <div className="field-input">
                   <User size={15} />
@@ -151,9 +133,7 @@ export default function HostRegister() {
               <div className="field">
                 <div className="field-label">
                   <span>Email</span>
-                  {touched.email && !EMAIL_RE.test(form.email) && (
-                    <span style={{ color: "var(--danger)" }}>invalid email</span>
-                  )}
+                  {touched.email && !EMAIL_RE.test(form.email) && <span className="field-err">invalid email</span>}
                 </div>
                 <div className="field-input">
                   <Mail size={15} />
@@ -170,7 +150,7 @@ export default function HostRegister() {
                 <div className="field-label">
                   <span>Password</span>
                   {touched.password && !PASSWORD_RE.test(form.password) && (
-                    <span style={{ color: "var(--danger)" }}>{PASSWORD_HINT}</span>
+                    <span className="field-err">{PASSWORD_HINT}</span>
                   )}
                 </div>
                 <PasswordField
@@ -183,7 +163,7 @@ export default function HostRegister() {
               <div className="field">
                 <div className="field-label">
                   <span>Date of birth</span>
-                  {touched.dob && !form.dob && <span style={{ color: "var(--danger)" }}>required</span>}
+                  {touched.dob && !form.dob && <span className="field-err">required</span>}
                 </div>
                 <DatePicker
                   value={form.dob}
@@ -201,7 +181,7 @@ export default function HostRegister() {
                 <div className="field-label">
                   <span>First name</span>
                   {touched.firstName && form.firstName.trim().length < 2 && (
-                    <span style={{ color: "var(--danger)" }}>min 2 chars</span>
+                    <span className="field-err">min 2 chars</span>
                   )}
                 </div>
                 <div className="field-input">
@@ -218,7 +198,7 @@ export default function HostRegister() {
                 <div className="field-label">
                   <span>Last name</span>
                   {touched.lastName && form.lastName.trim().length < 2 && (
-                    <span style={{ color: "var(--danger)" }}>min 2 chars</span>
+                    <span className="field-err">min 2 chars</span>
                   )}
                 </div>
                 <div className="field-input">
@@ -240,7 +220,7 @@ export default function HostRegister() {
                 <div className="field-label">
                   <span>Mobile phone</span>
                   {touched.phoneNumber && !PHONE_RE.test(form.phoneNumber) && (
-                    <span style={{ color: "var(--danger)" }}>+ and 7–15 digits</span>
+                    <span className="field-err">+ and 7–15 digits</span>
                   )}
                 </div>
                 <div className="field-input">
@@ -256,9 +236,7 @@ export default function HostRegister() {
               <div className="field">
                 <div className="field-label">
                   <span>Payout IBAN</span>
-                  {touched.iban && !IBAN_RE.test(form.iban) && (
-                    <span style={{ color: "var(--danger)" }}>invalid IBAN</span>
-                  )}
+                  {touched.iban && !IBAN_RE.test(form.iban) && <span className="field-err">invalid IBAN</span>}
                 </div>
                 <div className="field-input">
                   <Landmark size={15} />
@@ -313,14 +291,18 @@ export default function HostRegister() {
                 <span>I agree to the host terms and confirm I am authorised to receive payouts to this account.</span>
               </label>
               {touched.acceptedTerms && !form.acceptedTerms && (
-                <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 8 }}>
+                <div className="field-err" style={{ fontSize: 12, marginTop: 8 }}>
                   You must accept the host terms.
                 </div>
               )}
             </>
           )}
 
-          {err.form && <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 16 }}>{err.form}</div>}
+          {err.form && (
+            <div className="field-err" style={{ fontSize: 12, marginTop: 16 }}>
+              {err.form}
+            </div>
+          )}
 
           <div className="host-foot">
             <button type="button" className="btn lg host-back" onClick={back} disabled={loading}>

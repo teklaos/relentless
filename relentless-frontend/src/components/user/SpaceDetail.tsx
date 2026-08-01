@@ -4,13 +4,14 @@ import "./SpaceDetail.css";
 import { useEffect, useState } from "react";
 import Placeholder from "@/components/shared/ui/Placeholder";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
+import Stars from "@/components/shared/ui/Stars";
 import BookingWidget from "./BookingWidget";
 import { CAT_ICON_COMPONENT, CAT_ICON_FALLBACK, AMEN_ICON_COMPONENT } from "@/lib/iconMap";
 import { Space, Review } from "@/data/types";
 import { fmtDateShort } from "@/data/format";
 import { fetchReviews, imageUrl } from "@/lib/api";
 import Image from "next/image";
-import { Bookmark, X, MapPin, Star } from "lucide-react";
+import { Bookmark, X, MapPin } from "lucide-react";
 
 interface SpaceDetailProps {
   space: Space;
@@ -146,7 +147,6 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
               <div className="detail-section-h">AMENITIES - {amens.length} ITEMS</div>
               <div className="amenity-grid">
                 {amens.map((a) => {
-                  if (!a) return null;
                   const AmenIcon = AMEN_ICON_COMPONENT[a.name] ?? AMEN_ICON_COMPONENT["_fallback"];
                   return (
                     <div key={a.id} className="amenity">
@@ -192,14 +192,7 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
                         </div>
                       </div>
                       <div className="review-rating">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            size={11}
-                            fill={i < r.rating ? "currentColor" : "none"}
-                            strokeWidth={i < r.rating ? 0 : 1.5}
-                          />
-                        ))}
+                        <Stars rating={r.rating} size={11} variant="outline" />
                       </div>
                     </div>
                     <div className="review-body">{r.comment}</div>

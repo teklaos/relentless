@@ -3,24 +3,13 @@
 import "./Listings.css";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Plus,
-  Star,
-  Home,
-  Activity,
-  Mic,
-  Camera,
-  Music,
-  Headphones,
-  Target,
-  Trash2,
-  type LucideIcon
-} from "lucide-react";
+import { Plus, Star, Home, Trash2 } from "lucide-react";
 import { useHost } from "@/context/HostContext";
 import Placeholder from "@/components/shared/ui/Placeholder";
 import Modal from "@/components/shared/ui/Modal";
 import { imageUrl } from "@/lib/api";
 import { fmtPrice } from "@/data/format";
+import { CAT_ICON_COMPONENT, CAT_ICON_FALLBACK } from "@/lib/iconMap";
 
 const chipDefs: [string, string][] = [
   ["ACTIVE", "Visible"],
@@ -28,22 +17,13 @@ const chipDefs: [string, string][] = [
   ["ALL", "All"]
 ];
 
-const CAT_ICON: Record<string, LucideIcon> = {
-  "Dancing Studio": Activity,
-  "Vocal Studio": Mic,
-  Photography: Camera,
-  "Music Studio": Music,
-  "Podcast Booth": Headphones,
-  "Rehearsal Hall": Target
-};
-
 export default function Listings() {
   const host = useHost();
   const router = useRouter();
   const lf = host.listingFilter;
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const deleteTarget = host.spaces.find((s) => s.id === deleteId);
+  const deleteTarget = deleteId != null ? host.space(deleteId) : undefined;
 
   const confirmDelete = async () => {
     if (deleteId == null) return;
@@ -104,7 +84,7 @@ export default function Listings() {
             const loc = [`${s.address.street} ${s.address.streetNumber}`, s.address.city, s.address.country]
               .join(" - ")
               .toUpperCase();
-            const CatIcon = CAT_ICON[s.category.name] ?? Activity;
+            const CatIcon = CAT_ICON_COMPONENT[s.category.id] ?? CAT_ICON_FALLBACK;
             const cover = s.imageKeys?.[0];
             return (
               <div key={s.id} className="h-card h-card-hover h-list-card">

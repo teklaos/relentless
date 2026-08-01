@@ -2,46 +2,17 @@
 
 import "./BottomNav.css";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  Compass,
-  Bookmark,
-  History,
-  User,
-  LayoutDashboard,
-  LayoutGrid,
-  Wallet,
-  Star,
-  type LucideIcon
-} from "lucide-react";
+import { User } from "lucide-react";
 import { useApp } from "@/context/AppContext";
-
-type NavItem = { path: string; label: string; Icon: LucideIcon };
-
-const GUEST_ITEMS: NavItem[] = [
-  { path: "/explore", label: "Explore", Icon: Compass },
-  { path: "/saved", label: "Saved", Icon: Bookmark },
-  { path: "/bookings", label: "Bookings", Icon: History },
-  { path: "/profile", label: "Profile", Icon: User }
-];
-
-const HOST_ITEMS: NavItem[] = [
-  { path: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
-  { path: "/listings", label: "Listings", Icon: LayoutGrid },
-  { path: "/bookings", label: "Bookings", Icon: History },
-  { path: "/wallet", label: "Wallet", Icon: Wallet },
-  { path: "/reviews", label: "Reviews", Icon: Star },
-  { path: "/profile", label: "Profile", Icon: User }
-];
-
-const ANON_ITEMS: NavItem[] = [{ path: "/explore", label: "Explore", Icon: Compass }];
+import { navItemsFor, isActivePath } from "@/lib/navItems";
 
 export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, auth } = useApp();
-  const items = !auth ? ANON_ITEMS : user?.role === "HOST" ? HOST_ITEMS : GUEST_ITEMS;
+  const items = navItemsFor(auth, user?.role);
 
-  const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
+  const isActive = (path: string) => isActivePath(pathname, path);
 
   return (
     <nav className="bottom-nav">
