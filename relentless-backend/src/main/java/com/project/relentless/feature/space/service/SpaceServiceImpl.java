@@ -87,6 +87,10 @@ public class SpaceServiceImpl implements SpaceService {
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Space not found"));
 
+    if (!space.getStatus().equals(SpaceStatus.ACTIVE)) {
+      return List.of();
+    }
+
     var hours =
         space.getWorkingHours().stream()
             .filter(wh -> wh.getDayOfWeek() == date.getDayOfWeek())
@@ -146,7 +150,7 @@ public class SpaceServiceImpl implements SpaceService {
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Space not found"));
 
-    if (space.getStatus().equals(SpaceStatus.DELETED)) {
+    if (!space.getStatus().equals(SpaceStatus.ACTIVE)) {
       throw new EntityNotFoundException("Space not found");
     }
 
@@ -166,6 +170,10 @@ public class SpaceServiceImpl implements SpaceService {
         spaceRepository
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Space not found"));
+
+    if (!space.getStatus().equals(SpaceStatus.ACTIVE)) {
+      throw new EntityNotFoundException("Space not found");
+    }
 
     user.getSavedSpaces().remove(space);
     userRepository.save(user);
