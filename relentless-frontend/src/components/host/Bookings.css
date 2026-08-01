@@ -62,12 +62,6 @@
   border-radius: 9px;
 }
 
-.h-led-empty {
-  padding: 60px 18px;
-  text-align: center;
-  color: var(--ink-3);
-}
-
 .h-led-grid {
   display: grid;
   grid-template-columns: 90px 1.4fr 1.3fr 110px 130px;

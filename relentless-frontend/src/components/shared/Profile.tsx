@@ -2,6 +2,7 @@
 
 import "./Profile.css";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Booking, User } from "@/data/types";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import Modal from "@/components/shared/ui/Modal";
@@ -18,6 +19,7 @@ interface ProfileProps {
 }
 
 export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
+  const router = useRouter();
   const { onUpdateProfile, showToast } = useApp();
   const [twoFactor, setTwoFactor] = useState(true);
   const [notifications, setNotifications] = useState(true);
@@ -180,7 +182,7 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
               </button>
             </div>
 
-            <div className="setting">
+            <div className="setting" onClick={() => router.push("/profile/privacy")} style={{ cursor: "pointer" }}>
               <div className="setting-l">
                 <span className="setting-t">Data & privacy</span>
                 <span className="setting-d">Manage your personal data</span>

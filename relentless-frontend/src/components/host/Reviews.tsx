@@ -1,6 +1,7 @@
 "use client";
 
 import "./Reviews.css";
+import { Star } from "lucide-react";
 import { useHost } from "@/context/HostContext";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import { fmtDate, initials } from "@/data/format";
@@ -50,46 +51,58 @@ export default function Reviews() {
         </div>
       </div>
 
-      <div className="h-chips">
-        {chips.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => host.setReviewFilter(c.id)}
-            className={`h-chip ${host.reviewFilter === c.id ? "active" : ""}`}
-          >
-            {c.label}
-          </button>
-        ))}
+      <div className="h-book-bar">
+        <div className="h-tabs">
+          {chips.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => host.setReviewFilter(c.id)}
+              className={`mono h-tab ${host.reviewFilter === c.id ? "active" : ""}`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="h-rev-grid">
-        {filtered.map((r) => (
-          <div key={r.id} className="h-card h-rev-card">
-            <div className="h-rev-head">
-              <AvatarImg
-                imageKey={r.user.profileImageKey}
-                name={r.user.username}
-                size={36}
-                radius={3}
-                fallback={
-                  <div className="mono h-avatar-box" style={{ width: 36, height: 36, fontSize: 12 }}>
-                    {initials(r.user.username)}
-                  </div>
-                }
-              />
-              <div className="h-rev-meta">
-                <div className="h-rev-guest">{r.user.username}</div>
-                <div className="mono h-rev-space">{host.spaceName(r.space.id)}</div>
-              </div>
-              <Stars rating={r.rating} size={13} />
-            </div>
-            <div className="h-rev-body">{r.comment}</div>
-            <div className="h-rev-foot">
-              <span className="mono h-rev-date">{fmtDate(r.createdAt.slice(0, 10))}</span>
-            </div>
+      {filtered.length === 0 ? (
+        <div className="empty">
+          <div className="empty-icon">
+            <Star size={20} />
           </div>
-        ))}
-      </div>
+          <div className="empty-h">No reviews yet</div>
+          <div className="empty-p">Reviews from guests show up here after their stay.</div>
+        </div>
+      ) : (
+        <div className="h-rev-grid">
+          {filtered.map((r) => (
+            <div key={r.id} className="h-card h-rev-card">
+              <div className="h-rev-head">
+                <AvatarImg
+                  imageKey={r.user.profileImageKey}
+                  name={r.user.username}
+                  size={36}
+                  radius={3}
+                  fallback={
+                    <div className="mono h-avatar-box" style={{ width: 36, height: 36, fontSize: 12 }}>
+                      {initials(r.user.username)}
+                    </div>
+                  }
+                />
+                <div className="h-rev-meta">
+                  <div className="h-rev-guest">{r.user.username}</div>
+                  <div className="mono h-rev-space">{host.spaceName(r.space.id)}</div>
+                </div>
+                <Stars rating={r.rating} size={13} />
+              </div>
+              <div className="h-rev-body">{r.comment}</div>
+              <div className="h-rev-foot">
+                <span className="mono h-rev-date">{fmtDate(r.createdAt.slice(0, 10))}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

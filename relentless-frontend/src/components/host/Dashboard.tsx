@@ -2,7 +2,7 @@
 
 import "./Dashboard.css";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Plus, Calendar } from "lucide-react";
 import { useHost } from "@/context/HostContext";
 import { dayNum, money, monShort, earningsByMonth } from "@/data/format";
 
@@ -49,8 +49,8 @@ export default function Dashboard() {
       <div className="h-kpis">
         {kpis.map((k) => (
           <div key={k.label} className="h-kpi">
-            <div className="eyebrow h-kpi-label">{k.label}</div>
             <div className="h-kpi-value">{k.value}</div>
+            <div className="eyebrow h-kpi-label">{k.label}</div>
           </div>
         ))}
       </div>
@@ -58,7 +58,7 @@ export default function Dashboard() {
       <div className="h-sections">
         <div className="h-card" style={{ padding: 18 }}>
           <div className="h-flex-between" style={{ marginBottom: 18 }}>
-            <span className="eyebrow">Earnings - 6 mo</span>
+            <span className="eyebrow">Earnings - 6 months</span>
             <span onClick={() => router.push("/wallet")} className="mono h-panel-link">
               Details →
             </span>
@@ -92,7 +92,13 @@ export default function Dashboard() {
             </button>
           </div>
           {upcoming.length === 0 ? (
-            <div className="h-empty-note">No upcoming bookings.</div>
+            <div className="empty h-empty-plain">
+              <div className="empty-icon">
+                <Calendar size={20} />
+              </div>
+              <div className="empty-h">No upcoming bookings</div>
+              <div className="empty-p">When a guest books your space, it shows up here.</div>
+            </div>
           ) : (
             upcoming.map((u) => (
               <div key={u.id} className="h-up-row">

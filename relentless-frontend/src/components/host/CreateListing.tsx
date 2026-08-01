@@ -100,8 +100,8 @@ export default function CreateListing() {
     <div>
       <div className="page-header host-head">
         <h1 className="page-title">{host.editingId ? "Edit listing." : "New listing."}</h1>
-        <button onClick={cancel} className="mono h-link h-cancel">
-          Cancel ✕
+        <button onClick={cancel} className="btn mono h-cancel">
+          Cancel <X size={12} />
         </button>
       </div>
 

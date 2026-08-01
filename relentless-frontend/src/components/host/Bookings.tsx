@@ -1,6 +1,7 @@
 "use client";
 
 import "./Bookings.css";
+import { Calendar } from "lucide-react";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import { BookingTab, useHost } from "@/context/HostContext";
 import { fmtDate, initials, fmtPrice, net, statusMeta } from "@/data/format";
@@ -47,7 +48,17 @@ export default function Bookings() {
       </div>
 
       {ledgerSrc.length === 0 ? (
-        <div className="h-led-empty">Nothing here yet.</div>
+        <div className="empty">
+          <div className="empty-icon">
+            <Calendar size={20} />
+          </div>
+          <div className="empty-h">{bt === "past" ? "No past bookings yet" : "No bookings yet"}</div>
+          <div className="empty-p">
+            {bt === "past"
+              ? "Completed and cancelled bookings show up here."
+              : "When a guest books your space, it shows up here."}
+          </div>
+        </div>
       ) : (
         <div>
           <div className="mono h-led-grid h-led-head">

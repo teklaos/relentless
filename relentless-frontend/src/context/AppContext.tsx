@@ -16,7 +16,8 @@ import {
   register,
   registerHost,
   logout,
-  updateUser,
+  editUser,
+  deleteAccount,
   setUnauthorizedHandler
 } from "@/lib/api";
 import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "@/lib/auth";
@@ -63,6 +64,7 @@ interface AppContextValue {
     acceptedTerms: boolean;
   }) => Promise<void>;
   onSignOut: () => void;
+  onDeleteAccount: () => Promise<void>;
   onSave: (id: number) => void;
   onBook: (params: { space: Space; startIso: string; endIso: string; total: number; duration: number }) => void;
   onOpen: (space: Space) => void;
@@ -221,6 +223,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     router.push("/login");
   }, [router]);
 
+  const onDeleteAccount = useCallback(async () => {
+    await deleteAccount();
+    onSignOut();
+  }, [onSignOut]);
+
   const onSave = useCallback(
     async (id: number) => {
       if (!auth) {
@@ -329,7 +336,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const onUpdateProfile = useCallback(
     async (payload: UpdateUserPayload) => {
       if (!user) return;
-      const updated = await updateUser(user.id, payload);
+      const updated = await editUser(payload);
       setUser(updated);
       showToast("PROFILE UPDATED");
     },
@@ -354,6 +361,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         signUp,
         signUpHost,
         onSignOut,
+        onDeleteAccount,
         onSave,
         onBook,
         onOpen,

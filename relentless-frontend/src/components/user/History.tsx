@@ -60,8 +60,12 @@ export default function History({ bookings, onLeaveReview, onOpenSpace }: Histor
           <div className="empty-icon">
             <Calendar size={20} />
           </div>
-          <div className="empty-h">No {tab.toLowerCase()} bookings</div>
-          <div className="empty-p">When you book a space, it shows up here.</div>
+          <div className="empty-h">No {tab === "ALL" ? "" : `${tab.toLowerCase()} `}bookings</div>
+          <div className="empty-p">
+            {tab === "PAST"
+              ? "Completed and cancelled bookings show up here."
+              : "When you book a space, it shows up here."}
+          </div>
         </div>
       ) : (
         <div>

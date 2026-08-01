@@ -110,7 +110,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
   const [draft, setDraftState] = useState<Draft>(blankDraft());
   const [step, setStep] = useState(0);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [listingFilter, setListingFilter] = useState("ALL");
+  const [listingFilter, setListingFilter] = useState("ACTIVE");
   const [reviewFilter, setReviewFilter] = useState(0);
   const [bookingTab, setBookingTab] = useState<BookingTab>("upcoming");
 

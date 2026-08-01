@@ -76,7 +76,9 @@ async function request<T>(path: string, init?: RequestInit, retry = true): Promi
   }
 
   if (!res.ok) {
-    throw new Error(`${init?.method ?? "GET"} ${path} failed: ${res.status}`);
+    const text = await res.text();
+    const message = text ? (JSON.parse(text) as { message?: string }).message : undefined;
+    throw new Error(message || `${init?.method ?? "GET"} ${path} failed: ${res.status}`);
   }
   const text = await res.text();
   return (text ? JSON.parse(text) : undefined) as T;
@@ -193,11 +195,22 @@ export function debitWallet(amount: number): Promise<void> {
   });
 }
 
-export function updateUser(id: number, payload: UpdateUserPayload): Promise<User> {
-  return request<User>(`/api/users/${id}`, {
+export function editUser(payload: UpdateUserPayload): Promise<User> {
+  return request<User>("/api/users/me", {
     method: "PATCH",
     body: JSON.stringify(payload)
   });
+}
+
+export function changePassword(payload: { currentPassword: string; newPassword: string }): Promise<void> {
+  return request<void>("/api/users/me/password", {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function deleteAccount(): Promise<void> {
+  return request<void>("/api/users/me", { method: "DELETE" });
 }
 
 export async function uploadImage(file: File): Promise<string> {

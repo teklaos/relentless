@@ -1,0 +1,117 @@
+.page-header.privacy-head {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.privacy-back {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.privacy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.profile-card {
+  border: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  padding: 32px;
+}
+
+.profile-input {
+  width: 100%;
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 6px;
+  background: var(--surface, transparent);
+  color: inherit;
+}
+
+.profile-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field-label {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-3);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.field-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--hairline-strong);
+  padding: 9px 0;
+  transition: border-color 0.15s;
+}
+
+.field-input:focus-within {
+  border-color: var(--accent);
+}
+
+.field-input input {
+  width: 100%;
+  font-size: 15px;
+}
+
+.pw-toggle {
+  display: flex;
+  align-items: center;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.pw-toggle:hover {
+  color: var(--ink);
+}
+
+.privacy-copy {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-3);
+  margin: 0 0 16px;
+}
+
+.privacy-danger {
+  border-color: var(--danger);
+}
+
+.privacy-delete-btn {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.privacy-delete-btn:hover:not(:disabled) {
+  background: var(--danger);
+  color: var(--bg-elevated);
+}
+
+.privacy-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .privacy-grid {
+    grid-template-columns: 1fr;
+  }
+}
