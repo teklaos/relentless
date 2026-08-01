@@ -1,4 +1,14 @@
-import { Compass, Bookmark, History, User, LayoutDashboard, LayoutGrid, Wallet, Star, type LucideIcon } from "lucide-react";
+import {
+  Compass,
+  Bookmark,
+  History,
+  User,
+  LayoutDashboard,
+  LayoutGrid,
+  Wallet,
+  Star,
+  type LucideIcon
+} from "lucide-react";
 import type { User as AppUser } from "@/data/types";
 
 export type NavItem = { path: string; label: string; Icon: LucideIcon };

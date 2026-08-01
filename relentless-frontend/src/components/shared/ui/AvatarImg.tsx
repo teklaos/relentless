@@ -23,7 +23,14 @@ export default function AvatarImg({ imageKey, name, size, radius = "50%", style,
     return (
       <div
         className="mono avatar-fallback"
-        style={{ width: size, height: size, fontSize: Math.round(size / 3), borderRadius: radius, ...style }}
+        style={{
+          width: size,
+          height: size,
+          fontSize: Math.round(size / 3),
+          borderRadius: radius,
+          ...style,
+          ...(style?.display === "inline-block" ? { display: "inline-flex" } : {})
+        }}
       >
         {initials(name)}
       </div>

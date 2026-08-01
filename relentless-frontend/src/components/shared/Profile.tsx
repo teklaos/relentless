@@ -316,7 +316,9 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
                 <input
                   className="profile-input"
                   value={form.iban}
-                  onChange={(e) => setForm((f) => ({ ...f, iban: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "") }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, iban: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "") }))
+                  }
                 />
               </>
             )}
