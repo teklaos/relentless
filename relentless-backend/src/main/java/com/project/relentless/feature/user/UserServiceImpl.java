@@ -3,6 +3,7 @@ package com.project.relentless.feature.user;
 import com.project.relentless.feature.auth.AuthService;
 import com.project.relentless.feature.auth.details.CustomUserDetails;
 import com.project.relentless.feature.auth.refresh.RefreshTokenService;
+import com.project.relentless.feature.image.ImageService;
 import com.project.relentless.feature.user.dto.request.ChangePasswordRequest;
 import com.project.relentless.feature.user.dto.request.EditUserRequest;
 import com.project.relentless.feature.user.dto.response.UserResponse;
@@ -10,12 +11,14 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -24,6 +27,7 @@ public class UserServiceImpl implements UserService {
   private final UserMapper userMapper;
   private final AuthService authService;
   private final RefreshTokenService refreshTokenService;
+  private final ImageService imageService;
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -70,8 +74,17 @@ public class UserServiceImpl implements UserService {
     if (request.dateOfBirth() != null) {
       user.setDateOfBirth(request.dateOfBirth());
     }
-    if (request.profileImageKey() != null) {
+    if (request.profileImageKey() != null
+        && !request.profileImageKey().equals(user.getProfileImageKey())) {
+      String oldKey = user.getProfileImageKey();
       user.setProfileImageKey(request.profileImageKey());
+      if (oldKey != null) {
+        try {
+          imageService.deleteByKey(oldKey);
+        } catch (Exception ex) {
+          log.warn("Failed to delete orphaned image {}: {}", oldKey, ex.getMessage());
+        }
+      }
     }
 
     if (user.getRole().equals(Role.HOST)) {

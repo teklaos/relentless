@@ -3,6 +3,7 @@ package com.project.relentless.feature.space.service;
 import com.project.relentless.feature.auth.AuthService;
 import com.project.relentless.feature.booking.BookingStatus;
 import com.project.relentless.feature.booking.repository.BookingRepository;
+import com.project.relentless.feature.image.ImageService;
 import com.project.relentless.feature.space.SpaceStatus;
 import com.project.relentless.feature.space.dto.request.CreateSpaceRequest;
 import com.project.relentless.feature.space.dto.request.EditSpaceRequest;
@@ -27,9 +28,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SpaceServiceImpl implements SpaceService {
@@ -43,6 +46,7 @@ public class SpaceServiceImpl implements SpaceService {
   private final AddressMapper addressMapper;
   private final AuthService authService;
   private final WorkingHoursMapper workingHoursMapper;
+  private final ImageService imageService;
 
   private static final int SLOT_MINUTES = 30;
   private static final int MIN_BOOKING_LEAD_HOURS = 2;
@@ -244,7 +248,16 @@ public class SpaceServiceImpl implements SpaceService {
       space.setWorkingHours(workingHoursMapper.toWorkingHours(request.workingHours()));
     }
     if (request.imageKeys() != null) {
+      List<String> oldKeys = new ArrayList<>(space.getImageKeys());
+      oldKeys.removeAll(request.imageKeys());
       space.setImageKeys(request.imageKeys());
+      for (String key : oldKeys) {
+        try {
+          imageService.deleteByKey(key);
+        } catch (Exception ex) {
+          log.warn("Failed to delete orphaned image {}: {}", key, ex.getMessage());
+        }
+      }
     }
 
     if (request.categoryId() != null) {

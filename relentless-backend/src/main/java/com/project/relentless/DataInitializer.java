@@ -70,7 +70,6 @@ public class DataInitializer {
             .passwordHash(passwordEncoder.encode("P@ssw0rd"))
             .email("user@gmail.com")
             .dateOfBirth(LocalDate.of(2005, 1, 12))
-            .profileImageKey("avatar.jpg")
             .isDeleted(false)
             .build();
 
