@@ -1,12 +1,26 @@
 "use client";
 
 import "./Listings.css";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Star, Home, Activity, Mic, Camera, Music, Headphones, Target, type LucideIcon } from "lucide-react";
+import {
+  Plus,
+  Star,
+  Home,
+  Activity,
+  Mic,
+  Camera,
+  Music,
+  Headphones,
+  Target,
+  Trash2,
+  type LucideIcon
+} from "lucide-react";
 import { useHost } from "@/context/HostContext";
 import Placeholder from "@/components/shared/ui/Placeholder";
+import Modal from "@/components/shared/ui/Modal";
 import { imageUrl } from "@/lib/api";
-import { fmtPrice, statusMeta } from "@/data/format";
+import { fmtPrice } from "@/data/format";
 
 const chipDefs: [string, string][] = [
   ["ACTIVE", "Visible"],
@@ -27,6 +41,17 @@ export default function Listings() {
   const host = useHost();
   const router = useRouter();
   const lf = host.listingFilter;
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const deleteTarget = host.spaces.find((s) => s.id === deleteId);
+
+  const confirmDelete = async () => {
+    if (deleteId == null) return;
+    setDeleting(true);
+    await host.removeSpace(deleteId);
+    setDeleting(false);
+    setDeleteId(null);
+  };
   const counts: Record<string, number> = {
     ALL: host.spaces.length,
     ACTIVE: host.spaces.filter((s) => s.status === "ACTIVE").length,
@@ -74,7 +99,6 @@ export default function Listings() {
       ) : (
         <div className="h-listing-grid">
           {cards.map((s) => {
-            const sm = statusMeta(s.status);
             const isDeleted = s.status === "DELETED";
             const isActive = s.status === "ACTIVE";
             const loc = [`${s.address.street} ${s.address.streetNumber}`, s.address.city, s.address.country]
@@ -97,10 +121,6 @@ export default function Listings() {
                   }
                 >
                   {!cover && <Placeholder />}
-                  <span className="mono h-list-tag h-list-badge" style={{ color: sm.fg }}>
-                    <span className="h-list-dot" style={{ background: sm.dot }} />
-                    {s.status}
-                  </span>
                   <span className="mono h-list-tag h-list-cat">
                     <CatIcon size={10} strokeWidth={1.7} style={{ verticalAlign: "middle" }} />
                     {s.category.name}
@@ -139,6 +159,13 @@ export default function Listings() {
                         <button onClick={() => host.toggleStatus(s.id)} className="h-btn-outline h-list-btn">
                           {isActive ? "Hide" : "Show"}
                         </button>
+                        <button
+                          onClick={() => setDeleteId(s.id)}
+                          className="h-btn-outline h-list-btn h-list-btn-danger"
+                          aria-label="Delete listing"
+                        >
+                          <Trash2 size={13} />
+                        </button>
                       </>
                     )}
                   </div>
@@ -147,6 +174,28 @@ export default function Listings() {
             );
           })}
         </div>
+      )}
+
+      {deleteTarget && (
+        <Modal
+          title="Delete listing"
+          subtitle="This cannot be undone"
+          onClose={() => !deleting && setDeleteId(null)}
+          footer={
+            <>
+              <button className="btn" disabled={deleting} onClick={() => setDeleteId(null)}>
+                CANCEL
+              </button>
+              <button className="btn h-list-btn-danger" disabled={deleting} onClick={confirmDelete}>
+                {deleting ? "DELETING…" : "DELETE LISTING"}
+              </button>
+            </>
+          }
+        >
+          <p>
+            Permanently delete <b>{deleteTarget.name}</b>? Guests will no longer be able to book this space.
+          </p>
+        </Modal>
       )}
     </div>
   );

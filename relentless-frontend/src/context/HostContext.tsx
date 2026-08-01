@@ -10,13 +10,13 @@ import {
   AmenitySummary,
   EditSpacePayload,
   Draft,
-  HostBooking,
   WalletTransaction
 } from "@/data/types";
 import { blankDraft, defaultHours, hoursFromSpace } from "@/data/format";
 import {
   changeSpaceStatus,
   createSpace,
+  deleteSpace,
   editSpace,
   fetchAmenities,
   fetchCategories,
@@ -31,30 +31,12 @@ import {
 const draftWorkingHours = (hours: Draft["hours"]) =>
   hours.filter((h) => h.on).map((h) => ({ dayOfWeek: h.dayOfWeek, openTime: h.open, closeTime: h.close }));
 
-const pad2 = (n: number) => String(n).padStart(2, "0");
-
-const toHostBooking = (b: Booking): HostBooking => {
-  const start = new Date(b.startTime);
-  const end = new Date(b.endTime);
-  return {
-    id: b.id,
-    username: b.user.username,
-    profileImageKey: b.user.profileImageKey,
-    spaceId: b.space.id,
-    status: b.status,
-    date: b.startTime.slice(0, 10),
-    start: `${pad2(start.getHours())}:${pad2(start.getMinutes())}`,
-    end: `${pad2(end.getHours())}:${pad2(end.getMinutes())}`,
-    totalPrice: b.totalPrice
-  };
-};
-
 export type BookingTab = "upcoming" | "past";
 
 export interface HostContextValue {
   isMobile: boolean;
   spaces: Space[];
-  bookings: HostBooking[];
+  bookings: Booking[];
   reviews: Review[];
   categories: Category[];
   amenities: AmenitySummary[];
@@ -75,6 +57,7 @@ export interface HostContextValue {
 
   setListingFilter: (f: string) => void;
   toggleStatus: (id: number) => void;
+  removeSpace: (id: number) => Promise<void>;
 
   beginCreate: () => void;
   beginEdit: (id: number) => void;
@@ -101,7 +84,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
 
   const [isMobile, setIsMobile] = useState(false);
   const [spaces, setSpaces] = useState<Space[]>([]);
-  const [bookings, setBookings] = useState<HostBooking[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [amenities, setAmenities] = useState<AmenitySummary[]>([]);
@@ -139,7 +122,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
       .then((d) => active && setSpaces(d))
       .catch(() => active && setSpaces([]));
     fetchHostedBookings()
-      .then((d) => active && setBookings(d.map(toHostBooking)))
+      .then((d) => active && setBookings(d))
       .catch(() => active && setBookings([]));
     fetchHostedReviews()
       .then((d) => active && setReviews(d))
@@ -172,6 +155,19 @@ export function HostProvider({ children }: { children: ReactNode }) {
       }
     },
     [spaces, showToast]
+  );
+
+  const removeSpace = useCallback(
+    async (id: number) => {
+      try {
+        await deleteSpace(id);
+        setSpaces((sps) => sps.filter((s) => s.id !== id));
+        showToast("LISTING DELETED");
+      } catch {
+        showToast("COULD NOT DELETE LISTING");
+      }
+    },
+    [showToast]
   );
 
   const beginCreate = useCallback(() => {
@@ -366,6 +362,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
       setBookingTab,
       setListingFilter,
       toggleStatus,
+      removeSpace,
       beginCreate,
       beginEdit,
       setDraft,
@@ -401,6 +398,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
       space,
       spaceName,
       toggleStatus,
+      removeSpace,
       beginCreate,
       beginEdit,
       setDraft,

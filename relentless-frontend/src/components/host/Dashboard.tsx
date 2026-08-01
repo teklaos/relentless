@@ -4,7 +4,7 @@ import "./Dashboard.css";
 import { useRouter } from "next/navigation";
 import { Plus, Calendar } from "lucide-react";
 import { useHost } from "@/context/HostContext";
-import { dayNum, money, monShort, earningsByMonth } from "@/data/format";
+import { dayNum, fmtTimeRange, money, monShort, earningsByMonth } from "@/data/format";
 
 export default function Dashboard() {
   const host = useHost();
@@ -31,7 +31,9 @@ export default function Dashboard() {
     fill: i === buckets.length - 1 ? "var(--accent)" : "var(--hairline-strong)"
   }));
 
-  const confirmed = host.bookings.filter((b) => b.status === "CONFIRMED").sort((a, b) => a.date.localeCompare(b.date));
+  const confirmed = host.bookings
+    .filter((b) => b.status === "CONFIRMED")
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
   const upcoming = confirmed.slice(0, 3);
 
   return (
@@ -103,14 +105,14 @@ export default function Dashboard() {
             upcoming.map((u) => (
               <div key={u.id} className="h-up-row">
                 <div className="mono h-up-date">
-                  <div className="h-up-day">{dayNum(u.date)}</div>
-                  <div className="h-up-mon">{monShort(u.date)}</div>
+                  <div className="h-up-day">{dayNum(u.startTime.slice(0, 10))}</div>
+                  <div className="h-up-mon">{monShort(u.startTime.slice(0, 10))}</div>
                 </div>
                 <div className="h-up-div" />
                 <div className="h-up-main">
-                  <div className="h-up-name h-truncate">{host.spaceName(u.spaceId)}</div>
+                  <div className="h-up-name h-truncate">{u.space.name}</div>
                   <div className="mono h-up-meta">
-                    {u.start}–{u.end} - {u.username}
+                    {fmtTimeRange(u.startTime, u.endTime)} - {u.user.username}
                   </div>
                 </div>
               </div>

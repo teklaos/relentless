@@ -105,14 +105,14 @@ export default function Auth({ mode }: AuthProps) {
               className={`auth-tab ${mode === "login" ? "active" : ""}`}
               onClick={() => router.push("/login")}
             >
-              Sign in
+              Log in
             </button>
             <button
               type="button"
               className={`auth-tab ${mode === "register" ? "active" : ""}`}
               onClick={() => router.push("/register")}
             >
-              Register
+              Sign up
             </button>
           </div>
 

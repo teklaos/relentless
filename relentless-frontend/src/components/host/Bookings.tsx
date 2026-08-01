@@ -4,7 +4,7 @@ import "./Bookings.css";
 import { Calendar } from "lucide-react";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import { BookingTab, useHost } from "@/context/HostContext";
-import { fmtDate, initials, fmtPrice, net, statusMeta } from "@/data/format";
+import { fmtDate, fmtTimeRange, initials, fmtPrice, net, statusMeta } from "@/data/format";
 
 const tabDefs: [BookingTab, string][] = [
   ["upcoming", "Upcoming"],
@@ -15,10 +15,12 @@ export default function Bookings() {
   const host = useHost();
   const bt = host.bookingTab;
 
-  const upB = host.bookings.filter((b) => b.status === "CONFIRMED").sort((a, b) => a.date.localeCompare(b.date));
+  const upB = host.bookings
+    .filter((b) => b.status === "CONFIRMED")
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
   const pastB = host.bookings
     .filter((b) => b.status === "COMPLETED" || b.status === "CANCELLED")
-    .sort((a, b) => b.date.localeCompare(a.date));
+    .sort((a, b) => b.startTime.localeCompare(a.startTime));
   const counts: Record<BookingTab, number> = {
     upcoming: upB.length,
     past: pastB.length
@@ -75,27 +77,25 @@ export default function Bookings() {
                 <span className="mono h-led-ref">#{b.id}</span>
                 <div className="h-led-guest-cell">
                   <AvatarImg
-                    imageKey={b.profileImageKey}
-                    name={b.username}
+                    imageKey={b.user.profileImageKey}
+                    name={b.user.username}
                     size={30}
                     radius={3}
                     style={{ flexShrink: 0 }}
                     fallback={
                       <div className="mono h-avatar-box" style={{ width: 30, height: 30, fontSize: 10 }}>
-                        {initials(b.username)}
+                        {initials(b.user.username)}
                       </div>
                     }
                   />
                   <div style={{ minWidth: 0 }}>
-                    <div className="h-led-guest h-truncate">{b.username}</div>
-                    <div className="mono h-led-space h-truncate">{host.spaceName(b.spaceId)}</div>
+                    <div className="h-led-guest h-truncate">{b.user.username}</div>
+                    <div className="mono h-led-space h-truncate">{b.space.name}</div>
                   </div>
                 </div>
                 <div className="mono h-led-when">
-                  <div>{fmtDate(b.date)}</div>
-                  <div className="h-led-when-sub">
-                    {b.start}–{b.end}
-                  </div>
+                  <div>{fmtDate(b.startTime)}</div>
+                  <div className="h-led-when-sub">{fmtTimeRange(b.startTime, b.endTime)}</div>
                 </div>
                 <span className="mono h-led-keep">{fmtPrice(net(b.totalPrice))}</span>
                 <span className="mono h-led-status" style={{ color: sm.fg }}>

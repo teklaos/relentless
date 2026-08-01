@@ -20,8 +20,8 @@ export default function Reviews() {
     };
   });
 
-  const revSpaceIds = [...new Set(allRev.map((r) => r.space.id))];
-  const chips = [{ id: 0, label: "All spaces" }, ...revSpaceIds.map((id) => ({ id, label: host.spaceName(id) }))];
+  const revSpaces = [...new Map(allRev.map((r) => [r.space.id, r.space.name])).entries()];
+  const chips = [{ id: 0, label: "All spaces" }, ...revSpaces.map(([id, label]) => ({ id, label }))];
   const filtered = host.reviewFilter === 0 ? allRev : allRev.filter((r) => r.space.id === host.reviewFilter);
 
   return (
@@ -91,7 +91,7 @@ export default function Reviews() {
                 />
                 <div className="h-rev-meta">
                   <div className="h-rev-guest">{r.user.username}</div>
-                  <div className="mono h-rev-space">{host.spaceName(r.space.id)}</div>
+                  <div className="mono h-rev-space">{r.space.name}</div>
                 </div>
                 <Stars rating={r.rating} size={13} />
               </div>

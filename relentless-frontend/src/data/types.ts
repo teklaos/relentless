@@ -160,18 +160,6 @@ export interface WorkingHoursPayload {
   closeTime: string;
 }
 
-export interface HostBooking {
-  id: number;
-  username: string;
-  profileImageKey: string | null;
-  spaceId: number;
-  date: string;
-  start: string;
-  end: string;
-  status: BookingStatus;
-  totalPrice: number;
-}
-
 export interface Draft {
   name: string;
   category: string;

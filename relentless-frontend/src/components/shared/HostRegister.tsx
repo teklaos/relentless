@@ -335,7 +335,7 @@ export default function HostRegister() {
 
           <div className="auth-host-row">
             <button type="button" className="auth-link" onClick={() => router.push("/login")}>
-              Sign in <ArrowRight size={12} />
+              Log in <ArrowRight size={12} />
             </button>
           </div>
         </form>
