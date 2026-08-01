@@ -70,7 +70,7 @@ public class DataInitializer {
             .passwordHash(passwordEncoder.encode("P@ssw0rd"))
             .email("user@gmail.com")
             .dateOfBirth(LocalDate.of(2005, 1, 12))
-            .isDeleted(false)
+            .profileImageKey("avatar.jpg")
             .build();
 
     var host =
@@ -83,6 +83,7 @@ public class DataInitializer {
             .phoneNumber("+48123456789")
             .iban("PL61109010140000071219812874")
             .dateOfBirth(LocalDate.of(2004, 11, 20))
+            .dateAcceptedTerms(LocalDate.of(2026, 2, 18))
             .role(Role.HOST)
             .isDeleted(false)
             .build();
@@ -128,6 +129,7 @@ public class DataInitializer {
             .pricePerHour(new BigDecimal("50.00"))
             .publishedOn(LocalDate.of(2025, 12, 1))
             .workingHours(workingHours)
+            .imageKeys(List.of("dance.webp"))
             .build();
 
     var space2 =
@@ -146,6 +148,7 @@ public class DataInitializer {
             .pricePerHour(new BigDecimal("70.00"))
             .publishedOn(LocalDate.of(2025, 11, 15))
             .workingHours(workingHours)
+            .imageKeys(List.of("vocal.webp"))
             .build();
 
     space1.setHost(host);
