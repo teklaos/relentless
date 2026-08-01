@@ -10,7 +10,7 @@ public interface WalletService {
 
   List<TransactionResponse> getTransactionsByCurrentUser();
 
-  void recordCredit(Long bookingId);
+  void credit(Long bookingId);
 
   void debit(DebitWalletRequest request);
 }

@@ -16,6 +16,9 @@ import com.project.relentless.feature.space.repository.SpaceRepository;
 import com.project.relentless.feature.user.Role;
 import com.project.relentless.feature.user.User;
 import com.project.relentless.feature.user.UserRepository;
+import com.project.relentless.feature.wallet.Transaction;
+import com.project.relentless.feature.wallet.TransactionRepository;
+import com.project.relentless.feature.wallet.TransactionType;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
@@ -38,6 +41,7 @@ import org.springframework.stereotype.Component;
 public class DataInitializer {
 
   private final BookingRepository bookingRepository;
+  private final TransactionRepository transactionRepository;
   private final ReviewRepository reviewRepository;
   private final AmenityRepository amenityRepository;
   private final CategoryRepository categoryRepository;
@@ -45,9 +49,12 @@ public class DataInitializer {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
+  private static final BigDecimal HOST_KEEP_RATE = new BigDecimal("0.95");
+
   @EventListener(ContextRefreshedEvent.class)
   public void init() {
     if (bookingRepository.count() > 0
+        || transactionRepository.count() > 0
         || reviewRepository.count() > 0
         || amenityRepository.count() > 0
         || categoryRepository.count() > 0
@@ -177,6 +184,19 @@ public class DataInitializer {
             .build();
 
     bookingRepository.save(booking);
+
+    var amount = booking.getTotalPrice().multiply(HOST_KEEP_RATE).setScale(2, RoundingMode.HALF_UP);
+
+    var transaction =
+        Transaction.builder()
+            .amount(amount)
+            .createdAt(LocalDateTime.of(2026, 3, 6, 14, 0))
+            .type(TransactionType.CREDIT)
+            .host(host)
+            .booking(booking)
+            .build();
+
+    transactionRepository.save(transaction);
 
     var review =
         Review.builder()

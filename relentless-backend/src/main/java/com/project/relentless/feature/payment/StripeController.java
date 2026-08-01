@@ -39,7 +39,7 @@ public class StripeController {
       if (booking.getStatus() == BookingStatus.PENDING) {
         booking.setStatus(BookingStatus.CONFIRMED);
         bookingRepository.save(booking);
-        walletService.recordCredit(bookingId);
+        walletService.credit(bookingId);
       }
     }
     return ResponseEntity.ok().build();

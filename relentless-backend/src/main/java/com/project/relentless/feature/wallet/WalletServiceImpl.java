@@ -44,7 +44,7 @@ public class WalletServiceImpl implements WalletService {
 
   @Override
   @Transactional
-  public void recordCredit(Long bookingId) {
+  public void credit(Long bookingId) {
     if (transactionRepository.existsByBookingId(bookingId)) {
       return;
     }
