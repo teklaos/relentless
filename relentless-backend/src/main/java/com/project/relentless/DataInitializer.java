@@ -85,10 +85,18 @@ public class DataInitializer {
             .dateOfBirth(LocalDate.of(2004, 11, 20))
             .dateAcceptedTerms(LocalDate.of(2026, 2, 18))
             .role(Role.HOST)
-            .isDeleted(false)
             .build();
 
-    userRepository.saveAll(List.of(user, host));
+    var admin =
+        User.builder()
+            .username("admin")
+            .passwordHash(passwordEncoder.encode("P@ssw0rd"))
+            .email("admin@gmail.com")
+            .dateOfBirth(LocalDate.of(2005, 3, 7))
+            .role(Role.ADMIN)
+            .build();
+
+    userRepository.saveAll(List.of(user, host, admin));
 
     var amenity1 = Amenity.builder().name("Wi-Fi").build();
 

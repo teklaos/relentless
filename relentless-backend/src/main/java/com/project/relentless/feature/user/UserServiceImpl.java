@@ -6,10 +6,12 @@ import com.project.relentless.feature.auth.refresh.RefreshTokenService;
 import com.project.relentless.feature.image.ImageService;
 import com.project.relentless.feature.user.dto.request.ChangePasswordRequest;
 import com.project.relentless.feature.user.dto.request.EditUserRequest;
+import com.project.relentless.feature.user.dto.response.AdminUserResponse;
 import com.project.relentless.feature.user.dto.response.UserResponse;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -31,6 +33,13 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
 
   @Override
+  public List<AdminUserResponse> getAll() {
+    return userRepository.findAllByIsDeletedFalse().stream()
+        .map(userMapper::toAdminUserResponse)
+        .toList();
+  }
+
+  @Override
   public UserResponse getCurrent() {
     var auth = SecurityContextHolder.getContext().getAuthentication();
     if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
@@ -44,13 +53,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserResponse getById(Long id) {
+  public AdminUserResponse getById(Long id) {
     var user =
         userRepository
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-    return userMapper.toUserResponse(user);
+    return userMapper.toAdminUserResponse(user);
   }
 
   @Override

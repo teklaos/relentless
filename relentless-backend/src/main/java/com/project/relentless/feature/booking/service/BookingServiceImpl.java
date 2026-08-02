@@ -38,6 +38,11 @@ public class BookingServiceImpl implements BookingService {
   private static final int SLOT_MINUTES = 30;
 
   @Override
+  public List<BookingResponse> getAll() {
+    return bookingRepository.findAll().stream().map(bookingMapper::toBookingResponse).toList();
+  }
+
+  @Override
   public List<BookingResponse> getByCurrentUser() {
     Long userId = authService.getCurrentUserId();
     return bookingRepository.findAllByUserId(userId).stream()

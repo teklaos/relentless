@@ -18,6 +18,11 @@ public class BookingController {
 
   private final BookingService bookingService;
 
+  @GetMapping
+  public ResponseEntity<List<BookingResponse>> getAll() {
+    return ResponseEntity.ok(bookingService.getAll());
+  }
+
   @GetMapping("/me")
   public ResponseEntity<List<BookingResponse>> getByCurrentUser() {
     return ResponseEntity.ok(bookingService.getByCurrentUser());

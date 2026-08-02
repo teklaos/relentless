@@ -2,8 +2,10 @@ package com.project.relentless.feature.user;
 
 import com.project.relentless.feature.user.dto.request.ChangePasswordRequest;
 import com.project.relentless.feature.user.dto.request.EditUserRequest;
+import com.project.relentless.feature.user.dto.response.AdminUserResponse;
 import com.project.relentless.feature.user.dto.response.UserResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,13 +17,18 @@ public class UserController {
 
   private final UserService userService;
 
+  @GetMapping
+  public ResponseEntity<List<AdminUserResponse>> getAll() {
+    return ResponseEntity.ok(userService.getAll());
+  }
+
   @GetMapping("/me")
   public ResponseEntity<UserResponse> getCurrent() {
     return ResponseEntity.ok(userService.getCurrent());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> getById(@PathVariable Long id) {
+  public ResponseEntity<AdminUserResponse> getById(@PathVariable Long id) {
     return ResponseEntity.ok(userService.getById(id));
   }
 
