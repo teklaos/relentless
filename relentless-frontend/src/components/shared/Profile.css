@@ -88,13 +88,13 @@
     background 0.12s;
 }
 
-.profile-avatar-edit:hover:not(:disabled) {
-  border-color: var(--ink);
-}
-
 .profile-avatar-edit:disabled {
   cursor: default;
   opacity: 0.7;
+}
+
+.profile-avatar-edit:hover:not(:disabled) {
+  border-color: var(--ink);
 }
 
 .profile-avatar-edit.dragging {
@@ -118,8 +118,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  background: rgba(10, 10, 10, 0.35);
+  color: var(--ink-inverse);
+  background: rgb(10 10 10 / 35%);
   opacity: 0;
   transition: opacity 0.12s;
 }
@@ -278,14 +278,14 @@
   transform: translateX(18px);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .profile-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .profile-stat {
     padding: 16px 12px;
   }

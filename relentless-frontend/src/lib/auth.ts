@@ -1,6 +1,6 @@
 const ACCESS_KEY = "relentless.accessToken";
 const REFRESH_KEY = "relentless.refreshToken";
-const PENDING_BOOKING_KEY = "pendingBookingId";
+const PENDING_BOOKING_KEY = "relentless.pendingBookingId";
 
 export function getAccessToken(): string | null {
   if (typeof window === "undefined") return null;

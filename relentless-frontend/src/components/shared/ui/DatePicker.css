@@ -31,7 +31,7 @@
 
 .dp-pop {
   position: absolute;
-  z-index: 300;
+  z-index: var(--z-popover);
   bottom: calc(100% + 6px);
   left: 0;
   width: 280px;
@@ -40,7 +40,7 @@
   background: var(--bg);
   border: 1px solid var(--ink);
   border-radius: 6px;
-  box-shadow: 0 12px 32px rgba(10, 10, 10, 0.18);
+  box-shadow: 0 12px 32px rgb(10 10 10 / 18%);
   animation: pop 0.16s cubic-bezier(0.22, 1, 0.36, 1);
 }
 

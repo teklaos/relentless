@@ -1,5 +1,6 @@
 "use client";
 
+import "./Profile.css";
 import "./DataPrivacy.css";
 import { useState } from "react";
 import { useRouter } from "next/navigation";

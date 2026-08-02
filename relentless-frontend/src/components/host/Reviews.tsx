@@ -31,14 +31,14 @@ export default function Reviews() {
       </div>
 
       <div className="h-rev-summary">
-        <div className="h-card h-rev-avg">
+        <div className="card h-rev-avg">
           <div className="h-rev-avg-row">
             <span className="h-rev-avg-num">{avg.toFixed(2)}</span>
             <Stars rating={Math.round(avg)} size={18} />
           </div>
           <div className="mono h-rev-avg-sub">Across {allRev.length} reviews</div>
         </div>
-        <div className="h-card h-rev-dist">
+        <div className="card h-rev-dist">
           {dist.map((d) => (
             <div key={d.star} className="h-rev-dist-row">
               <span className="mono h-rev-dist-star">{d.star}</span>
@@ -51,13 +51,13 @@ export default function Reviews() {
         </div>
       </div>
 
-      <div className="h-book-bar">
-        <div className="h-tabs">
+      <div className="list-toolbar">
+        <div className="tabs">
           {chips.map((c) => (
             <button
               key={c.id}
               onClick={() => host.setReviewFilter(c.id)}
-              className={`mono h-tab ${host.reviewFilter === c.id ? "active" : ""}`}
+              className={`mono tab ${host.reviewFilter === c.id ? "active" : ""}`}
             >
               {c.label}
             </button>
@@ -76,7 +76,7 @@ export default function Reviews() {
       ) : (
         <div className="h-rev-grid">
           {filtered.map((r) => (
-            <div key={r.id} className="h-card h-rev-card">
+            <div key={r.id} className="card h-rev-card">
               <div className="h-rev-head">
                 <AvatarImg imageKey={r.user.profileImageKey} name={r.user.username} size={36} radius={3} />
                 <div className="h-rev-meta">

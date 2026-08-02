@@ -204,7 +204,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         setUser(await fetchMe());
       } catch {
-        // best-effort refresh; user stays authed either way
+        // ignore errors
       }
       router.push("/dashboard");
     },

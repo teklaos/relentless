@@ -152,11 +152,11 @@
 }
 
 .br-status.confirmed {
-  color: oklch(0.45 0.13 145);
+  color: oklch(45% 0.13 145deg);
 }
 
 .br-status.confirmed .dot {
-  background: oklch(0.55 0.13 145);
+  background: oklch(55% 0.13 145deg);
 }
 
 .br-status.completed {
@@ -179,7 +179,7 @@
   justify-self: end;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .booking-row {
     grid-template-columns: 1fr 1fr;
     gap: 8px;

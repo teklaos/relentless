@@ -68,7 +68,7 @@
   background: var(--bg-elevated);
   border: 1px solid var(--ink);
   box-shadow: var(--shadow-pop);
-  z-index: 20;
+  z-index: var(--z-dropdown);
   padding: 18px;
   border-radius: 2px;
   animation: fade 0.15s ease;
@@ -147,7 +147,7 @@
   font-weight: 500;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .filter-bar {
     grid-template-columns: 1fr auto;
     grid-template-rows: auto;

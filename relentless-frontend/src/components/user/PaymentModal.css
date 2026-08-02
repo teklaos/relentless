@@ -35,16 +35,6 @@
   color: var(--accent-ink);
 }
 
-.pay-spin {
-  animation: pay-spin 0.9s linear infinite;
-}
-
-@keyframes pay-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .pay-note {
   display: flex;
   align-items: center;

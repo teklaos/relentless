@@ -7,6 +7,9 @@ import {
   LayoutGrid,
   Wallet,
   Star,
+  Users,
+  Receipt,
+  BarChart3,
   type LucideIcon
 } from "lucide-react";
 import type { User as AppUser } from "@/data/types";
@@ -29,9 +32,16 @@ export const HOST_ITEMS: NavItem[] = [
   { path: "/profile", label: "Profile", Icon: User }
 ];
 
+export const ADMIN_ITEMS: NavItem[] = [
+  { path: "/users", label: "Users", Icon: Users },
+  { path: "/transactions", label: "Transactions", Icon: Receipt },
+  { path: "/statistics", label: "Statistics", Icon: BarChart3 },
+  { path: "/profile", label: "Profile", Icon: User }
+];
+
 export const ANON_ITEMS: NavItem[] = [{ path: "/explore", label: "Explore", Icon: Compass }];
 
 export const navItemsFor = (auth: boolean, role: AppUser["role"] | undefined) =>
-  !auth ? ANON_ITEMS : role === "HOST" ? HOST_ITEMS : GUEST_ITEMS;
+  !auth ? ANON_ITEMS : role === "HOST" ? HOST_ITEMS : role === "ADMIN" ? ADMIN_ITEMS : GUEST_ITEMS;
 
 export const isActivePath = (pathname: string, path: string) => pathname === path || pathname.startsWith(path + "/");

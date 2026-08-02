@@ -86,14 +86,14 @@
   transition: all 0.12s;
 }
 
-.cal-nav:hover:not(:disabled) {
-  border-color: var(--hairline-strong);
-  color: var(--ink);
-}
-
 .cal-nav:disabled {
   opacity: 0.3;
   cursor: default;
+}
+
+.cal-nav:hover:not(:disabled) {
+  border-color: var(--hairline-strong);
+  color: var(--ink);
 }
 
 .cal-dow-row,
@@ -133,7 +133,7 @@
   transition: all 0.12s;
 }
 
-.cal-cell:hover:not(.past):not(.closed) {
+.cal-cell:hover:not(.past, .closed) {
   border-color: var(--hairline-strong);
 }
 
@@ -207,7 +207,7 @@
   border-top: 1px solid var(--hairline);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .book-card {
     position: static;
     box-shadow: none;

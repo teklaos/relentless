@@ -1,0 +1,13 @@
+.a-tabs {
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 24px;
+}
+
+.kpis.a-kpis {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  margin-bottom: 32px;
+}
+
+.kpis.a-kpis .kpi-value {
+  font-size: 26px;
+}

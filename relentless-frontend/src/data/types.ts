@@ -105,6 +105,19 @@ export interface User {
   role: "HOST" | "USER" | "ADMIN";
 }
 
+export interface AdminUser {
+  id: number;
+  username: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  phoneNumber: string | null;
+  dateOfBirth: string;
+  dateJoined: string;
+  profileImageKey: string | null;
+  role: "HOST" | "USER" | "ADMIN";
+}
+
 export interface UserSummary {
   id: number;
   username: string;

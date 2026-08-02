@@ -1,5 +1,6 @@
 "use client";
 
+import "./Host.css";
 import "./Dashboard.css";
 import { useRouter } from "next/navigation";
 import { Plus, Calendar } from "lucide-react";
@@ -39,30 +40,30 @@ export default function Dashboard() {
         You have <span className="h-accent">{confirmed.length} upcoming bookings</span>.
       </div>
 
-      <div className="h-kpis">
+      <div className="kpis host-kpis">
         {kpis.map((k) => (
-          <div key={k.label} className="h-kpi">
-            <div className="h-kpi-value">{k.value}</div>
-            <div className="eyebrow h-kpi-label">{k.label}</div>
+          <div key={k.label} className="kpi">
+            <div className="kpi-value">{k.value}</div>
+            <div className="eyebrow kpi-label">{k.label}</div>
           </div>
         ))}
       </div>
 
       <div className="h-sections">
-        <div className="h-card" style={{ padding: 18 }}>
-          <div className="h-flex-between" style={{ marginBottom: 18 }}>
+        <div className="card" style={{ padding: 18 }}>
+          <div className="flex-between" style={{ marginBottom: 18 }}>
             <span className="eyebrow">Earnings - 6 months</span>
             <span onClick={() => router.push("/wallet")} className="mono h-panel-link">
               Details →
             </span>
           </div>
-          <div className="h-chart-wrap">
-            <div className="h-bars" style={{ height: 96, gap: 9 }}>
+          <div className="chart-wrap">
+            <div className="bars" style={{ height: 96, gap: 9 }}>
               {earningsBars.map((b) => (
-                <div key={b.m} className="h-bar-col" style={{ gap: 7 }}>
+                <div key={b.m} className="bar-col" style={{ gap: 7 }}>
                   <div
                     title={hasEarnings ? b.full : undefined}
-                    className={hasEarnings ? "h-bar" : "h-bar h-bar-ghost"}
+                    className={hasEarnings ? "bar" : "bar bar-ghost"}
                     style={{ height: b.h, background: hasEarnings ? b.fill : undefined }}
                   />
                   <div className="mono h-bar-m">{b.m}</div>
@@ -70,14 +71,14 @@ export default function Dashboard() {
               ))}
             </div>
             {!hasEarnings && (
-              <div className="h-chart-empty">
+              <div className="chart-empty">
                 <span>Your first booking starts the climb.</span>
               </div>
             )}
           </div>
         </div>
 
-        <div className="h-card">
+        <div className="card">
           <div className="h-panel-head">
             <span className="h-panel-name">Next up</span>
             <button onClick={() => router.push("/bookings")} className="eyebrow h-link">
@@ -101,7 +102,7 @@ export default function Dashboard() {
                 </div>
                 <div className="h-up-div" />
                 <div className="h-up-main">
-                  <div className="h-up-name h-truncate">{u.space.name}</div>
+                  <div className="h-up-name truncate">{u.space.name}</div>
                   <div className="mono h-up-meta">
                     {fmtTimeRange(u.startTime, u.endTime)} - {u.user.username}
                   </div>

@@ -78,13 +78,13 @@
   background: var(--accent);
 }
 
-.sb-item.active .sb-item-icon {
-  color: var(--accent);
-}
-
 .sb-item-icon {
   display: flex;
   align-items: center;
+}
+
+.sb-item.active .sb-item-icon {
+  color: var(--accent);
 }
 
 .sb-item-label {
@@ -136,7 +136,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .sidebar {
     display: none;
   }

@@ -34,16 +34,16 @@ export default function Bookings() {
         <h1 className="page-title">Bookings.</h1>
       </div>
 
-      <div className="h-book-bar">
-        <div className="h-tabs">
+      <div className="list-toolbar">
+        <div className="tabs">
           {tabDefs.map(([key, label]) => (
             <button
               key={key}
               onClick={() => host.setBookingTab(key)}
-              className={`mono h-tab ${bt === key ? "active" : ""}`}
+              className={`mono tab ${bt === key ? "active" : ""}`}
             >
               {label}
-              <span className="h-tab-count">{counts[key]}</span>
+              <span className="tab-count">{counts[key]}</span>
             </button>
           ))}
         </div>
@@ -73,7 +73,7 @@ export default function Bookings() {
           {ledgerSrc.map((b) => {
             const sm = statusMeta(b.status);
             return (
-              <div key={b.id} className="h-row h-led-grid h-led-row">
+              <div key={b.id} className="row h-led-grid h-led-row">
                 <span className="mono h-led-ref">#{b.id}</span>
                 <div className="h-led-guest-cell">
                   <AvatarImg
@@ -84,8 +84,8 @@ export default function Bookings() {
                     style={{ flexShrink: 0 }}
                   />
                   <div style={{ minWidth: 0 }}>
-                    <div className="h-led-guest h-truncate">{b.user.username}</div>
-                    <div className="mono h-led-space h-truncate">{b.space.name}</div>
+                    <div className="h-led-guest truncate">{b.user.username}</div>
+                    <div className="mono h-led-space truncate">{b.space.name}</div>
                   </div>
                 </div>
                 <div className="mono h-led-when">
@@ -93,8 +93,8 @@ export default function Bookings() {
                   <div className="h-led-when-sub">{fmtTimeRange(b.startTime, b.endTime)}</div>
                 </div>
                 <span className="mono h-led-keep">{fmtPrice(net(b.totalPrice))}</span>
-                <span className="mono h-led-status" style={{ color: sm.fg }}>
-                  <span className="h-led-dot" style={{ background: sm.dot }} />
+                <span className="mono badge" style={{ color: sm.fg }}>
+                  <span className="badge-dot" style={{ background: sm.dot }} />
                   {b.status}
                 </span>
               </div>

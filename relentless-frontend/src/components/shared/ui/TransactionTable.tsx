@@ -35,11 +35,11 @@ export default function TransactionTable({ transactions, emptyHeading, emptyText
       {transactions.map((t) => {
         const credit = t.type === "CREDIT";
         return (
-          <div key={t.id} className="h-row h-tx-grid h-tx-row">
+          <div key={t.id} className="row h-tx-grid h-tx-row">
             <span className="mono h-tx-ref">#{t.id}</span>
             <span className="mono h-tx-date">{fmtDate(t.createdAt)}</span>
             <div style={{ minWidth: 0 }}>
-              <div className="h-tx-space h-truncate">{t.space?.name ?? "—"}</div>
+              <div className="h-tx-space truncate">{t.space?.name ?? "—"}</div>
               <div className="mono h-tx-status" style={{ color: credit ? "var(--ok)" : "var(--ink-3)" }}>
                 {t.type}
               </div>

@@ -4,6 +4,7 @@ import "./layout.css";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
+import type { User } from "@/data/types";
 import { HostProvider } from "@/context/HostContext";
 import Sidebar from "@/components/shared/Sidebar";
 import BottomNav from "@/components/shared/BottomNav";
@@ -14,7 +15,10 @@ import AuthGateModal from "@/components/shared/AuthGateModal";
 
 const HOST_ONLY = ["/dashboard", "/listings", "/wallet", "/reviews"];
 const GUEST_ONLY = ["/explore", "/saved"];
+const ADMIN_ONLY = ["/users", "/transactions", "/statistics"];
+const SHARED_PATHS = ["/profile"];
 const PUBLIC_PATHS = ["/explore"];
+const HOME_PATH: Record<User["role"], string> = { USER: "/explore", HOST: "/dashboard", ADMIN: "/users" };
 const isPublic = (p: string) => PUBLIC_PATHS.some((x) => p === x || p.startsWith(x + "/"));
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -49,11 +53,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
     if (!user) return;
     const isHost = user.role === "HOST";
+    const isAdmin = user.role === "ADMIN";
     const matches = (paths: string[]) => paths.some((p) => pathname === p || pathname.startsWith(p + "/"));
-    if (isHost && matches(GUEST_ONLY)) {
-      router.replace("/dashboard");
+    if (isAdmin && !matches(ADMIN_ONLY) && !matches(SHARED_PATHS)) {
+      router.replace(HOME_PATH.ADMIN);
+    } else if (!isAdmin && matches(ADMIN_ONLY)) {
+      router.replace(HOME_PATH[user.role]);
+    } else if (isHost && matches(GUEST_ONLY)) {
+      router.replace(HOME_PATH.HOST);
     } else if (!isHost && matches(HOST_ONLY)) {
-      router.replace("/explore");
+      router.replace(HOME_PATH.USER);
     }
   }, [authReady, auth, user, pathname, router]);
 

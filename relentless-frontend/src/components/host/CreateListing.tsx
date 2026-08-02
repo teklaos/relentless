@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import "./Host.css";
 import "./CreateListing.css";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import { useHost } from "@/context/HostContext";
@@ -83,8 +84,8 @@ export default function CreateListing() {
     openDays.length === 0
       ? "Closed"
       : sameHours
-        ? `${openDays.length} days · ${openDays[0].open}–${openDays[0].close}`
-        : `${openDays.length} days · custom`;
+        ? `${openDays.length} days - ${openDays[0].open}–${openDays[0].close}`
+        : `${openDays.length} days - custom`;
 
   const cancel = () => router.push(host.editingId ? "/listings" : "/dashboard");
   const onPrimary = () => {
@@ -127,7 +128,7 @@ export default function CreateListing() {
       </div>
 
       <div className="h-create-grid">
-        <div className="h-card h-create-card">
+        <div className="card h-create-card">
           {step === 0 && (
             <div className="h-form-stack" style={{ gap: 20 }}>
               <Field label="Space name">
@@ -410,7 +411,7 @@ export default function CreateListing() {
 
         <div className="h-preview">
           <div className="mono h-preview-eyebrow">Live preview</div>
-          <div className="h-card" style={{ overflow: "hidden" }}>
+          <div className="card" style={{ overflow: "hidden" }}>
             <div
               className="h-preview-media"
               style={

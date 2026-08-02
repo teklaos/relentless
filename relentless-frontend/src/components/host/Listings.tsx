@@ -1,5 +1,6 @@
 "use client";
 
+import "./Host.css";
 import "./Listings.css";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -49,16 +50,16 @@ export default function Listings() {
         </button>
       </div>
 
-      <div className="h-book-bar">
-        <div className="h-tabs">
+      <div className="list-toolbar">
+        <div className="tabs">
           {chipDefs.map(([key, label]) => (
             <button
               key={key}
               onClick={() => host.setListingFilter(key)}
-              className={`mono h-tab ${lf === key ? "active" : ""}`}
+              className={`mono tab ${lf === key ? "active" : ""}`}
             >
               {label}
-              <span className="h-tab-count">{counts[key]}</span>
+              <span className="tab-count">{counts[key]}</span>
             </button>
           ))}
         </div>
@@ -87,7 +88,7 @@ export default function Listings() {
             const CatIcon = CAT_ICON_COMPONENT[s.category.id] ?? CAT_ICON_FALLBACK;
             const cover = s.imageKeys?.[0];
             return (
-              <div key={s.id} className="h-card h-card-hover h-list-card">
+              <div key={s.id} className="card h-card-hover h-list-card">
                 <div
                   className="h-list-media"
                   style={
@@ -115,7 +116,7 @@ export default function Listings() {
                     </span>
                   </div>
                   <div className="mono h-list-meta">
-                    <span className="h-list-loc h-truncate">{loc}</span>
+                    <span className="h-list-loc truncate">{loc}</span>
                     <span className="h-list-rating">
                       <Star size={10} fill="currentColor" strokeWidth={0} />
                       <span className="h-list-rating-num">{s.rating.toFixed(2)}</span>

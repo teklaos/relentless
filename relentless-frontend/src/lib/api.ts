@@ -13,7 +13,8 @@ import {
   WalletBalance,
   WalletTransaction,
   UpdateUserPayload,
-  SpaceStatus
+  SpaceStatus,
+  AdminUser
 } from "@/data/types";
 import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "./auth";
 
@@ -269,4 +270,12 @@ export function changeSpaceStatus(id: number, status: SpaceStatus): Promise<Spac
 
 export function deleteSpace(id: number): Promise<void> {
   return request<void>(`/api/spaces/${id}`, { method: "DELETE" });
+}
+
+export function fetchAdminUsers(): Promise<AdminUser[]> {
+  return request<AdminUser[]>("/api/users");
+}
+
+export function fetchAdminBookings(): Promise<Booking[]> {
+  return request<Booking[]>("/api/bookings");
 }

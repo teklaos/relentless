@@ -34,6 +34,11 @@
   transition: all 0.12s;
 }
 
+.ts-trigger:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 .ts-field.bare .ts-trigger {
   height: 100%;
   padding: 0;
@@ -51,18 +56,13 @@
   border-color: transparent;
 }
 
-.ts-trigger.open svg {
-  transform: rotate(180deg);
-}
-
 .ts-trigger svg {
   color: var(--ink-3);
   transition: transform 0.12s;
 }
 
-.ts-trigger:disabled {
-  opacity: 0.4;
-  cursor: default;
+.ts-trigger.open svg {
+  transform: rotate(180deg);
 }
 
 .ts-menu {
@@ -70,7 +70,7 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  z-index: 20;
+  z-index: var(--z-dropdown);
   max-height: 208px;
   overflow-y: auto;
   display: flex;

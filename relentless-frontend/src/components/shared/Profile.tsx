@@ -117,6 +117,7 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
     }, 0);
 
   if (!user) return null;
+  const isAdmin = user.role === "ADMIN";
 
   return (
     <div>
@@ -160,7 +161,7 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
         </div>
 
         <div>
-          {user.role !== "HOST" && (
+          {user.role === "USER" && (
             <div className="profile-stats">
               <div className="profile-stat">
                 <div className="num">{completed}</div>
@@ -184,15 +185,17 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
           </div>
 
           <div className="settings-list">
-            <div className="setting" onClick={() => setNotifications((v) => !v)} style={{ cursor: "pointer" }}>
-              <div className="setting-l">
-                <span className="setting-t">Notifications</span>
-                <span className="setting-d">Receive email notifications</span>
+            {!isAdmin && (
+              <div className="setting" onClick={() => setNotifications((v) => !v)} style={{ cursor: "pointer" }}>
+                <div className="setting-l">
+                  <span className="setting-t">Notifications</span>
+                  <span className="setting-d">Receive email notifications</span>
+                </div>
+                <button className={`toggle ${notifications ? "on" : ""}`} aria-pressed={notifications}>
+                  <span className="toggle-thumb" />
+                </button>
               </div>
-              <button className={`toggle ${notifications ? "on" : ""}`} aria-pressed={notifications}>
-                <span className="toggle-thumb" />
-              </button>
-            </div>
+            )}
 
             <div className="setting" onClick={() => setTwoFactor((v) => !v)} style={{ cursor: "pointer" }}>
               <div className="setting-l">
@@ -204,15 +207,17 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
               </button>
             </div>
 
-            <div className="setting" onClick={() => router.push("/profile/privacy")} style={{ cursor: "pointer" }}>
-              <div className="setting-l">
-                <span className="setting-t">Data & privacy</span>
-                <span className="setting-d">Manage your personal data</span>
+            {!isAdmin && (
+              <div className="setting" onClick={() => router.push("/profile/privacy")} style={{ cursor: "pointer" }}>
+                <div className="setting-l">
+                  <span className="setting-t">Data & privacy</span>
+                  <span className="setting-d">Manage your personal data</span>
+                </div>
+                <span className="setting-v">
+                  <ArrowRight size={12} />
+                </span>
               </div>
-              <span className="setting-v">
-                <ArrowRight size={12} />
-              </span>
-            </div>
+            )}
 
             <div className="setting" onClick={onSignOut} style={{ cursor: "pointer" }}>
               <div className="setting-l">

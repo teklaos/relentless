@@ -1,6 +1,5 @@
 import { DayHours, Draft, WalletTransaction, WorkingHoursPayload } from "./types";
 
-// Canonical calendar names; every day/month array used across the app derives from these two.
 const DAY_NAMES = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 const MONTH_NAMES = [
   "JANUARY",
@@ -17,16 +16,16 @@ const MONTH_NAMES = [
   "DECEMBER"
 ];
 
-export const WEEK_DAYS = DAY_NAMES; // full, Mon-first — dayOfWeek keys
-export const DOW = DAY_NAMES.map((d) => d.slice(0, 3)); // 3-letter, Mon-first
-export const DOW_INITIAL = DAY_NAMES.map((d) => d[0]); // 1-letter, Mon-first
+export const WEEK_DAYS = DAY_NAMES;
+export const DOW = DAY_NAMES.map((d) => d.slice(0, 3));
+export const DOW_INITIAL = DAY_NAMES.map((d) => d[0]);
 
 const DAY_NAMES_SUN_FIRST = [DAY_NAMES[6], ...DAY_NAMES.slice(0, 6)];
-export const DAY_NAME = DAY_NAMES_SUN_FIRST; // full, Sun-first
-export const DAYS = DAY_NAMES_SUN_FIRST.map((d) => d.slice(0, 3)); // 3-letter, Sun-first
+export const DAY_NAME = DAY_NAMES_SUN_FIRST;
+export const DAYS = DAY_NAMES_SUN_FIRST.map((d) => d.slice(0, 3));
 
 export const MONTHS_FULL = MONTH_NAMES;
-export const MONTHS_SHORT_TITLE = MONTH_NAMES.map((m) => m[0] + m.slice(1, 3).toLowerCase()); // Jan, Feb, …
+export const MONTHS_SHORT_TITLE = MONTH_NAMES.map((m) => m[0] + m.slice(1, 3).toLowerCase());
 
 export const defaultHours = (): DayHours[] =>
   WEEK_DAYS.map((dayOfWeek) => ({ dayOfWeek, open: "09:00", close: "22:00", on: true }));

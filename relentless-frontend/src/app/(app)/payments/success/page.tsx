@@ -37,7 +37,7 @@ export default function PaymentSuccessPage() {
           return;
         }
       } catch {
-        // transient fetch failure; next poll retries
+        // ignore errors
       }
       if (!active) return;
       if (tries.current >= MAX_TRIES) {

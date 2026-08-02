@@ -34,13 +34,3 @@
   margin: 0 0 24px;
   max-width: 34ch;
 }
-
-.pay-spin {
-  animation: pay-spin 0.9s linear infinite;
-}
-
-@keyframes pay-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}

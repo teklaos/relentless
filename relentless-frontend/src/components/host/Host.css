@@ -1,0 +1,78 @@
+.h-link {
+  color: var(--ink-3);
+  transition: color 0.15s;
+}
+
+.h-link:hover {
+  color: var(--accent-ink);
+}
+
+.h-btn-dark {
+  background: var(--ink);
+  color: var(--ink-inverse);
+  transition: background 0.15s;
+}
+
+.h-btn-dark:hover {
+  background: var(--accent);
+}
+
+.h-btn-dark:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.h-btn-outline {
+  box-shadow: inset 0 0 0 1px var(--hairline-strong);
+  transition: all 0.15s;
+}
+
+.h-btn-outline:hover {
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.h-list-tag {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: rgb(255 255 255 / 92%);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+}
+
+.h-list-cat {
+  bottom: 12px;
+  left: 12px;
+  gap: 6px;
+  padding: 4px 7px;
+  color: var(--accent-ink);
+}
+
+.h-list-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.h-list-name {
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.h-list-price {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.h-list-price-u {
+  color: var(--ink-4);
+  font-size: 10px;
+}
