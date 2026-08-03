@@ -2,8 +2,8 @@
 
 import "./ReviewModal.css";
 import { useState } from "react";
-import { Booking } from "@/data/types";
-import { fmtDateShort } from "@/data/format";
+import { Booking } from "@/lib/types";
+import { fmtDateShort } from "@/lib/format";
 import Modal from "@/components/shared/ui/Modal";
 import { Star, Check } from "lucide-react";
 

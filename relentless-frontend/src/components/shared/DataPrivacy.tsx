@@ -4,7 +4,7 @@ import "./Profile.css";
 import "./DataPrivacy.css";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PASSWORD_RE, PASSWORD_HINT } from "@/data/format";
+import { PASSWORD_RE, PASSWORD_HINT } from "@/lib/format";
 import PasswordField from "@/components/shared/ui/PasswordField";
 import Modal from "@/components/shared/ui/Modal";
 import { useApp } from "@/context/AppContext";

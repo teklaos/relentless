@@ -4,7 +4,7 @@ import "./AvatarImg.css";
 import { useState, type CSSProperties, type ReactNode } from "react";
 import Image from "next/image";
 import { imageUrl } from "@/lib/api";
-import { initials } from "@/data/format";
+import { initials } from "@/lib/format";
 
 interface AvatarImgProps {
   imageKey: string | null | undefined;

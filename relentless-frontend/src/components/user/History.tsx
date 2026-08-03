@@ -5,8 +5,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Placeholder from "@/components/shared/ui/Placeholder";
 import { imageUrl } from "@/lib/api";
-import { Booking, BookingStatus } from "@/data/types";
-import { fmtDateLong, fmtTimeRange, fmtPrice } from "@/data/format";
+import { Booking, BookingStatus } from "@/lib/types";
+import { fmtDateLong, fmtTimeRange, fmtPrice } from "@/lib/format";
 import { Calendar, Star, Check } from "lucide-react";
 
 const STATUS_CLS: Record<string, string> = {

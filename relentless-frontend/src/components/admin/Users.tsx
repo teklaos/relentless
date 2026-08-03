@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { Users as UsersIcon } from "lucide-react";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import { fetchAdminUsers } from "@/lib/api";
-import { AdminUser } from "@/data/types";
-import { fmtDateShort } from "@/data/format";
+import { AdminUser } from "@/lib/types";
+import { fmtDateShort } from "@/lib/format";
 
 const ROLE_FILTERS = ["ALL", "USER", "HOST", "ADMIN"] as const;
 type RoleFilter = (typeof ROLE_FILTERS)[number];

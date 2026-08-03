@@ -9,7 +9,7 @@ import { useHost } from "@/context/HostContext";
 import Placeholder from "@/components/shared/ui/Placeholder";
 import Modal from "@/components/shared/ui/Modal";
 import { imageUrl } from "@/lib/api";
-import { fmtPrice } from "@/data/format";
+import { fmtPrice } from "@/lib/format";
 import { CAT_ICON_COMPONENT, CAT_ICON_FALLBACK } from "@/lib/iconMap";
 
 const chipDefs: [string, string][] = [

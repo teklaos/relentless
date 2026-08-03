@@ -4,7 +4,7 @@ import "./DatePicker.css";
 import { useEffect, useRef, useState } from "react";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { Dropdown } from "@/components/shared/ui/Dropdown";
-import { DOW_INITIAL, MONTHS_SHORT_TITLE } from "@/data/format";
+import { DOW_INITIAL, MONTHS_SHORT_TITLE } from "@/lib/format";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const toIso = (y: number, m: number, d: number) => `${y}-${pad(m + 1)}-${pad(d)}`;

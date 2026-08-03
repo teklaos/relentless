@@ -2,9 +2,9 @@
 
 import "./BookingWidget.css";
 import { useState, useMemo, useEffect } from "react";
-import { fmtPrice, fmtDateShort, todayStart, DOW, MONTHS_FULL } from "@/data/format";
+import { fmtPrice, fmtDateShort, todayStart, DOW, MONTHS_FULL } from "@/lib/format";
 import { fetchAvailability, fetchMonthAvailability } from "@/lib/api";
-import { Space, TimeSlot } from "@/data/types";
+import { Space, TimeSlot } from "@/lib/types";
 import { Dropdown } from "@/components/shared/ui/Dropdown";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 

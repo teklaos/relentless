@@ -16,7 +16,7 @@ import {
   UpdateUserPayload,
   SpaceStatus,
   AdminUser
-} from "@/data/types";
+} from "@/lib/types";
 import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "./auth";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";

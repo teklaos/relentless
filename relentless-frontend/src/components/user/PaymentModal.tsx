@@ -3,7 +3,7 @@
 import "./PaymentModal.css";
 import { useState } from "react";
 import Modal from "@/components/shared/ui/Modal";
-import { fmtPrice, fmtDateShort, fmtTimeRange } from "@/data/format";
+import { fmtPrice, fmtDateShort, fmtTimeRange } from "@/lib/format";
 import { CreditCard, Loader } from "lucide-react";
 import { Checkout } from "@/context/AppContext";
 

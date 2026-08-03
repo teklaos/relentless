@@ -4,8 +4,8 @@ import "./Bookings.css";
 import { Calendar } from "lucide-react";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import { BookingTab, useHost } from "@/context/HostContext";
-import { fmtDate, fmtTimeRange, fmtPrice, net, statusMeta } from "@/data/format";
-import { Booking, BookingStatus } from "@/data/types";
+import { fmtDate, fmtTimeRange, fmtPrice, net, statusMeta } from "@/lib/format";
+import { Booking, BookingStatus } from "@/lib/types";
 
 const tabDefs: [BookingTab, string][] = [
   ["upcoming", "Upcoming"],

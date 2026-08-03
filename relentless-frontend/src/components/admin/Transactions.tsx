@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { Receipt } from "lucide-react";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import { fetchAdminBookings } from "@/lib/api";
-import { Booking } from "@/data/types";
-import { fmtDate, fmtTimeRange, fmtPrice, statusMeta } from "@/data/format";
+import { Booking } from "@/lib/types";
+import { fmtDate, fmtTimeRange, fmtPrice, statusMeta } from "@/lib/format";
 
 const STATUSES = ["ALL", "PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"] as const;
 type StatusFilter = (typeof STATUSES)[number];

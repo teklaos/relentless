@@ -3,7 +3,7 @@
 import "./Profile.css";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Booking, User } from "@/data/types";
+import { Booking, User } from "@/lib/types";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import Modal from "@/components/shared/ui/Modal";
 import DatePicker from "@/components/shared/ui/DatePicker";

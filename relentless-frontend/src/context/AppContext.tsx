@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Space, Booking, User, UpdateUserPayload } from "@/data/types";
+import { Space, Booking, User, UpdateUserPayload } from "@/lib/types";
 import {
   fetchMe,
   fetchMyBookings,

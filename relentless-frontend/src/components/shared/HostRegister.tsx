@@ -8,7 +8,7 @@ import DatePicker from "@/components/shared/ui/DatePicker";
 import AuthBrandPanel from "@/components/shared/ui/AuthBrandPanel";
 import { User, Mail, Phone, Landmark, ArrowRight, ArrowLeft } from "lucide-react";
 import PasswordField from "@/components/shared/ui/PasswordField";
-import { EMAIL_RE, PHONE_RE, IBAN_RE, PASSWORD_RE, PASSWORD_HINT, HOST_MIN_AGE, maxDobIso } from "@/data/format";
+import { EMAIL_RE, PHONE_RE, IBAN_RE, PASSWORD_RE, PASSWORD_HINT, HOST_MIN_AGE, maxDobIso } from "@/lib/format";
 
 const STEP_LABELS = ["Account", "Identity", "Payout", "Review"];
 const STEP_FIELDS: string[][] = [

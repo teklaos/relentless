@@ -4,7 +4,7 @@ import "./layout.css";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
-import type { User } from "@/data/types";
+import type { User } from "@/lib/types";
 import { HostProvider } from "@/context/HostContext";
 import Sidebar from "@/components/shared/Sidebar";
 import BottomNav from "@/components/shared/BottomNav";

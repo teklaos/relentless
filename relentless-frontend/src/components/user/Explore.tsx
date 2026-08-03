@@ -3,7 +3,7 @@
 import "./Explore.css";
 import { useState, useMemo, useEffect, useRef } from "react";
 import SpaceCard from "./SpaceCard";
-import { Space, Category } from "@/data/types";
+import { Space, Category } from "@/lib/types";
 import { Dropdown } from "@/components/shared/ui/Dropdown";
 import { CAT_ICON_COMPONENT, CAT_ICON_FALLBACK } from "@/lib/iconMap";
 import { Search, Filter } from "lucide-react";

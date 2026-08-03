@@ -8,7 +8,7 @@ import DatePicker from "@/components/shared/ui/DatePicker";
 import AuthBrandPanel from "@/components/shared/ui/AuthBrandPanel";
 import { User, Mail, ArrowRight } from "lucide-react";
 import PasswordField from "@/components/shared/ui/PasswordField";
-import { EMAIL_RE, PASSWORD_RE, PASSWORD_HINT, USER_MIN_AGE, maxDobIso } from "@/data/format";
+import { EMAIL_RE, PASSWORD_RE, PASSWORD_HINT, USER_MIN_AGE, maxDobIso } from "@/lib/format";
 
 interface AuthProps {
   mode: "login" | "register";

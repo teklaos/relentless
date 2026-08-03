@@ -1,7 +1,7 @@
 "use client";
 
 import SpaceCard from "@/components/user/SpaceCard";
-import { Space } from "@/data/types";
+import { Space } from "@/lib/types";
 import { Bookmark } from "lucide-react";
 
 interface SavedProps {

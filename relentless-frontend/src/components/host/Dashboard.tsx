@@ -5,7 +5,7 @@ import "./Dashboard.css";
 import { useRouter } from "next/navigation";
 import { Plus, Calendar } from "lucide-react";
 import { useHost } from "@/context/HostContext";
-import { dayNum, fmtTimeRange, fmtPrice, monShort, buildEarningsBars } from "@/data/format";
+import { dayNum, fmtTimeRange, fmtPrice, monShort, buildEarningsBars } from "@/lib/format";
 
 export default function Dashboard() {
   const host = useHost();

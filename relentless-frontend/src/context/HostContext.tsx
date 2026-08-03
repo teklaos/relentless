@@ -11,8 +11,8 @@ import {
   EditSpacePayload,
   Draft,
   WalletTransaction
-} from "@/data/types";
-import { blankDraft, defaultHours, hoursFromSpace } from "@/data/format";
+} from "@/lib/types";
+import { blankDraft, defaultHours, hoursFromSpace } from "@/lib/format";
 import {
   changeSpaceStatus,
   createSpace,

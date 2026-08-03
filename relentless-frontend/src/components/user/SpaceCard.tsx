@@ -2,8 +2,8 @@
 
 import "./SpaceCard.css";
 import Placeholder from "@/components/shared/ui/Placeholder";
-import { Space } from "@/data/types";
-import { fmtPrice } from "@/data/format";
+import { Space } from "@/lib/types";
+import { fmtPrice } from "@/lib/format";
 import { imageUrl } from "@/lib/api";
 import { CAT_ICON_COMPONENT, CAT_ICON_FALLBACK } from "@/lib/iconMap";
 import Image from "next/image";

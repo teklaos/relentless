@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { useHost } from "@/context/HostContext";
 import { debitWallet } from "@/lib/api";
-import { fmtPrice, buildEarningsBars } from "@/data/format";
+import { fmtPrice, buildEarningsBars } from "@/lib/format";
 import TransactionTable from "@/components/shared/ui/TransactionTable";
 
 export default function Wallet() {

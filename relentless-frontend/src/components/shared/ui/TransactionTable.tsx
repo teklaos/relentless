@@ -2,8 +2,8 @@
 
 import "./TransactionTable.css";
 import { Receipt } from "lucide-react";
-import { WalletTransaction } from "@/data/types";
-import { fmtDate, fmtPrice } from "@/data/format";
+import { WalletTransaction } from "@/lib/types";
+import { fmtDate, fmtPrice } from "@/lib/format";
 
 interface TransactionTableProps {
   transactions: WalletTransaction[];

@@ -12,7 +12,7 @@ import {
   BarChart3,
   type LucideIcon
 } from "lucide-react";
-import type { User as AppUser } from "@/data/types";
+import type { User as AppUser } from "@/lib/types";
 
 export type NavItem = { path: string; label: string; Icon: LucideIcon };
 

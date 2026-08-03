@@ -4,7 +4,7 @@ import "./Reviews.css";
 import { Star } from "lucide-react";
 import { useHost } from "@/context/HostContext";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
-import { fmtDate } from "@/data/format";
+import { fmtDate } from "@/lib/format";
 import Stars from "@/components/shared/ui/Stars";
 
 export default function Reviews() {

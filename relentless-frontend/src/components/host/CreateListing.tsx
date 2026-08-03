@@ -9,7 +9,7 @@ import { useHost } from "@/context/HostContext";
 import { imageUrl } from "@/lib/api";
 import Placeholder from "@/components/shared/ui/Placeholder";
 import { Dropdown } from "@/components/shared/ui/Dropdown";
-import { HOST_KEEP_RATE, fmtPrice, net } from "@/data/format";
+import { HOST_KEEP_RATE, fmtPrice, net } from "@/lib/format";
 
 const STEP_LABELS = ["Basics", "Location", "Pricing", "Working hours", "Amenities", "Photos", "Review"];
 

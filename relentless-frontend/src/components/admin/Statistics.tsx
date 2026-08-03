@@ -3,8 +3,8 @@
 import "./Admin.css";
 import { useEffect, useState } from "react";
 import { fetchAdminUsers, fetchAdminBookings, fetchSpaces } from "@/lib/api";
-import { AdminUser, Booking, Space, WalletTransaction } from "@/data/types";
-import { fmtPrice, buildEarningsBars, HOST_KEEP_RATE } from "@/data/format";
+import { AdminUser, Booking, Space, WalletTransaction } from "@/lib/types";
+import { fmtPrice, buildEarningsBars, HOST_KEEP_RATE } from "@/lib/format";
 
 const PAID_STATUSES = new Set(["CONFIRMED", "COMPLETED"]);
 
