@@ -19,6 +19,7 @@ public class EmailServiceImpl implements EmailService {
   private static final String fromEmail = "noreply@relentless.com";
   private static final String fromName = "Relentless";
 
+  @Override
   @Async
   @SneakyThrows
   public void sendEmail(String to, String subject, String text) {

@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,6 +34,7 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
 
   @Override
+  @PreAuthorize("hasRole('ADMIN')")
   public List<AdminUserResponse> getAll() {
     return userRepository.findAllByIsDeletedFalse().stream()
         .map(userMapper::toAdminUserResponse)
@@ -53,6 +55,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @PreAuthorize("hasRole('ADMIN')")
   public AdminUserResponse getById(Long id) {
     var user =
         userRepository

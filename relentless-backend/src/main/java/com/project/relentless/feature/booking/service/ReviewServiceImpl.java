@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,7 @@ public class ReviewServiceImpl implements ReviewService {
   }
 
   @Override
+  @PreAuthorize("hasRole('HOST')")
   public List<ReviewResponse> getHostedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
 
@@ -50,6 +52,7 @@ public class ReviewServiceImpl implements ReviewService {
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('USER')")
   public ReviewResponse leave(LeaveReviewRequest request) {
     Long userId = authService.getCurrentUserId();
 

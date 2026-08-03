@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +60,7 @@ public class SpaceServiceImpl implements SpaceService {
   }
 
   @Override
+  @PreAuthorize("hasRole('USER')")
   public List<SpaceResponse> getSavedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
     return spaceRepository.findBySavedByIdAndStatus(userId, SpaceStatus.ACTIVE).stream()
@@ -67,6 +69,7 @@ public class SpaceServiceImpl implements SpaceService {
   }
 
   @Override
+  @PreAuthorize("hasRole('HOST')")
   public List<SpaceResponse> getHostedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
     return spaceRepository.findByHostIdAndStatusNot(userId, SpaceStatus.DELETED).stream()
@@ -143,6 +146,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('USER')")
   public void save(Long id) {
     Long userId = authService.getCurrentUserId();
     var user =
@@ -164,6 +168,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('USER')")
   public void unsave(Long id) {
     Long userId = authService.getCurrentUserId();
     var user =
@@ -185,6 +190,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('HOST')")
   public SpaceResponse create(CreateSpaceRequest request) {
     Long userId = authService.getCurrentUserId();
     var user =
@@ -225,6 +231,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('HOST')")
   public SpaceResponse edit(Long id, EditSpaceRequest request) {
     var space = getOwnedSpaceByIdOrThrow(id, "You are not allowed to edit this space");
 
@@ -283,6 +290,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('HOST')")
   public SpaceResponse changeStatus(Long id, SpaceStatusRequest request) {
     if (request.status() == SpaceStatus.DELETED) {
       throw new IllegalArgumentException("Cannot change status to DELETED");
@@ -301,6 +309,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('HOST')")
   public void delete(Long id) {
     var space = getOwnedSpaceByIdOrThrow(id, "You are not allowed to delete this space");
     space.setStatus(SpaceStatus.DELETED);

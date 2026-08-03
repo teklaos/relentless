@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,11 +39,13 @@ public class BookingServiceImpl implements BookingService {
   private static final int SLOT_MINUTES = 30;
 
   @Override
+  @PreAuthorize("hasRole('ADMIN')")
   public List<BookingResponse> getAll() {
     return bookingRepository.findAll().stream().map(bookingMapper::toBookingResponse).toList();
   }
 
   @Override
+  @PreAuthorize("hasRole('USER')")
   public List<BookingResponse> getByCurrentUser() {
     Long userId = authService.getCurrentUserId();
     return bookingRepository.findAllByUserId(userId).stream()
@@ -51,6 +54,7 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
+  @PreAuthorize("hasRole('HOST')")
   public List<BookingResponse> getHostedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
     return bookingRepository.findAllBySpaceHostId(userId).stream()
@@ -60,6 +64,7 @@ public class BookingServiceImpl implements BookingService {
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('USER')")
   public BookingCheckoutResponse create(CreateBookingRequest request) {
     if (!request.startTime().isBefore(request.endTime())) {
       throw new IllegalArgumentException("Start time must be before end time");

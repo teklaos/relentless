@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,6 +28,7 @@ public class WalletServiceImpl implements WalletService {
   private static final BigDecimal HOST_KEEP_RATE = new BigDecimal("0.95");
 
   @Override
+  @PreAuthorize("hasRole('HOST')")
   public BalanceResponse getBalanceByCurrentUser() {
     Long userId = authService.getCurrentUserId();
     var balance = getBalanceByUserId(userId);
@@ -35,6 +37,7 @@ public class WalletServiceImpl implements WalletService {
   }
 
   @Override
+  @PreAuthorize("hasRole('HOST')")
   public List<TransactionResponse> getTransactionsByCurrentUser() {
     Long userId = authService.getCurrentUserId();
     return transactionRepository.findAllByHostIdOrderByCreatedAtDesc(userId).stream()
@@ -68,6 +71,7 @@ public class WalletServiceImpl implements WalletService {
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('HOST')")
   public void debit(DebitWalletRequest request) {
     Long userId = authService.getCurrentUserId();
     var balance = getBalanceByUserId(userId);
