@@ -6,6 +6,7 @@ import {
   User,
   AmenitySummary,
   TimeSlot,
+  DayAvailability,
   AuthTokens,
   CreateSpacePayload,
   EditSpacePayload,
@@ -144,6 +145,10 @@ export function fetchSpace(id: number): Promise<Space> {
 
 export function fetchAvailability(id: number, date: string): Promise<TimeSlot[]> {
   return request<TimeSlot[]>(`/api/spaces/${id}/availability?date=${date}`);
+}
+
+export function fetchMonthAvailability(id: number, month: string): Promise<DayAvailability[]> {
+  return request<DayAvailability[]>(`/api/spaces/${id}/availability/month?month=${month}`);
 }
 
 export function fetchMe(): Promise<User> {

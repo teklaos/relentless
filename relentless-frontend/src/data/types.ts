@@ -139,6 +139,11 @@ export interface TimeSlot {
   isAvailable: boolean;
 }
 
+export interface DayAvailability {
+  date: string;
+  isAvailable: boolean;
+}
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;

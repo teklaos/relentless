@@ -127,10 +127,12 @@
   font-family: var(--font-geist-mono), "Geist Mono", monospace;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.12s;
+  transition:
+    all 0.12s,
+    opacity 0.2s;
 }
 
-.cal-cell:hover:not(.past, .closed) {
+.cal-cell:hover:not(.unavailable) {
   border-color: var(--hairline-strong);
 }
 
@@ -140,14 +142,8 @@
   border-color: var(--ink);
 }
 
-.cal-cell.past {
+.cal-cell.unavailable {
   opacity: 0.3;
-  cursor: default;
-}
-
-.cal-cell.closed:not(.active) {
-  color: var(--ink-4);
-  background: var(--bg-sunken);
   cursor: default;
 }
 

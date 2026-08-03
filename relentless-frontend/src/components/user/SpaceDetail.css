@@ -255,6 +255,10 @@
     top: 0;
   }
 
+  .drawer-head {
+    padding: 14px 20px;
+  }
+
   .drawer-body {
     grid-template-columns: 1fr;
   }

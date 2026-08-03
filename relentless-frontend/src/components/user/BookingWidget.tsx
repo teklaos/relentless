@@ -2,8 +2,8 @@
 
 import "./BookingWidget.css";
 import { useState, useMemo, useEffect } from "react";
-import { fmtPrice, fmtDateShort, todayStart, DOW, MONTHS_FULL, DAY_NAME } from "@/data/format";
-import { fetchAvailability } from "@/lib/api";
+import { fmtPrice, fmtDateShort, todayStart, DOW, MONTHS_FULL } from "@/data/format";
+import { fetchAvailability, fetchMonthAvailability } from "@/lib/api";
 import { Space, TimeSlot } from "@/data/types";
 import { Dropdown } from "@/components/shared/ui/Dropdown";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
@@ -50,8 +50,10 @@ export default function BookingWidget({ space, onBook }: BookingWidgetProps) {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [startIdx, setStartIdx] = useState<number | null>(null);
   const [endIdx, setEndIdx] = useState<number | null>(null);
+  const [slotData, setSlotData] = useState<{ month: string; days: Set<string> } | null>(null);
 
   const dateKey = ymd(selectedDate);
+  const monthKey = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, "0")}`;
 
   useEffect(() => {
     let active = true;
@@ -75,6 +77,22 @@ export default function BookingWidget({ space, onBook }: BookingWidgetProps) {
     };
   }, [space.id, dateKey]);
 
+  useEffect(() => {
+    let active = true;
+    fetchMonthAvailability(space.id, monthKey)
+      .then((days) => {
+        if (!active) return;
+        setSlotData({ month: monthKey, days: new Set(days.filter((d) => d.isAvailable).map((d) => d.date)) });
+      })
+      .catch(() => {
+        if (!active) return;
+        setSlotData({ month: monthKey, days: new Set() });
+      });
+    return () => {
+      active = false;
+    };
+  }, [space.id, monthKey]);
+
   const monthCells = useMemo(() => {
     const first = new Date(month.getFullYear(), month.getMonth(), 1);
     const offset = (first.getDay() + 6) % 7;
@@ -84,9 +102,6 @@ export default function BookingWidget({ space, onBook }: BookingWidgetProps) {
     for (let d = 1; d <= days; d++) cells.push(new Date(month.getFullYear(), month.getMonth(), d));
     return cells;
   }, [month]);
-
-  const openDows = useMemo(() => new Set((space.workingHours ?? []).map((h) => h.dayOfWeek)), [space.workingHours]);
-  const isClosed = (d: Date) => !openDows.has(DAY_NAME[d.getDay()]);
 
   const atCurrentMonth = month.getFullYear() === today.getFullYear() && month.getMonth() === today.getMonth();
 
@@ -170,17 +185,14 @@ export default function BookingWidget({ space, onBook }: BookingWidgetProps) {
         <div className="cal-grid">
           {monthCells.map((d, i) => {
             if (!d) return <div key={`b${i}`} className="cal-blank" />;
-            const past = d < today;
-            const closed = isClosed(d);
-            const blocked = past || closed;
+            const loadedDays = slotData?.month === monthKey ? slotData.days : null;
+            const noSlots = d < today || (loadedDays !== null && !loadedDays.has(ymd(d)));
             return (
               <button
-                key={d.getDate()}
-                disabled={blocked}
-                className={`cal-cell ${sameDay(d, selectedDate) ? "active" : ""} ${past ? "past" : ""} ${
-                  closed ? "closed" : ""
-                }`}
-                onClick={() => !blocked && setSelectedDate(d)}
+                key={ymd(d)}
+                disabled={noSlots}
+                className={`cal-cell ${sameDay(d, selectedDate) ? "active" : noSlots ? "unavailable" : ""}`}
+                onClick={() => !noSlots && setSelectedDate(d)}
               >
                 {d.getDate()}
               </button>
