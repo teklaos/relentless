@@ -27,8 +27,8 @@ export default function Saved({ saved, onSave, onOpen }: SavedProps) {
         </div>
       ) : (
         <div className="space-grid">
-          {saved.map((s) => (
-            <SpaceCard key={s.id} space={s} saved={true} onSave={onSave} onOpen={onOpen} />
+          {saved.map((s, i) => (
+            <SpaceCard key={s.id} space={s} saved={true} onSave={onSave} onOpen={onOpen} priority={i === 0} />
           ))}
         </div>
       )}

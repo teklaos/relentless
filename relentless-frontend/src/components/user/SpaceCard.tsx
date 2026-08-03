@@ -14,9 +14,10 @@ interface SpaceCardProps {
   saved: boolean;
   onSave: (id: number) => void;
   onOpen: (space: Space) => void;
+  priority?: boolean;
 }
 
-export default function SpaceCard({ space, saved, onSave, onOpen }: SpaceCardProps) {
+export default function SpaceCard({ space, saved, onSave, onOpen, priority }: SpaceCardProps) {
   const cat = space.category;
   const rating = space.rating;
   const CatIcon = CAT_ICON_COMPONENT[cat.id] ?? CAT_ICON_FALLBACK;
@@ -32,6 +33,7 @@ export default function SpaceCard({ space, saved, onSave, onOpen }: SpaceCardPro
             fill
             sizes="(max-width: 768px) 100vw, 360px"
             style={{ objectFit: "cover" }}
+            priority={priority}
           />
         ) : (
           <Placeholder />

@@ -203,8 +203,15 @@ export default function Explore({ spaces, categories, loading, error, savedIds, 
         </div>
       ) : (
         <div className="space-grid">
-          {filtered.map((s) => (
-            <SpaceCard key={s.id} space={s} saved={savedIds.has(s.id)} onSave={onSave} onOpen={onOpen} />
+          {filtered.map((s, i) => (
+            <SpaceCard
+              key={s.id}
+              space={s}
+              saved={savedIds.has(s.id)}
+              onSave={onSave}
+              onOpen={onOpen}
+              priority={i === 0}
+            />
           ))}
         </div>
       )}

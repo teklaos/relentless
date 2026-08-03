@@ -112,6 +112,7 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
                   fill
                   sizes="(max-width: 768px) 100vw, 720px"
                   style={{ objectFit: "cover" }}
+                  priority
                 />
               ) : (
                 <Placeholder />
