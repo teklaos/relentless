@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
-public class StripeController {
+public class PaymentController {
 
-  private final StripeService stripeService;
+  private final PaymentService paymentService;
   private final BookingRepository bookingRepository;
   private final WalletService walletService;
 
   @PostMapping("/webhook")
   public ResponseEntity<String> handleStripeWebhook(
       @RequestBody String payload, @RequestHeader("Stripe-Signature") String signature) {
-    var event = stripeService.constructWebhookEvent(payload, signature);
+    var event = paymentService.constructWebhookEvent(payload, signature);
 
     if (event.getType().equals("checkout.session.completed")) {
       var session = (Session) event.getDataObjectDeserializer().getObject().orElseThrow();

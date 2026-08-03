@@ -8,7 +8,7 @@ import com.project.relentless.feature.booking.dto.response.BookingResponse;
 import com.project.relentless.feature.booking.entity.Booking;
 import com.project.relentless.feature.booking.mapper.BookingMapper;
 import com.project.relentless.feature.booking.repository.BookingRepository;
-import com.project.relentless.feature.payment.StripeService;
+import com.project.relentless.feature.payment.PaymentService;
 import com.project.relentless.feature.space.SpaceStatus;
 import com.project.relentless.feature.space.repository.SpaceRepository;
 import com.project.relentless.feature.user.UserRepository;
@@ -34,7 +34,7 @@ public class BookingServiceImpl implements BookingService {
   private final UserRepository userRepository;
   private final SpaceRepository spaceRepository;
   private final AuthService authService;
-  private final StripeService stripeService;
+  private final PaymentService paymentService;
 
   private static final int SLOT_MINUTES = 30;
 
@@ -131,7 +131,7 @@ public class BookingServiceImpl implements BookingService {
             .build();
 
     var saved = bookingRepository.save(booking);
-    var session = stripeService.createCheckoutSession(saved);
+    var session = paymentService.createCheckoutSession(saved);
 
     return bookingMapper.toBookingCheckoutResponse(saved, session.getUrl());
   }
