@@ -5,14 +5,24 @@ import { useState } from "react";
 import Image from "next/image";
 import Placeholder from "@/components/shared/ui/Placeholder";
 import { imageUrl } from "@/lib/api";
-import { Booking } from "@/data/types";
+import { Booking, BookingStatus } from "@/data/types";
 import { fmtDateLong, fmtTimeRange, fmtPrice } from "@/data/format";
 import { Calendar, Star, Check } from "lucide-react";
 
 const STATUS_CLS: Record<string, string> = {
+  PENDING: "pending",
   CONFIRMED: "confirmed",
   COMPLETED: "completed",
   CANCELLED: "cancelled"
+};
+
+type HistoryTab = "UPCOMING" | "PAST" | "PENDING" | "CANCELLED" | "ALL";
+
+const TAB_STATUS: Partial<Record<HistoryTab, BookingStatus>> = {
+  UPCOMING: "CONFIRMED",
+  PAST: "COMPLETED",
+  PENDING: "PENDING",
+  CANCELLED: "CANCELLED"
 };
 
 interface HistoryProps {
@@ -22,13 +32,15 @@ interface HistoryProps {
 }
 
 export default function History({ bookings, onLeaveReview, onOpenSpace }: HistoryProps) {
-  const [tab, setTab] = useState<"UPCOMING" | "PAST" | "ALL">("UPCOMING");
-  const now = new Date();
-  const upcoming = bookings.filter((b) => new Date(b.startTime) >= now && b.status !== "CANCELLED");
-  const past = bookings.filter((b) => new Date(b.startTime) < now || b.status === "CANCELLED");
+  const [tab, setTab] = useState<HistoryTab>("UPCOMING");
 
-  const list = tab === "UPCOMING" ? upcoming : tab === "PAST" ? past : bookings;
-  const sorted = [...list].sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+  const byTab = (t: HistoryTab) => {
+    const status = TAB_STATUS[t];
+    const list = status ? bookings.filter((b) => b.status === status) : bookings;
+    return [...list].sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+  };
+
+  const sorted = byTab(tab);
 
   return (
     <div>
@@ -37,20 +49,10 @@ export default function History({ bookings, onLeaveReview, onOpenSpace }: Histor
       </div>
 
       <div className="history-tabs">
-        {(
-          [
-            ["UPCOMING", upcoming.length],
-            ["PAST", past.length],
-            ["ALL", bookings.length]
-          ] as [string, number][]
-        ).map(([k, ct]) => (
-          <button
-            key={k}
-            className={`history-tab ${tab === k ? "active" : ""}`}
-            onClick={() => setTab(k as "UPCOMING" | "PAST" | "ALL")}
-          >
+        {(["UPCOMING", "PAST", "PENDING", "CANCELLED", "ALL"] as HistoryTab[]).map((k) => (
+          <button key={k} className={`history-tab ${tab === k ? "active" : ""}`} onClick={() => setTab(k)}>
             {k}
-            <span className="ct">{ct}</span>
+            <span className="ct">{byTab(k).length}</span>
           </button>
         ))}
       </div>
@@ -62,9 +64,9 @@ export default function History({ bookings, onLeaveReview, onOpenSpace }: Histor
           </div>
           <div className="empty-h">No {tab === "ALL" ? "" : `${tab.toLowerCase()} `}bookings</div>
           <div className="empty-p">
-            {tab === "PAST"
-              ? "Completed and cancelled bookings show up here."
-              : "When you book a space, it shows up here."}
+            {tab === "UPCOMING" || tab === "ALL"
+              ? "When you book a space, it shows up here."
+              : `${tab.charAt(0)}${tab.slice(1).toLowerCase()} bookings show up here.`}
           </div>
         </div>
       ) : (

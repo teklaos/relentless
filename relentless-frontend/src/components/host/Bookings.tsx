@@ -5,11 +5,18 @@ import { Calendar } from "lucide-react";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import { BookingTab, useHost } from "@/context/HostContext";
 import { fmtDate, fmtTimeRange, fmtPrice, net, statusMeta } from "@/data/format";
+import { Booking, BookingStatus } from "@/data/types";
 
 const tabDefs: [BookingTab, string][] = [
   ["upcoming", "Upcoming"],
-  ["past", "Past"]
+  ["past", "Past"],
+  ["pending", "Pending"],
+  ["cancelled", "Cancelled"],
+  ["all", "All"]
 ];
+
+const byStatus = (bookings: Booking[], status: BookingStatus) =>
+  bookings.filter((b) => b.status === status).sort((a, b) => b.startTime.localeCompare(a.startTime));
 
 export default function Bookings() {
   const host = useHost();
@@ -18,15 +25,20 @@ export default function Bookings() {
   const upB = host.bookings
     .filter((b) => b.status === "CONFIRMED")
     .sort((a, b) => a.startTime.localeCompare(b.startTime));
-  const pastB = host.bookings
-    .filter((b) => b.status === "COMPLETED" || b.status === "CANCELLED")
-    .sort((a, b) => b.startTime.localeCompare(a.startTime));
+  const pastB = byStatus(host.bookings, "COMPLETED");
+  const pendingB = byStatus(host.bookings, "PENDING");
+  const cancelledB = byStatus(host.bookings, "CANCELLED");
+  const allB = [...host.bookings].sort((a, b) => b.startTime.localeCompare(a.startTime));
   const counts: Record<BookingTab, number> = {
     upcoming: upB.length,
-    past: pastB.length
+    past: pastB.length,
+    pending: pendingB.length,
+    cancelled: cancelledB.length,
+    all: allB.length
   };
 
-  const ledgerSrc = bt === "past" ? pastB : upB;
+  const ledgerSrc =
+    bt === "past" ? pastB : bt === "pending" ? pendingB : bt === "cancelled" ? cancelledB : bt === "all" ? allB : upB;
 
   return (
     <div>
@@ -54,11 +66,11 @@ export default function Bookings() {
           <div className="empty-icon">
             <Calendar size={20} />
           </div>
-          <div className="empty-h">{bt === "past" ? "No past bookings yet" : "No bookings yet"}</div>
+          <div className="empty-h">{bt === "upcoming" ? "No bookings yet" : `No ${bt} bookings`}</div>
           <div className="empty-p">
-            {bt === "past"
-              ? "Completed and cancelled bookings show up here."
-              : "When a guest books your space, it shows up here."}
+            {bt === "upcoming"
+              ? "When a guest books your space, it shows up here."
+              : `${tabDefs.find(([k]) => k === bt)?.[1]} bookings show up here.`}
           </div>
         </div>
       ) : (

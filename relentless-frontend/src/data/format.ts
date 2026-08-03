@@ -156,6 +156,7 @@ export function statusMeta(s: string): { fg: string; dot: string } {
     case "CONFIRMED":
     case "ACTIVE":
       return { fg: "var(--ok)", dot: "var(--ok-dot)" };
+    case "PENDING":
     case "INACTIVE":
       return { fg: "var(--warn)", dot: "var(--warn-dot)" };
     case "CANCELLED":

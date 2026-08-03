@@ -31,7 +31,7 @@ import {
 const draftWorkingHours = (hours: Draft["hours"]) =>
   hours.filter((h) => h.on).map((h) => ({ dayOfWeek: h.dayOfWeek, openTime: h.open, closeTime: h.close }));
 
-export type BookingTab = "upcoming" | "past";
+export type BookingTab = "upcoming" | "past" | "pending" | "cancelled" | "all";
 
 export interface HostContextValue {
   isMobile: boolean;

@@ -3,9 +3,6 @@
   background: var(--bg-elevated);
   position: sticky;
   top: 32px;
-  box-shadow:
-    8px 8px 0 -1px var(--accent-softer),
-    8px 8px 0 var(--accent-soft);
 }
 
 .book-head {

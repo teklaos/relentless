@@ -172,6 +172,7 @@
 }
 
 .profile-stat {
+  background: var(--bg-elevated);
   padding: 24px 20px;
   border-right: 1px solid var(--hairline);
 }
@@ -199,6 +200,7 @@
 }
 
 .settings-list {
+  background: var(--bg-elevated);
   border: 1px solid var(--hairline);
 }
 

@@ -151,6 +151,14 @@
   border-radius: 50%;
 }
 
+.br-status.pending {
+  color: var(--warn);
+}
+
+.br-status.pending .dot {
+  background: var(--warn-dot);
+}
+
 .br-status.confirmed {
   color: oklch(45% 0.13 145deg);
 }

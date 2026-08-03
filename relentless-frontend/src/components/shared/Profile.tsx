@@ -9,7 +9,7 @@ import Modal from "@/components/shared/ui/Modal";
 import DatePicker from "@/components/shared/ui/DatePicker";
 import { useApp } from "@/context/AppContext";
 import { uploadImage } from "@/lib/api";
-import { Edit2, ArrowRight, Camera } from "lucide-react";
+import { Edit2, ArrowRight, Camera, LogOut } from "lucide-react";
 
 interface ProfileProps {
   user: User | null;
@@ -225,7 +225,7 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
                 <span className="setting-d">End session on this device</span>
               </div>
               <span className="setting-v field-err">
-                <ArrowRight size={12} />
+                <LogOut size={12} />
               </span>
             </div>
           </div>
