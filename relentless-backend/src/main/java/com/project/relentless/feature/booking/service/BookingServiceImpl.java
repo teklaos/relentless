@@ -147,4 +147,16 @@ public class BookingServiceImpl implements BookingService {
       bookingRepository.save(booking);
     }
   }
+
+  @Override
+  @Transactional
+  public void completeFinished() {
+    var bookings =
+        bookingRepository.findAllByStatusAndEndTimeBefore(
+            BookingStatus.CONFIRMED, LocalDateTime.now());
+    for (var booking : bookings) {
+      booking.setStatus(BookingStatus.COMPLETED);
+      bookingRepository.save(booking);
+    }
+  }
 }

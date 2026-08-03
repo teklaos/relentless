@@ -15,4 +15,9 @@ public class BookingScheduler {
   public void cancelPending() {
     bookingService.cancelPending();
   }
+
+  @Scheduled(cron = "5 */30 * * * *")
+  public void completeFinished() {
+    bookingService.completeFinished();
+  }
 }

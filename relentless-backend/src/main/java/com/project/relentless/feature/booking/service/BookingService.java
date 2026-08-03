@@ -15,4 +15,6 @@ public interface BookingService {
   BookingCheckoutResponse create(CreateBookingRequest request);
 
   void cancelPending();
+
+  void completeFinished();
 }
