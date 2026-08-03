@@ -8,6 +8,7 @@ import com.project.relentless.feature.space.SpaceStatus;
 import com.project.relentless.feature.space.dto.request.CreateSpaceRequest;
 import com.project.relentless.feature.space.dto.request.EditSpaceRequest;
 import com.project.relentless.feature.space.dto.request.SpaceStatusRequest;
+import com.project.relentless.feature.space.dto.response.DayAvailabilityResponse;
 import com.project.relentless.feature.space.dto.response.SpaceResponse;
 import com.project.relentless.feature.space.dto.response.TimeSlotResponse;
 import com.project.relentless.feature.space.entity.Space;
@@ -23,6 +24,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -142,6 +144,20 @@ public class SpaceServiceImpl implements SpaceService {
     }
 
     return availableSlots;
+  }
+
+  @Override
+  public List<DayAvailabilityResponse> getMonthAvailabilityById(Long id, YearMonth month) {
+    var availableDays = new ArrayList<DayAvailabilityResponse>();
+
+    for (var date = month.atDay(1); !date.isAfter(month.atEndOfMonth()); date = date.plusDays(1)) {
+      boolean isAvailable =
+          !date.isBefore(LocalDate.now())
+              && getAvailabilityById(id, date).stream().anyMatch(TimeSlotResponse::isAvailable);
+      availableDays.add(new DayAvailabilityResponse(date, isAvailable));
+    }
+
+    return availableDays;
   }
 
   @Override

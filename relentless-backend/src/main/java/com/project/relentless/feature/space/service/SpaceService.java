@@ -3,9 +3,11 @@ package com.project.relentless.feature.space.service;
 import com.project.relentless.feature.space.dto.request.CreateSpaceRequest;
 import com.project.relentless.feature.space.dto.request.EditSpaceRequest;
 import com.project.relentless.feature.space.dto.request.SpaceStatusRequest;
+import com.project.relentless.feature.space.dto.response.DayAvailabilityResponse;
 import com.project.relentless.feature.space.dto.response.SpaceResponse;
 import com.project.relentless.feature.space.dto.response.TimeSlotResponse;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 public interface SpaceService {
@@ -18,6 +20,8 @@ public interface SpaceService {
   SpaceResponse getById(Long id);
 
   List<TimeSlotResponse> getAvailabilityById(Long id, LocalDate date);
+
+  List<DayAvailabilityResponse> getMonthAvailabilityById(Long id, YearMonth month);
 
   void save(Long id);
 
