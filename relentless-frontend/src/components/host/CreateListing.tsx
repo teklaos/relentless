@@ -2,7 +2,7 @@
 
 import "./Host.css";
 import "./CreateListing.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import { useHost } from "@/context/HostContext";
@@ -54,6 +54,11 @@ export default function CreateListing() {
   const [dropIdx, setDropIdx] = useState<number | null>(null);
   const [publishing, setPublishing] = useState(false);
   const fileInput = useRef<HTMLInputElement | null>(null);
+  const stepRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    stepRef.current?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }, [step]);
 
   const onPickFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
@@ -119,6 +124,7 @@ export default function CreateListing() {
             <div key={label} className="h-step">
               {i > 0 && <div className={`h-step-line ${canJump ? "active" : ""}`} />}
               <button
+                ref={active ? stepRef : undefined}
                 onClick={() => (canJump ? host.setStep(i) : undefined)}
                 disabled={!canJump}
                 className="h-step-btn"
@@ -131,7 +137,7 @@ export default function CreateListing() {
         })}
       </div>
 
-      <div className="h-create-grid">
+      <div className={`h-create-grid ${isLast ? "last" : ""}`}>
         <div className="card h-create-card">
           {step === 0 && (
             <div className="h-form-stack" style={{ gap: 20 }}>
@@ -258,7 +264,7 @@ export default function CreateListing() {
                 <label className="mono h-field-label" style={{ marginBottom: 0 }}>
                   Working hours
                 </label>
-                <button type="button" onClick={() => host.copyDayToAll(0)} className="mono h-sched-copy">
+                <button type="button" onClick={() => host.copyDayToAll(0)} className="btn mono h-cancel">
                   Copy Monday to all
                 </button>
               </div>
@@ -413,7 +419,7 @@ export default function CreateListing() {
           </div>
         </div>
 
-        <div className="h-preview">
+        <div className={`h-preview ${isLast ? "on-last" : ""}`}>
           <div className="mono h-preview-eyebrow">Live preview</div>
           <div className="card" style={{ overflow: "hidden" }}>
             <div

@@ -14,10 +14,16 @@
   }
 }
 
-@media (width <= 768px) {
+@media (width <= 480px) {
   .h-listing-grid {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+}
+
+@media (width <= 768px) {
+  .h-list-country {
+    display: none;
   }
 }
 

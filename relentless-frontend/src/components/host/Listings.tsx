@@ -82,9 +82,8 @@ export default function Listings() {
           {cards.map((s) => {
             const isDeleted = s.status === "DELETED";
             const isActive = s.status === "ACTIVE";
-            const loc = [`${s.address.street} ${s.address.streetNumber}`, s.address.city, s.address.country]
-              .join(" - ")
-              .toUpperCase();
+            const loc = `${s.address.street} ${s.address.streetNumber} - ${s.address.city}`.toUpperCase();
+            const country = ` - ${s.address.country}`.toUpperCase();
             const CatIcon = CAT_ICON_COMPONENT[s.category.id] ?? CAT_ICON_FALLBACK;
             const cover = s.imageKeys?.[0];
             return (
@@ -116,7 +115,10 @@ export default function Listings() {
                     </span>
                   </div>
                   <div className="mono h-list-meta">
-                    <span className="h-list-loc truncate">{loc}</span>
+                    <span className="h-list-loc truncate">
+                      {loc}
+                      <span className="h-list-country">{country}</span>
+                    </span>
                     <span className="h-list-rating">
                       <Star size={10} fill="currentColor" strokeWidth={0} />
                       <span className="h-list-rating-num">{s.rating.toFixed(2)}</span>

@@ -249,7 +249,7 @@ a {
   }
 }
 
-@media (width <= 768px) {
+@media (width <= 480px) {
   .space-grid {
     grid-template-columns: 1fr;
     gap: 12px;

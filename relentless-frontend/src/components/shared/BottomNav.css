@@ -28,7 +28,6 @@
     color: var(--ink-3);
     font-family: var(--font-geist-mono), "Geist Mono", monospace;
     font-size: 9.5px;
-    text-transform: uppercase;
     letter-spacing: 0.08em;
     transition: color 0.12s;
     padding: 8px 0;
