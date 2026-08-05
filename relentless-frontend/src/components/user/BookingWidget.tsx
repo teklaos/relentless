@@ -157,90 +157,94 @@ export default function BookingWidget({ space, onBook }: BookingWidgetProps) {
       </div>
 
       <div className="book-body">
-        <div className="cal-head">
-          <button
-            className="cal-nav"
-            onClick={() => shiftMonth(-1)}
-            disabled={atCurrentMonth}
-            aria-label="Previous month"
-          >
-            <ChevronLeft size={16} />
-          </button>
-          <div className="cal-title">
-            {MONTHS_FULL[month.getMonth()]} {month.getFullYear()}
-          </div>
-          <button className="cal-nav" onClick={() => shiftMonth(1)} aria-label="Next month">
-            <ChevronRight size={16} />
-          </button>
-        </div>
-
-        <div className="cal-dow-row">
-          {DOW.map((d) => (
-            <div key={d} className="cal-dow">
-              {d[0]}
+        <div className="book-cal">
+          <div className="cal-head">
+            <button
+              className="cal-nav"
+              onClick={() => shiftMonth(-1)}
+              disabled={atCurrentMonth}
+              aria-label="Previous month"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <div className="cal-title">
+              {MONTHS_FULL[month.getMonth()]} {month.getFullYear()}
             </div>
-          ))}
+            <button className="cal-nav" onClick={() => shiftMonth(1)} aria-label="Next month">
+              <ChevronRight size={16} />
+            </button>
+          </div>
+
+          <div className="cal-dow-row">
+            {DOW.map((d) => (
+              <div key={d} className="cal-dow">
+                {d[0]}
+              </div>
+            ))}
+          </div>
+
+          <div className="cal-grid">
+            {monthCells.map((d, i) => {
+              if (!d) return <div key={`b${i}`} className="cal-blank" />;
+              const loadedDays = slotData?.month === monthKey ? slotData.days : null;
+              const noSlots = d < today || (loadedDays !== null && !loadedDays.has(ymd(d)));
+              return (
+                <button
+                  key={ymd(d)}
+                  disabled={noSlots}
+                  className={`cal-cell ${sameDay(d, selectedDate) ? "active" : noSlots ? "unavailable" : ""}`}
+                  onClick={() => !noSlots && setSelectedDate(d)}
+                >
+                  {d.getDate()}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="cal-grid">
-          {monthCells.map((d, i) => {
-            if (!d) return <div key={`b${i}`} className="cal-blank" />;
-            const loadedDays = slotData?.month === monthKey ? slotData.days : null;
-            const noSlots = d < today || (loadedDays !== null && !loadedDays.has(ymd(d)));
-            return (
-              <button
-                key={ymd(d)}
-                disabled={noSlots}
-                className={`cal-cell ${sameDay(d, selectedDate) ? "active" : noSlots ? "unavailable" : ""}`}
-                onClick={() => !noSlots && setSelectedDate(d)}
-              >
-                {d.getDate()}
-              </button>
-            );
-          })}
-        </div>
+        <div className="book-pick">
+          <div className="book-label">Start & end - {fmtDateShort(dateKey)}</div>
+          {slots.length === 0 || startOptions.length === 0 ? (
+            <div className="time-empty">NO SLOTS THIS DAY</div>
+          ) : (
+            <div className="book-fields">
+              <Dropdown
+                label="FROM"
+                value={startIdx}
+                options={startOptions.map((o) => ({
+                  value: o.i,
+                  label: fmtT(o.time)
+                }))}
+                onChange={chooseStart}
+              />
+              <Dropdown
+                label="TO"
+                value={endIdx}
+                disabled={startIdx === null}
+                options={endOptions.map((o) => ({
+                  value: o.i,
+                  label: fmtT(o.time)
+                }))}
+                onChange={setEndIdx}
+              />
+            </div>
+          )}
 
-        <div className="book-label">Start & end - {fmtDateShort(dateKey)}</div>
-        {slots.length === 0 || startOptions.length === 0 ? (
-          <div className="time-empty">NO SLOTS THIS DAY</div>
-        ) : (
-          <div className="book-fields">
-            <Dropdown
-              label="FROM"
-              value={startIdx}
-              options={startOptions.map((o) => ({
-                value: o.i,
-                label: fmtT(o.time)
-              }))}
-              onChange={chooseStart}
-            />
-            <Dropdown
-              label="TO"
-              value={endIdx}
-              disabled={startIdx === null}
-              options={endOptions.map((o) => ({
-                value: o.i,
-                label: fmtT(o.time)
-              }))}
-              onChange={setEndIdx}
-            />
-          </div>
-        )}
-
-        <div className="summary">
-          <div className="summary-row">
-            <span>
-              {fmtPrice(space.pricePerHour)} × {ready ? fmtDur(duration) : "—"}
-            </span>
-            <span>{fmtPrice(total)}</span>
-          </div>
-          <div className="summary-row">
-            <span>{ready ? `${fmtT(startSlot.startTime)} — ${fmtT(endSlot.endTime)}` : "SELECT A RANGE"}</span>
-            <span>{fmtDateShort(dateKey)}</span>
-          </div>
-          <div className="summary-row total">
-            <span>TOTAL</span>
-            <span className="v">{fmtPrice(total)}</span>
+          <div className="summary">
+            <div className="summary-row">
+              <span>
+                {fmtPrice(space.pricePerHour)} × {ready ? fmtDur(duration) : "—"}
+              </span>
+              <span>{fmtPrice(total)}</span>
+            </div>
+            <div className="summary-row">
+              <span>{ready ? `${fmtT(startSlot.startTime)} — ${fmtT(endSlot.endTime)}` : "SELECT A RANGE"}</span>
+              <span>{fmtDateShort(dateKey)}</span>
+            </div>
+            <div className="summary-row total">
+              <span>TOTAL</span>
+              <span className="v">{fmtPrice(total)}</span>
+            </div>
           </div>
         </div>
       </div>

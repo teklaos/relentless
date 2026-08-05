@@ -52,6 +52,7 @@ export default function CreateListing() {
   const isLast = step === 6;
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dropIdx, setDropIdx] = useState<number | null>(null);
+  const [publishing, setPublishing] = useState(false);
   const fileInput = useRef<HTMLInputElement | null>(null);
 
   const onPickFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,13 +89,16 @@ export default function CreateListing() {
         : `${openDays.length} days - custom`;
 
   const cancel = () => router.push(host.editingId ? "/listings" : "/dashboard");
-  const onPrimary = () => {
-    if (isLast) {
-      host.publishDraft();
-      router.push("/listings");
-    } else {
+  const onPrimary = async () => {
+    if (!isLast) {
       host.nextStep();
+      return;
     }
+    if (publishing) return;
+    setPublishing(true);
+    const ok = await host.publishDraft();
+    if (ok) router.push("/listings");
+    else setPublishing(false);
   };
 
   return (
@@ -403,8 +407,8 @@ export default function CreateListing() {
             ) : (
               <span />
             )}
-            <button onClick={onPrimary} disabled={!canContinue} className="h-btn-dark h-foot-btn">
-              {isLast ? "Publish listing" : "Continue"}
+            <button onClick={onPrimary} disabled={!canContinue || publishing} className="h-btn-dark h-foot-btn">
+              {isLast ? (publishing ? "Publishing…" : "Publish listing") : "Continue"}
             </button>
           </div>
         </div>

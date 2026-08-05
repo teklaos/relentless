@@ -2,28 +2,12 @@
 
 import "./History.css";
 import { useState } from "react";
-import Image from "next/image";
-import Placeholder from "@/components/shared/ui/Placeholder";
-import { imageUrl } from "@/lib/api";
-import { Booking, BookingStatus } from "@/lib/types";
-import { fmtDateLong, fmtTimeRange, fmtPrice } from "@/lib/format";
-import { Calendar, Star, Check } from "lucide-react";
-
-const STATUS_CLS: Record<string, string> = {
-  PENDING: "pending",
-  CONFIRMED: "confirmed",
-  COMPLETED: "completed",
-  CANCELLED: "cancelled"
-};
-
-type HistoryTab = "UPCOMING" | "PAST" | "PENDING" | "CANCELLED" | "ALL";
-
-const TAB_STATUS: Partial<Record<HistoryTab, BookingStatus>> = {
-  UPCOMING: "CONFIRMED",
-  PAST: "COMPLETED",
-  PENDING: "PENDING",
-  CANCELLED: "CANCELLED"
-};
+import Modal from "@/components/shared/ui/Modal";
+import ThumbImg from "@/components/shared/ui/ThumbImg";
+import { Booking } from "@/lib/types";
+import { BOOKING_TABS, bookingsForTab, type BookingTab } from "@/lib/bookings";
+import { DAYS, fmtDateNoDow, fmtTimeRange, fmtPrice, statusMeta } from "@/lib/format";
+import { Calendar, Star, Check, MoreVertical } from "lucide-react";
 
 interface HistoryProps {
   bookings: Booking[];
@@ -32,15 +16,14 @@ interface HistoryProps {
 }
 
 export default function History({ bookings, onLeaveReview, onOpenSpace }: HistoryProps) {
-  const [tab, setTab] = useState<HistoryTab>("UPCOMING");
+  const [tab, setTab] = useState<BookingTab>("upcoming");
+  const [menuBooking, setMenuBooking] = useState<Booking | null>(null);
 
-  const byTab = (t: HistoryTab) => {
-    const status = TAB_STATUS[t];
-    const list = status ? bookings.filter((b) => b.status === status) : bookings;
-    return [...list].sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
-  };
-
-  const sorted = byTab(tab);
+  const sorted = bookingsForTab(bookings, tab);
+  const counts = Object.fromEntries(
+    BOOKING_TABS.map(({ key }) => [key, bookingsForTab(bookings, key).length])
+  ) as Record<BookingTab, number>;
+  const activeLabel = BOOKING_TABS.find((t) => t.key === tab)?.label ?? "";
 
   return (
     <div>
@@ -48,13 +31,15 @@ export default function History({ bookings, onLeaveReview, onOpenSpace }: Histor
         <h1 className="page-title">Bookings ledger.</h1>
       </div>
 
-      <div className="history-tabs">
-        {(["UPCOMING", "PAST", "PENDING", "CANCELLED", "ALL"] as HistoryTab[]).map((k) => (
-          <button key={k} className={`history-tab ${tab === k ? "active" : ""}`} onClick={() => setTab(k)}>
-            {k}
-            <span className="ct">{byTab(k).length}</span>
-          </button>
-        ))}
+      <div className="list-toolbar">
+        <div className="tabs">
+          {BOOKING_TABS.map(({ key, label }) => (
+            <button key={key} className={`mono tab ${tab === key ? "active" : ""}`} onClick={() => setTab(key)}>
+              {label.toUpperCase()}
+              <span className={`tab-count ${counts[key] === 0 ? "zero" : ""}`}>{counts[key]}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {sorted.length === 0 ? (
@@ -62,55 +47,46 @@ export default function History({ bookings, onLeaveReview, onOpenSpace }: Histor
           <div className="empty-icon">
             <Calendar size={20} />
           </div>
-          <div className="empty-h">No {tab === "ALL" ? "" : `${tab.toLowerCase()} `}bookings</div>
+          <div className="empty-h">No {tab === "all" ? "" : `${activeLabel.toLowerCase()} `}bookings</div>
           <div className="empty-p">
-            {tab === "UPCOMING" || tab === "ALL"
+            {tab === "upcoming" || tab === "all"
               ? "When you book a space, it shows up here."
-              : `${tab.charAt(0)}${tab.slice(1).toLowerCase()} bookings show up here.`}
+              : `${activeLabel} bookings show up here.`}
           </div>
         </div>
       ) : (
         <div>
           <div className="booking-row head">
-            <span>REF</span>
-            <span></span>
             <span>SPACE</span>
             <span>WHEN</span>
             <span>TOTAL</span>
             <span>STATUS</span>
-            <span></span>
+            <span className="br-action-h">ACTIONS</span>
           </div>
           {sorted.map((b) => {
             const sp = b.space;
+            const sm = statusMeta(b.status);
             return (
               <div key={b.id} className="booking-row" onClick={() => onOpenSpace(sp.id)}>
-                <span className="br-id">#{b.id}</span>
-                <div className="br-thumb">
-                  <Placeholder />
-                  {sp.coverImageKey && (
-                    <Image
-                      src={imageUrl(sp.coverImageKey)}
-                      alt=""
-                      fill
-                      sizes="64px"
-                      className="br-thumb-img"
-                      onError={(e) => (e.currentTarget.style.display = "none")}
-                    />
-                  )}
-                </div>
-                <div>
-                  <div className="br-title">{sp.name}</div>
-                  <div className="br-cat">
-                    {sp.categoryName} - {sp.city}
+                <div className="br-space">
+                  <ThumbImg imageKey={sp.coverImageKey} className="br-thumb" imgClassName="br-thumb-img" />
+                  <div className="br-info" style={{ minWidth: 0 }}>
+                    <div className="br-title">{sp.name}</div>
+                    <div className="br-cat">
+                      {sp.categoryName} - {sp.city}
+                    </div>
                   </div>
                 </div>
                 <div className="br-when">
-                  <div>{fmtDateLong(b.startTime)}</div>
-                  <div className="t">{fmtTimeRange(b.startTime, b.endTime)}</div>
+                  <div className="br-date">
+                    <span className="br-dow">{DAYS[new Date(b.startTime).getDay()]} </span>
+                    {fmtDateNoDow(b.startTime)}
+                  </div>
+                  <div className="br-time">{fmtTimeRange(b.startTime, b.endTime)}</div>
                 </div>
                 <span className="br-price">{fmtPrice(b.totalPrice)}</span>
-                <span className={`br-status ${STATUS_CLS[b.status]}`}>
-                  <span className="dot"></span>
+                <span className="br-status" style={{ color: sm.fg }}>
+                  <span className="dot" style={{ background: sm.dot }} />
                   {b.status}
                 </span>
                 <span className="br-action">
@@ -146,10 +122,52 @@ export default function History({ bookings, onLeaveReview, onOpenSpace }: Histor
                     </button>
                   )}
                 </span>
+                <button
+                  className="br-menu"
+                  aria-label="Actions"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMenuBooking(b);
+                  }}
+                >
+                  <MoreVertical size={18} />
+                </button>
               </div>
             );
           })}
         </div>
+      )}
+
+      {menuBooking && (
+        <Modal onClose={() => setMenuBooking(null)}>
+          <div className="br-menu-preview">
+            <ThumbImg imageKey={menuBooking.space.coverImageKey} className="br-thumb" imgClassName="br-thumb-img" />
+            <div className="br-title">{menuBooking.space.name}</div>
+          </div>
+          <div className="br-menu-h">ACTIONS</div>
+          <div className="br-menu-actions">
+            {menuBooking.status === "COMPLETED" && !menuBooking.reviewed && (
+              <button
+                className="btn"
+                onClick={() => {
+                  onLeaveReview(menuBooking);
+                  setMenuBooking(null);
+                }}
+              >
+                <Star size={14} /> LEAVE REVIEW
+              </button>
+            )}
+            {menuBooking.status === "COMPLETED" && menuBooking.reviewed && (
+              <div className="mono br-menu-note">
+                <Check size={14} /> Already reviewed
+              </div>
+            )}
+            {menuBooking.status === "CANCELLED" && <div className="mono br-menu-note">Booking cancelled</div>}
+            {(menuBooking.status === "PENDING" || menuBooking.status === "CONFIRMED") && (
+              <div className="mono br-menu-note">No actions available</div>
+            )}
+          </div>
+        </Modal>
       )}
     </div>
   );

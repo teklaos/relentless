@@ -7,7 +7,7 @@ import { Receipt } from "lucide-react";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import { fetchAdminBookings } from "@/lib/api";
 import { Booking } from "@/lib/types";
-import { fmtDate, fmtTimeRange, fmtPrice, statusMeta } from "@/lib/format";
+import { DAYS, fmtDateNoDow, fmtTimeRange, fmtPrice, statusMeta } from "@/lib/format";
 
 const STATUSES = ["ALL", "PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"] as const;
 type StatusFilter = (typeof STATUSES)[number];
@@ -25,7 +25,9 @@ export default function Transactions() {
   const counts = Object.fromEntries(
     STATUSES.map((s) => [s, s === "ALL" ? bookings.length : bookings.filter((b) => b.status === s).length])
   ) as Record<StatusFilter, number>;
-  const rows = bookings.filter((b) => filter === "ALL" || b.status === filter);
+  const rows = bookings
+    .filter((b) => filter === "ALL" || b.status === filter)
+    .sort((a, b) => b.startTime.localeCompare(a.startTime));
 
   return (
     <div>
@@ -53,17 +55,15 @@ export default function Transactions() {
       ) : (
         <div>
           <div className="mono a-tx-grid a-tx-head">
-            <span>Ref</span>
             <span>Guest - Space</span>
             <span>When</span>
             <span>Amount</span>
-            <span>Status</span>
+            <span className="a-tx-status-h">Status</span>
           </div>
           {rows.map((b) => {
             const sm = statusMeta(b.status);
             return (
               <div key={b.id} className="row a-tx-grid a-tx-row">
-                <span className="mono a-tx-ref">#{b.id}</span>
                 <div className="a-tx-cell">
                   <AvatarImg
                     imageKey={b.user.profileImageKey}
@@ -78,11 +78,14 @@ export default function Transactions() {
                   </div>
                 </div>
                 <div className="mono a-tx-when">
-                  <div>{fmtDate(b.startTime)}</div>
+                  <div>
+                    <span className="a-tx-dow">{DAYS[new Date(b.startTime).getDay()]} </span>
+                    {fmtDateNoDow(b.startTime)}
+                  </div>
                   <div className="a-tx-when-sub">{fmtTimeRange(b.startTime, b.endTime)}</div>
                 </div>
                 <span className="mono a-tx-amount">{fmtPrice(b.totalPrice)}</span>
-                <span className="mono badge" style={{ color: sm.fg }}>
+                <span className="mono badge a-tx-status" style={{ color: sm.fg }}>
                   <span className="badge-dot" style={{ background: sm.dot }} />
                   {b.status}
                 </span>

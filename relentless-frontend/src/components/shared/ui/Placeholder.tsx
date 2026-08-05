@@ -1,5 +1,3 @@
-"use client";
-
 export default function Placeholder() {
   return (
     <div
@@ -10,7 +8,7 @@ export default function Placeholder() {
         alignItems: "center",
         justifyContent: "center",
         background:
-          "repeating-linear-gradient(135deg, var(--bg-sunken), var(--bg-sunken) 9px, #efeee9 9px, #efeee9 18px)"
+          "repeating-linear-gradient(135deg, var(--bg-sunken), var(--bg-sunken) 9px, var(--hairline) 9px, var(--hairline) 18px)"
       }}
     ></div>
   );

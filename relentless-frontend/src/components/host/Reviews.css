@@ -16,7 +16,7 @@
 
 .h-rev-avg-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
 }
 

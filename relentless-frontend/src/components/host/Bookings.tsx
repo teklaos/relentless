@@ -2,43 +2,20 @@
 
 import "./Bookings.css";
 import { Calendar } from "lucide-react";
-import AvatarImg from "@/components/shared/ui/AvatarImg";
-import { BookingTab, useHost } from "@/context/HostContext";
-import { fmtDate, fmtTimeRange, fmtPrice, net, statusMeta } from "@/lib/format";
-import { Booking, BookingStatus } from "@/lib/types";
-
-const tabDefs: [BookingTab, string][] = [
-  ["upcoming", "Upcoming"],
-  ["past", "Past"],
-  ["pending", "Pending"],
-  ["cancelled", "Cancelled"],
-  ["all", "All"]
-];
-
-const byStatus = (bookings: Booking[], status: BookingStatus) =>
-  bookings.filter((b) => b.status === status).sort((a, b) => b.startTime.localeCompare(a.startTime));
+import ThumbImg from "@/components/shared/ui/ThumbImg";
+import { useHost } from "@/context/HostContext";
+import { BOOKING_TABS, bookingsForTab, type BookingTab } from "@/lib/bookings";
+import { DAYS, fmtDateNoDow, fmtTimeRange, fmtPrice, net, statusMeta } from "@/lib/format";
 
 export default function Bookings() {
   const host = useHost();
   const bt = host.bookingTab;
 
-  const upB = host.bookings
-    .filter((b) => b.status === "CONFIRMED")
-    .sort((a, b) => a.startTime.localeCompare(b.startTime));
-  const pastB = byStatus(host.bookings, "COMPLETED");
-  const pendingB = byStatus(host.bookings, "PENDING");
-  const cancelledB = byStatus(host.bookings, "CANCELLED");
-  const allB = [...host.bookings].sort((a, b) => b.startTime.localeCompare(a.startTime));
-  const counts: Record<BookingTab, number> = {
-    upcoming: upB.length,
-    past: pastB.length,
-    pending: pendingB.length,
-    cancelled: cancelledB.length,
-    all: allB.length
-  };
+  const counts = Object.fromEntries(
+    BOOKING_TABS.map(({ key }) => [key, bookingsForTab(host.bookings, key).length])
+  ) as Record<BookingTab, number>;
 
-  const ledgerSrc =
-    bt === "past" ? pastB : bt === "pending" ? pendingB : bt === "cancelled" ? cancelledB : bt === "all" ? allB : upB;
+  const ledgerSrc = bookingsForTab(host.bookings, bt);
 
   return (
     <div>
@@ -48,7 +25,7 @@ export default function Bookings() {
 
       <div className="list-toolbar">
         <div className="tabs">
-          {tabDefs.map(([key, label]) => (
+          {BOOKING_TABS.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => host.setBookingTab(key)}
@@ -70,42 +47,39 @@ export default function Bookings() {
           <div className="empty-p">
             {bt === "upcoming"
               ? "When a guest books your space, it shows up here."
-              : `${tabDefs.find(([k]) => k === bt)?.[1]} bookings show up here.`}
+              : `${BOOKING_TABS.find((t) => t.key === bt)?.label} bookings show up here.`}
           </div>
         </div>
       ) : (
         <div>
           <div className="mono h-led-grid h-led-head">
-            <span>Ref</span>
-            <span>Guest - Space</span>
+            <span>Space</span>
             <span>When</span>
             <span>Earned</span>
-            <span>Status</span>
+            <span className="h-led-status-h">Status</span>
           </div>
           {ledgerSrc.map((b) => {
             const sm = statusMeta(b.status);
             return (
               <div key={b.id} className="row h-led-grid h-led-row">
-                <span className="mono h-led-ref">#{b.id}</span>
-                <div className="h-led-guest-cell">
-                  <AvatarImg
-                    imageKey={b.user.profileImageKey}
-                    name={b.user.username}
-                    size={30}
-                    radius={3}
-                    style={{ flexShrink: 0 }}
-                  />
-                  <div style={{ minWidth: 0 }}>
-                    <div className="h-led-guest truncate">{b.user.username}</div>
-                    <div className="mono h-led-space truncate">{b.space.name}</div>
+                <div className="h-led-space">
+                  <ThumbImg imageKey={b.space.coverImageKey} className="h-led-thumb" imgClassName="h-led-thumb-img" />
+                  <div className="h-led-info" style={{ minWidth: 0 }}>
+                    <div className="h-led-title">{b.space.name}</div>
+                    <div className="h-led-sub">
+                      {b.space.categoryName} - {b.space.city}
+                    </div>
                   </div>
                 </div>
                 <div className="mono h-led-when">
-                  <div>{fmtDate(b.startTime)}</div>
+                  <div className="h-led-date">
+                    <span className="h-led-dow">{DAYS[new Date(b.startTime).getDay()]} </span>
+                    {fmtDateNoDow(b.startTime)}
+                  </div>
                   <div className="h-led-when-sub">{fmtTimeRange(b.startTime, b.endTime)}</div>
                 </div>
                 <span className="mono h-led-keep">{fmtPrice(net(b.totalPrice))}</span>
-                <span className="mono badge" style={{ color: sm.fg }}>
+                <span className="mono badge h-led-status" style={{ color: sm.fg }}>
                   <span className="badge-dot" style={{ background: sm.dot }} />
                   {b.status}
                 </span>

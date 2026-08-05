@@ -53,7 +53,7 @@ export default function Statistics() {
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Statistics.</h1>
+        <h1 className="page-title">Dashboard.</h1>
       </div>
 
       <div className="kpis a-kpis">

@@ -9,7 +9,6 @@ import {
   Star,
   Users,
   Receipt,
-  BarChart3,
   type LucideIcon
 } from "lucide-react";
 import type { User as AppUser } from "@/lib/types";
@@ -33,9 +32,9 @@ export const HOST_ITEMS: NavItem[] = [
 ];
 
 export const ADMIN_ITEMS: NavItem[] = [
-  { path: "/users", label: "Users", Icon: Users },
+  { path: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { path: "/transactions", label: "Transactions", Icon: Receipt },
-  { path: "/statistics", label: "Statistics", Icon: BarChart3 },
+  { path: "/users", label: "Users", Icon: Users },
   { path: "/profile", label: "Profile", Icon: User }
 ];
 

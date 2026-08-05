@@ -9,12 +9,12 @@ import Modal from "@/components/shared/ui/Modal";
 import DatePicker from "@/components/shared/ui/DatePicker";
 import { useApp } from "@/context/AppContext";
 import { uploadImage } from "@/lib/api";
+import { fmtIban } from "@/lib/format";
 import { Edit2, ArrowRight, Camera, LogOut } from "lucide-react";
 
 interface ProfileProps {
   user: User | null;
   bookings: Booking[];
-  savedIds: Set<number>;
   onSignOut: () => void;
 }
 
@@ -22,7 +22,6 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
   const router = useRouter();
   const { onUpdateProfile, showToast } = useApp();
   const [twoFactor, setTwoFactor] = useState(true);
-  const [notifications, setNotifications] = useState(true);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -151,7 +150,7 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
                 <div className="k">PHONE</div>
                 <div className="v">{user.phoneNumber}</div>
                 <div className="k">IBAN</div>
-                <div className="v">{user.iban}</div>
+                <div className="v">{fmtIban(user.iban ?? "")}</div>
               </>
             )}
           </div>
@@ -185,18 +184,6 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
           </div>
 
           <div className="settings-list">
-            {!isAdmin && (
-              <div className="setting" onClick={() => setNotifications((v) => !v)} style={{ cursor: "pointer" }}>
-                <div className="setting-l">
-                  <span className="setting-t">Notifications</span>
-                  <span className="setting-d">Receive email notifications</span>
-                </div>
-                <button className={`toggle ${notifications ? "on" : ""}`} aria-pressed={notifications}>
-                  <span className="toggle-thumb" />
-                </button>
-              </div>
-            )}
-
             <div className="setting" onClick={() => setTwoFactor((v) => !v)} style={{ cursor: "pointer" }}>
               <div className="setting-l">
                 <span className="setting-t">Two-factor authentication</span>

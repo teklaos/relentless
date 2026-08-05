@@ -23,17 +23,21 @@
   position: absolute;
   top: 14px;
   right: 14px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  border: none;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 2px;
   background: none;
   color: var(--ink-3);
   cursor: pointer;
+  transition: all 0.15s;
 }
 
 .modal-x:hover {
+  border-color: var(--ink);
   color: var(--ink);
 }
 

@@ -22,7 +22,9 @@ export default function Reviews() {
 
   const revSpaces = [...new Map(allRev.map((r) => [r.space.id, r.space.name])).entries()];
   const chips = [{ id: 0, label: "All spaces" }, ...revSpaces.map(([id, label]) => ({ id, label }))];
-  const filtered = host.reviewFilter === 0 ? allRev : allRev.filter((r) => r.space.id === host.reviewFilter);
+  const filtered = (host.reviewFilter === 0 ? allRev : allRev.filter((r) => r.space.id === host.reviewFilter))
+    .slice()
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   return (
     <div>
@@ -34,7 +36,7 @@ export default function Reviews() {
         <div className="card h-rev-avg">
           <div className="h-rev-avg-row">
             <span className="h-rev-avg-num">{avg.toFixed(2)}</span>
-            <Stars rating={Math.round(avg)} size={18} />
+            <Stars rating={Math.round(avg)} size={24} />
           </div>
           <div className="mono h-rev-avg-sub">Across {allRev.length} reviews</div>
         </div>

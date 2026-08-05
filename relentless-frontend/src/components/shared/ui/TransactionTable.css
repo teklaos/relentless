@@ -1,6 +1,6 @@
 .h-tx-grid {
   display: grid;
-  grid-template-columns: 90px 1fr 1.1fr 100px;
+  grid-template-columns: 2fr 1fr 100px;
   gap: 14px;
 }
 
@@ -22,11 +22,6 @@
   align-items: center;
   padding: 13px 12px;
   border-bottom: 1px solid var(--hairline);
-}
-
-.h-tx-ref {
-  font-size: 11px;
-  color: var(--ink-3);
 }
 
 .h-tx-date {

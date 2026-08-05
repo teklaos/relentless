@@ -144,6 +144,22 @@
   .toast {
     bottom: 80px;
   }
+
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
 }
 
 @media (width <= 480px) {
@@ -217,11 +233,21 @@
   box-shadow: inset 0 -2px 0 var(--accent);
 }
 
+.tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
 .tab-count {
   font-size: 10px;
   background: var(--bg-sunken);
   padding: 1px 6px;
   border-radius: 9px;
+}
+
+.tab-count.zero {
+  background: transparent;
+  color: var(--ink-4);
 }
 
 .badge {

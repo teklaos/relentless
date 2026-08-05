@@ -3,7 +3,7 @@
 import "./TransactionTable.css";
 import { Receipt } from "lucide-react";
 import { WalletTransaction } from "@/lib/types";
-import { fmtDate, fmtPrice } from "@/lib/format";
+import { fmtDateNoDow, fmtPrice } from "@/lib/format";
 
 interface TransactionTableProps {
   transactions: WalletTransaction[];
@@ -27,30 +27,30 @@ export default function TransactionTable({ transactions, emptyHeading, emptyText
   return (
     <>
       <div className="mono h-tx-grid h-tx-head">
-        <span>Ref</span>
-        <span>Date</span>
         <span>Space</span>
+        <span>Date</span>
         <span className="h-tx-net-h">Amount</span>
       </div>
-      {transactions.map((t) => {
-        const credit = t.type === "CREDIT";
-        return (
-          <div key={t.id} className="row h-tx-grid h-tx-row">
-            <span className="mono h-tx-ref">#{t.id}</span>
-            <span className="mono h-tx-date">{fmtDate(t.createdAt)}</span>
-            <div style={{ minWidth: 0 }}>
-              <div className="h-tx-space truncate">{t.space?.name ?? "—"}</div>
-              <div className="mono h-tx-status" style={{ color: credit ? "var(--ok)" : "var(--ink-3)" }}>
-                {t.type}
+      {[...transactions]
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .map((t) => {
+          const credit = t.type === "CREDIT";
+          return (
+            <div key={t.id} className="row h-tx-grid h-tx-row">
+              <div style={{ minWidth: 0 }}>
+                <div className="h-tx-space truncate">{t.space?.name ?? "—"}</div>
+                <div className="mono h-tx-status" style={{ color: credit ? "var(--ok)" : "var(--ink-3)" }}>
+                  {t.type}
+                </div>
               </div>
+              <span className="mono h-tx-date">{fmtDateNoDow(t.createdAt)}</span>
+              <span className="mono h-tx-net">
+                {credit ? "+" : "−"}
+                {fmtPrice(Math.abs(t.amount))}
+              </span>
             </div>
-            <span className="mono h-tx-net">
-              {credit ? "+" : "−"}
-              {fmtPrice(Math.abs(t.amount))}
-            </span>
-          </div>
-        );
-      })}
+          );
+        })}
     </>
   );
 }

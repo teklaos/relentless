@@ -1,15 +1,16 @@
 "use client";
 
 import "./SpaceDetail.css";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Placeholder from "@/components/shared/ui/Placeholder";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import Stars from "@/components/shared/ui/Stars";
 import BookingWidget from "./BookingWidget";
 import { CAT_ICON_COMPONENT, CAT_ICON_FALLBACK, AMEN_ICON_COMPONENT } from "@/lib/iconMap";
 import { Space, Review } from "@/lib/types";
-import { fmtDateShort } from "@/lib/format";
+import { fmtDateShort, fmtPrice } from "@/lib/format";
 import { fetchReviews, imageUrl } from "@/lib/api";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 import Image from "next/image";
 import { Bookmark, X, MapPin } from "lucide-react";
 
@@ -31,12 +32,25 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
   const hero = images[0];
   const thumbs = images.length ? images.slice(0, 4) : [null, null, null, null];
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [bookOpen, setBookOpen] = useState(false);
+  const [shown, setShown] = useState(false);
+  const mobile = useMediaQuery("(max-width: 768px)");
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setShown(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const requestClose = useCallback(() => {
+    setShown(false);
+    setTimeout(onClose, 320);
+  }, [onClose]);
 
   useEffect(() => {
     let active = true;
     fetchReviews(space.id)
       .then((data) => {
-        if (active) setReviews(data);
+        if (active) setReviews([...data].sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
       })
       .catch(() => {
         if (active) setReviews([]);
@@ -48,23 +62,25 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
 
   useEffect(() => {
     const onEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key !== "Escape") return;
+      if (bookOpen) setBookOpen(false);
+      else requestClose();
     };
     window.addEventListener("keydown", onEsc);
     return () => window.removeEventListener("keydown", onEsc);
-  }, [onClose]);
+  }, [requestClose, bookOpen]);
 
   return (
     <>
-      <div className="drawer-backdrop" onClick={onClose} />
-      <div className="drawer">
+      <div className={`drawer-backdrop ${shown ? "open" : ""}`} onClick={requestClose} />
+      <div className={`drawer ${shown ? "open" : ""}`}>
         <div className="drawer-head">
           <div style={{ display: "flex", gap: 8 }}>
             <button className={`btn sm ${saved ? "primary" : ""}`} onClick={() => onSave(space.id)}>
               <Bookmark size={13} fill={saved ? "currentColor" : "none"} strokeWidth={saved ? 0 : 1.5} />
               {saved ? "SAVED" : "SAVE"}
             </button>
-            <button className="drawer-close" onClick={onClose}>
+            <button className="drawer-close" onClick={requestClose}>
               <X size={16} />
             </button>
           </div>
@@ -203,11 +219,33 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
             </div>
           </div>
 
-          <div className="detail-side">
+          <div className="detail-side">{!mobile && <BookingWidget space={space} onBook={onBook} />}</div>
+        </div>
+
+        <div className="book-bar">
+          <div className="book-bar-price">
+            <span className="v">{fmtPrice(space.pricePerHour)}</span>
+            <span className="u">/ hour</span>
+          </div>
+          <button className="btn accent lg" onClick={() => setBookOpen(true)}>
+            BOOK
+          </button>
+        </div>
+      </div>
+
+      {mobile && (
+        <div className={`book-drawer ${bookOpen ? "open" : ""}`}>
+          <div className="book-drawer-head">
+            <span className="book-drawer-title">Book this space</span>
+            <button className="drawer-close" onClick={() => setBookOpen(false)} aria-label="Close booking">
+              <X size={16} />
+            </button>
+          </div>
+          <div className="book-drawer-body">
             <BookingWidget space={space} onBook={onBook} />
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

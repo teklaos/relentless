@@ -16,22 +16,20 @@ const MONTH_NAMES = [
   "DECEMBER"
 ];
 
-export const WEEK_DAYS = DAY_NAMES;
 export const DOW = DAY_NAMES.map((d) => d.slice(0, 3));
 export const DOW_INITIAL = DAY_NAMES.map((d) => d[0]);
 
 const DAY_NAMES_SUN_FIRST = [DAY_NAMES[6], ...DAY_NAMES.slice(0, 6)];
-export const DAY_NAME = DAY_NAMES_SUN_FIRST;
 export const DAYS = DAY_NAMES_SUN_FIRST.map((d) => d.slice(0, 3));
 
 export const MONTHS_FULL = MONTH_NAMES;
 export const MONTHS_SHORT_TITLE = MONTH_NAMES.map((m) => m[0] + m.slice(1, 3).toLowerCase());
 
 export const defaultHours = (): DayHours[] =>
-  WEEK_DAYS.map((dayOfWeek) => ({ dayOfWeek, open: "09:00", close: "22:00", on: true }));
+  DAY_NAMES.map((dayOfWeek) => ({ dayOfWeek, open: "09:00", close: "22:00", on: true }));
 
 export const hoursFromSpace = (wh: WorkingHoursPayload[]): DayHours[] =>
-  WEEK_DAYS.map((dayOfWeek) => {
+  DAY_NAMES.map((dayOfWeek) => {
     const saved = wh.find((h) => h.dayOfWeek === dayOfWeek);
     return saved
       ? { dayOfWeek, open: saved.openTime.slice(0, 5), close: saved.closeTime.slice(0, 5), on: true }
@@ -51,6 +49,10 @@ export const maxDobIso = (minAge: number): string => {
 export const EMAIL_RE = /.+@.+\..+/;
 export const PHONE_RE = /^\+[0-9]{7,15}$/;
 export const IBAN_RE = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/;
+
+export const fmtIban = (iban: string) =>
+  iban.length <= 12 ? iban : `${iban.slice(0, 4)} (…) ${iban.slice(-8, -4)} ${iban.slice(-4)}`;
+
 export const PASSWORD_RE =
   /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()\-_=+[\]{}])[a-zA-Z0-9!@#$%^&*()\-_=+[\]{}]{8,64}$/;
 export const PASSWORD_HINT = "Min 8 chars: upper, lower, number & symbol";
@@ -86,6 +88,11 @@ export const fmtDateShort = (iso: string) => {
 export const fmtDateLong = (iso: string) => {
   const d = new Date(iso);
   return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+};
+
+export const fmtDateNoDow = (iso: string) => {
+  const d = new Date(iso);
+  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 };
 
 export const padDate = (d: Date) => d.toISOString().slice(0, 10);

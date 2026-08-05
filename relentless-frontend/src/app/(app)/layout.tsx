@@ -13,13 +13,23 @@ import ReviewModal from "@/components/user/ReviewModal";
 import PaymentModal from "@/components/user/PaymentModal";
 import AuthGateModal from "@/components/shared/AuthGateModal";
 
-const HOST_ONLY = ["/dashboard", "/listings", "/wallet", "/reviews"];
-const GUEST_ONLY = ["/explore", "/saved"];
-const ADMIN_ONLY = ["/users", "/transactions", "/statistics"];
-const SHARED_PATHS = ["/profile"];
+const ROUTE_ROLES: [string, User["role"][]][] = [
+  ["/explore", ["USER"]],
+  ["/saved", ["USER"]],
+  ["/bookings", ["USER", "HOST"]],
+  ["/dashboard", ["HOST", "ADMIN"]],
+  ["/listings", ["HOST"]],
+  ["/wallet", ["HOST"]],
+  ["/reviews", ["HOST"]],
+  ["/users", ["ADMIN"]],
+  ["/transactions", ["ADMIN"]],
+  ["/statistics", ["ADMIN"]],
+  ["/profile", ["USER", "HOST", "ADMIN"]]
+];
 const PUBLIC_PATHS = ["/explore"];
-const HOME_PATH: Record<User["role"], string> = { USER: "/explore", HOST: "/dashboard", ADMIN: "/users" };
+const HOME_PATH: Record<User["role"], string> = { USER: "/explore", HOST: "/dashboard", ADMIN: "/dashboard" };
 const isPublic = (p: string) => PUBLIC_PATHS.some((x) => p === x || p.startsWith(x + "/"));
+const rolesFor = (p: string) => ROUTE_ROLES.find(([prefix]) => p === prefix || p.startsWith(prefix + "/"))?.[1];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const {
@@ -52,17 +62,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       return;
     }
     if (!user) return;
-    const isHost = user.role === "HOST";
-    const isAdmin = user.role === "ADMIN";
-    const matches = (paths: string[]) => paths.some((p) => pathname === p || pathname.startsWith(p + "/"));
-    if (isAdmin && !matches(ADMIN_ONLY) && !matches(SHARED_PATHS)) {
-      router.replace(HOME_PATH.ADMIN);
-    } else if (!isAdmin && matches(ADMIN_ONLY)) {
+    const allowed = rolesFor(pathname);
+    if (allowed && !allowed.includes(user.role)) {
       router.replace(HOME_PATH[user.role]);
-    } else if (isHost && matches(GUEST_ONLY)) {
-      router.replace(HOME_PATH.HOST);
-    } else if (!isHost && matches(HOST_ONLY)) {
-      router.replace(HOME_PATH.USER);
     }
   }, [authReady, auth, user, pathname, router]);
 

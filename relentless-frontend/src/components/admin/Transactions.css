@@ -1,6 +1,6 @@
 .a-tx-grid {
   display: grid;
-  grid-template-columns: 90px 1.4fr 1.2fr 110px 130px;
+  grid-template-columns: 2fr 1.5fr 1fr 1fr;
   gap: 16px;
 }
 
@@ -18,11 +18,6 @@
   align-items: center;
   padding: 14px 12px;
   border-bottom: 1px solid var(--hairline);
-}
-
-.a-tx-ref {
-  font-size: 11px;
-  color: var(--ink-3);
 }
 
 .a-tx-cell {
@@ -58,4 +53,62 @@
 .a-tx-amount {
   font-size: 13px;
   font-weight: 500;
+}
+
+.a-tx-status,
+.a-tx-status-h {
+  justify-self: end;
+}
+
+@media (width <= 480px) {
+  .a-tx-head {
+    display: none;
+  }
+
+  .a-tx-row {
+    position: relative;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "cell"
+      "when"
+      "status";
+    row-gap: 6px;
+    align-items: start;
+    padding: 14px;
+  }
+
+  .a-tx-cell {
+    grid-area: cell;
+  }
+
+  .a-tx-when {
+    grid-area: when;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .a-tx-dow {
+    display: none;
+  }
+
+  .a-tx-when-sub {
+    color: inherit;
+    margin-top: 0;
+    font-size: inherit;
+  }
+
+  .a-tx-when-sub::before {
+    content: ", ";
+  }
+
+  .a-tx-status {
+    grid-area: status;
+    justify-self: start;
+  }
+
+  .a-tx-amount {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+  }
 }

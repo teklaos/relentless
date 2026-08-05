@@ -29,6 +29,8 @@ export default function Users() {
     ROLE_FILTERS.map((r) => [r, r === "ALL" ? users.length : users.filter((u) => u.role === r).length])
   ) as Record<RoleFilter, number>;
   const rows = users.filter((u) => filter === "ALL" || u.role === filter);
+  const showContact = filter === "HOST";
+  const single = filter !== "ALL";
 
   return (
     <div>
@@ -55,18 +57,21 @@ export default function Users() {
         </div>
       ) : (
         <div>
-          <div className="mono a-usr-grid a-usr-head">
+          <div className={`mono a-usr-grid a-usr-head ${showContact ? "contact" : ""} ${single ? "single" : ""}`}>
             <span>User</span>
-            <span>Name</span>
-            <span>Phone</span>
-            <span>Date of birth</span>
-            <span>Joined</span>
-            <span>Role</span>
+            {showContact && <span>Name</span>}
+            {showContact && <span className="a-usr-phone">Phone</span>}
+            <span className="a-usr-dob">DOB</span>
+            <span className="a-usr-joined">Joined</span>
+            <span className="a-usr-role-h">Role</span>
           </div>
           {rows.map((u) => {
             const fullName = [u.firstName, u.lastName].filter(Boolean).join(" ");
             return (
-              <div key={u.id} className="row a-usr-grid a-usr-row">
+              <div
+                key={u.id}
+                className={`row a-usr-grid a-usr-row ${showContact ? "contact" : ""} ${single ? "single" : ""}`}
+              >
                 <div className="a-usr-cell">
                   <AvatarImg
                     imageKey={u.profileImageKey}
@@ -80,11 +85,11 @@ export default function Users() {
                     <div className="mono a-usr-email truncate">{u.email}</div>
                   </div>
                 </div>
-                <span className="a-usr-field">{fullName || "—"}</span>
-                <span className="mono a-usr-field">{u.phoneNumber ?? "—"}</span>
-                <span className="mono a-usr-field">{u.dateOfBirth ? fmtDateShort(u.dateOfBirth) : "—"}</span>
-                <span className="mono a-usr-field">{fmtDateShort(u.dateJoined)}</span>
-                <span className="mono badge">
+                {showContact && <span className="a-usr-field">{fullName || "—"}</span>}
+                {showContact && <span className="mono a-usr-field a-usr-phone">{u.phoneNumber ?? "—"}</span>}
+                <span className="mono a-usr-field a-usr-dob">{u.dateOfBirth ? fmtDateShort(u.dateOfBirth) : "—"}</span>
+                <span className="mono a-usr-field a-usr-joined">{fmtDateShort(u.dateJoined)}</span>
+                <span className="mono badge a-usr-role">
                   <span className="badge-dot" style={{ background: roleDot(u.role) }} />
                   {u.role}
                 </span>

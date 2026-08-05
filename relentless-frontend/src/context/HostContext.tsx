@@ -27,11 +27,11 @@ import {
   fetchWalletTransactions,
   uploadImage
 } from "@/lib/api";
+import type { BookingTab } from "@/lib/bookings";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 
 const draftWorkingHours = (hours: Draft["hours"]) =>
   hours.filter((h) => h.on).map((h) => ({ dayOfWeek: h.dayOfWeek, openTime: h.open, closeTime: h.close }));
-
-export type BookingTab = "upcoming" | "past" | "pending" | "cancelled" | "all";
 
 export interface HostContextValue {
   isMobile: boolean;
@@ -72,7 +72,7 @@ export interface HostContextValue {
   setStep: (n: number) => void;
   nextStep: () => void;
   prevStep: () => void;
-  publishDraft: () => void;
+  publishDraft: () => Promise<boolean>;
 
   setReviewFilter: (id: number) => void;
 }
@@ -83,7 +83,7 @@ export function HostProvider({ children }: { children: ReactNode }) {
   const { auth, user, showToast } = useApp();
   const isHost = user?.role === "HOST";
 
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 880px)");
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -97,14 +97,6 @@ export function HostProvider({ children }: { children: ReactNode }) {
   const [listingFilter, setListingFilter] = useState("ACTIVE");
   const [reviewFilter, setReviewFilter] = useState(0);
   const [bookingTab, setBookingTab] = useState<BookingTab>("upcoming");
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 880px)");
-    const upd = () => setIsMobile(mq.matches);
-    upd();
-    mq.addEventListener("change", upd);
-    return () => mq.removeEventListener("change", upd);
-  }, []);
 
   const refreshWallet = useCallback(() => {
     fetchWalletBalance()
@@ -318,11 +310,11 @@ export function HostProvider({ children }: { children: ReactNode }) {
         setSpaces((sps) => sps.map((s) => (s.id === editingId ? updated : s)));
         setEditingId(null);
         showToast("LISTING UPDATED");
-        return;
+        return true;
       }
       if (categoryId == null) {
         showToast("PICK A VALID CATEGORY");
-        return;
+        return false;
       }
       const created = await createSpace({
         name: d.name || "UNTITLED SPACE",
@@ -337,8 +329,10 @@ export function HostProvider({ children }: { children: ReactNode }) {
       setSpaces((sps) => [created, ...sps]);
       setListingFilter("ALL");
       showToast("LISTING PUBLISHED — NOW LIVE");
+      return true;
     } catch {
       showToast("COULD NOT SAVE LISTING");
+      return false;
     }
   }, [draft, editingId, categories, amenities, showToast]);
 
