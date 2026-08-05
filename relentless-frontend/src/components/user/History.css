@@ -146,6 +146,10 @@
   gap: 10px;
 }
 
+.br-menu-actions .btn {
+  justify-content: center;
+}
+
 .br-menu-note {
   display: flex;
   align-items: center;
@@ -154,9 +158,21 @@
   color: var(--ink-3);
 }
 
+.pay-label-short {
+  display: none;
+}
+
 @media (width <= 1100px) {
   .br-cat {
     display: none;
+  }
+
+  .pay-label-full {
+    display: none;
+  }
+
+  .pay-label-short {
+    display: inline;
   }
 }
 

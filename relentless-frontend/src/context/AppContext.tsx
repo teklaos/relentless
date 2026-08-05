@@ -9,6 +9,7 @@ import {
   fetchSavedSpaces,
   fetchSpace,
   createBooking,
+  fetchBookingCheckout,
   leaveReview,
   saveSpace,
   unsaveSpace,
@@ -71,6 +72,7 @@ interface AppContextValue {
   onOpenById: (id: number) => void;
   onClose: () => void;
   onLeaveReview: (booking: Booking) => void;
+  onPayBooking: (booking: Booking) => void;
   onCloseReview: () => void;
   onSubmitReview: (params: { rating: number; comment: string }) => void;
   onUpdateProfile: (payload: UpdateUserPayload) => Promise<void>;
@@ -310,6 +312,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         startTime: checkout.startIso,
         endTime: checkout.endIso
       });
+      if (!booking.checkoutSessionUrl) throw new Error("Missing checkout url");
       setPendingBookingId(booking.id);
       window.location.href = booking.checkoutSessionUrl;
     } catch {
@@ -317,6 +320,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCheckout(null);
     }
   }, [checkout, showToast]);
+
+  const onPayBooking = useCallback(
+    async (booking: Booking) => {
+      try {
+        const checkout = await fetchBookingCheckout(booking.id);
+        if (!checkout.checkoutSessionUrl) {
+          showToast("PAYMENT LINK EXPIRED");
+          return;
+        }
+        setPendingBookingId(booking.id);
+        window.location.href = checkout.checkoutSessionUrl;
+      } catch {
+        showToast("PAYMENT FAILED");
+      }
+    },
+    [showToast]
+  );
 
   const onSubmitReview = useCallback(
     async ({ rating, comment }: { rating: number; comment: string }) => {
@@ -368,6 +388,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         onOpenById,
         onClose,
         onLeaveReview,
+        onPayBooking,
         onCloseReview,
         onSubmitReview,
         onUpdateProfile,

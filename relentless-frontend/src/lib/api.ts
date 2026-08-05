@@ -159,6 +159,10 @@ export function fetchMyBookings(): Promise<Booking[]> {
   return request<Booking[]>("/api/bookings/me");
 }
 
+export function fetchBookingCheckout(id: number): Promise<BookingCheckout> {
+  return request<BookingCheckout>(`/api/bookings/${id}`);
+}
+
 export function fetchSavedSpaces(): Promise<Space[]> {
   return request<Space[]>("/api/spaces/me/saved");
 }

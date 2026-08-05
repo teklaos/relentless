@@ -11,18 +11,28 @@ export interface Booking {
   reviewed: boolean;
 }
 
-export interface BookingCheckout extends Booking {
-  checkoutSessionUrl: string;
+export interface BookingCheckout {
+  id: number;
+  startTime: string;
+  endTime: string;
+  totalPrice: number;
+  status: BookingStatus;
+  user: UserSummary;
+  space: SpaceSummary;
+  reviewed: boolean;
+  checkoutSessionUrl: string | null;
 }
 
 export interface WalletBalance {
   balance: number;
 }
 
+export type WalletTransactionType = "CREDIT" | "DEBIT";
+
 export interface WalletTransaction {
   id: number;
   amount: number;
-  type: "CREDIT" | "DEBIT";
+  type: WalletTransactionType;
   createdAt: string;
   bookingId: number | null;
   space: SpaceSummary | null;
@@ -91,6 +101,8 @@ export interface CategorySummary {
   name: string;
 }
 
+export type UserRole = "USER" | "HOST" | "ADMIN";
+
 export interface User {
   id: number;
   username: string;
@@ -102,7 +114,7 @@ export interface User {
   dateOfBirth: string;
   dateJoined: string;
   profileImageKey: string | null;
-  role: "HOST" | "USER" | "ADMIN";
+  role: UserRole;
 }
 
 export interface AdminUser {
@@ -115,7 +127,7 @@ export interface AdminUser {
   dateOfBirth: string;
   dateJoined: string;
   profileImageKey: string | null;
-  role: "HOST" | "USER" | "ADMIN";
+  role: UserRole;
 }
 
 export interface UserSummary {

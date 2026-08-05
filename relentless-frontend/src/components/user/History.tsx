@@ -7,15 +7,16 @@ import ThumbImg from "@/components/shared/ui/ThumbImg";
 import { Booking } from "@/lib/types";
 import { BOOKING_TABS, bookingsForTab, type BookingTab } from "@/lib/bookings";
 import { DAYS, fmtDateNoDow, fmtTimeRange, fmtPrice, statusMeta } from "@/lib/format";
-import { Calendar, Star, Check, MoreVertical } from "lucide-react";
+import { Calendar, Star, Check, MoreVertical, CreditCard } from "lucide-react";
 
 interface HistoryProps {
   bookings: Booking[];
   onLeaveReview: (booking: Booking) => void;
+  onPayBooking: (booking: Booking) => void;
   onOpenSpace: (id: number) => void;
 }
 
-export default function History({ bookings, onLeaveReview, onOpenSpace }: HistoryProps) {
+export default function History({ bookings, onLeaveReview, onPayBooking, onOpenSpace }: HistoryProps) {
   const [tab, setTab] = useState<BookingTab>("upcoming");
   const [menuBooking, setMenuBooking] = useState<Booking | null>(null);
 
@@ -90,6 +91,19 @@ export default function History({ bookings, onLeaveReview, onOpenSpace }: Histor
                   {b.status}
                 </span>
                 <span className="br-action">
+                  {b.status === "PENDING" && (
+                    <button
+                      className="btn sm accent"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onPayBooking(b);
+                      }}
+                    >
+                      <CreditCard size={12} />
+                      <span className="pay-label-full">PROCEED TO PAYMENT</span>
+                      <span className="pay-label-short">PROCEED</span>
+                    </button>
+                  )}
                   {b.status === "COMPLETED" && !b.reviewed && (
                     <button
                       className="btn sm"
@@ -163,9 +177,18 @@ export default function History({ bookings, onLeaveReview, onOpenSpace }: Histor
               </div>
             )}
             {menuBooking.status === "CANCELLED" && <div className="mono br-menu-note">Booking cancelled</div>}
-            {(menuBooking.status === "PENDING" || menuBooking.status === "CONFIRMED") && (
-              <div className="mono br-menu-note">No actions available</div>
+            {menuBooking.status === "PENDING" && (
+              <button
+                className="btn accent"
+                onClick={() => {
+                  onPayBooking(menuBooking);
+                  setMenuBooking(null);
+                }}
+              >
+                <CreditCard size={14} /> PROCEED TO PAYMENT
+              </button>
             )}
+            {menuBooking.status === "CONFIRMED" && <div className="mono br-menu-note">No actions available</div>}
           </div>
         </Modal>
       )}
