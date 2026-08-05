@@ -7,6 +7,7 @@ import { useHost } from "@/context/HostContext";
 import { debitWallet } from "@/lib/api";
 import { fmtPrice, buildEarningsBars } from "@/lib/format";
 import TransactionTable from "@/components/shared/ui/TransactionTable";
+import Modal from "@/components/shared/ui/Modal";
 
 export default function Wallet() {
   const { showToast } = useApp();
@@ -14,6 +15,7 @@ export default function Wallet() {
   const balance = host.walletBalance;
   const txs = host.walletTransactions;
   const [withdrawing, setWithdrawing] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   const withdraw = async () => {
     if (balance <= 0 || withdrawing) return;
@@ -22,6 +24,7 @@ export default function Wallet() {
       await debitWallet(balance);
       showToast(`WITHDRAWAL OF ${fmtPrice(balance)} INITIATED`);
       host.refreshWallet();
+      setConfirming(false);
     } catch {
       showToast("WITHDRAWAL FAILED");
     } finally {
@@ -43,7 +46,7 @@ export default function Wallet() {
             <div className="mono h-withdraw-label">Balance</div>
             <div className="h-withdraw-amt">{fmtPrice(balance)}</div>
           </div>
-          <button onClick={withdraw} disabled={balance <= 0 || withdrawing} className="h-withdraw-btn">
+          <button onClick={() => setConfirming(true)} disabled={balance <= 0 || withdrawing} className="h-withdraw-btn">
             {withdrawing ? "Processing…" : "Withdraw"}
           </button>
         </div>
@@ -81,6 +84,38 @@ export default function Wallet() {
         emptyHeading="No transactions yet"
         emptyText="Payouts and charges show up here."
       />
+
+      {confirming && (
+        <Modal
+          title="Confirm withdrawal"
+          subtitle={`Withdraw ${fmtPrice(balance)} from your wallet?`}
+          onClose={withdrawing ? () => {} : () => setConfirming(false)}
+          footer={
+            <>
+              <button
+                className="btn"
+                style={{ flex: 1, justifyContent: "center" }}
+                onClick={() => setConfirming(false)}
+                disabled={withdrawing}
+              >
+                CANCEL
+              </button>
+              <button
+                className="btn accent"
+                style={{ flex: 1, justifyContent: "center" }}
+                onClick={withdraw}
+                disabled={withdrawing}
+              >
+                {withdrawing ? "PROCESSING…" : "CONFIRM WITHDRAWAL"}
+              </button>
+            </>
+          }
+        >
+          <div className="h-withdraw-amt" style={{ textAlign: "center" }}>
+            {fmtPrice(balance)}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
