@@ -51,6 +51,11 @@
   background: var(--bg-sunken);
 }
 
+.h-withdraw-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
 .h-panel-title-lg {
   font-weight: 500;
   font-size: 15px;
