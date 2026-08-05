@@ -12,6 +12,8 @@ public interface BookingService {
 
   List<BookingResponse> getHostedByCurrentUser();
 
+  BookingCheckoutResponse getById(Long id);
+
   BookingCheckoutResponse create(CreateBookingRequest request);
 
   void cancelPending();

@@ -194,6 +194,7 @@ public class DataInitializer {
             .startTime(startTime)
             .endTime(endTime)
             .totalPrice(totalPrice)
+            .checkoutSessionUrl("https://checkout.stripe.com/pay/cs_test_1a2b3c4d5e6f7g8h")
             .status(BookingStatus.COMPLETED)
             .build();
 

@@ -41,6 +41,12 @@ public class Booking {
       message = "Total price must be a valid number with up to 2 decimal places.")
   private BigDecimal totalPrice;
 
+  @Size(
+      min = 2,
+      max = 1000,
+      message = "Checkout session URL must be between 2 and 1023 characters.")
+  private String checkoutSessionUrl;
+
   @NotNull(message = "Creation time is required.")
   @PastOrPresent(message = "Creation time must be in the past or present.")
   @Builder.Default

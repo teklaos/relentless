@@ -339,12 +339,7 @@ public class SpaceServiceImpl implements SpaceService {
             .orElseThrow(() -> new EntityNotFoundException("Space not found"));
 
     Long userId = authService.getCurrentUserId();
-    var user =
-        userRepository
-            .findById(userId)
-            .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-    if (!space.getHost().getId().equals(user.getId())) {
+    if (!space.getHost().getId().equals(userId)) {
       throw new AuthorizationDeniedException(message);
     }
 

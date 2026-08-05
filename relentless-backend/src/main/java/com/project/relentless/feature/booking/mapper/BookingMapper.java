@@ -16,5 +16,5 @@ public interface BookingMapper {
   BookingResponse toBookingResponse(Booking booking);
 
   @Mapping(target = "reviewed", expression = "java(booking.getReview() != null)")
-  BookingCheckoutResponse toBookingCheckoutResponse(Booking booking, String checkoutSessionUrl);
+  BookingCheckoutResponse toBookingCheckoutResponse(Booking booking);
 }

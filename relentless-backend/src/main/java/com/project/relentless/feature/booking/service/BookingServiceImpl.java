@@ -23,6 +23,7 @@ import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -60,6 +61,22 @@ public class BookingServiceImpl implements BookingService {
     return bookingRepository.findAllBySpaceHostId(userId).stream()
         .map(bookingMapper::toBookingResponse)
         .toList();
+  }
+
+  @Override
+  @PreAuthorize("hasRole('USER')")
+  public BookingCheckoutResponse getById(Long id) {
+    var booking =
+        bookingRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+
+    Long userId = authService.getCurrentUserId();
+    if (!booking.getUser().getId().equals(userId)) {
+      throw new AuthorizationDeniedException("You are not allowed to access this booking");
+    }
+
+    return bookingMapper.toBookingCheckoutResponse(booking);
   }
 
   @Override
@@ -132,8 +149,9 @@ public class BookingServiceImpl implements BookingService {
 
     var saved = bookingRepository.save(booking);
     var session = paymentService.createCheckoutSession(saved);
+    saved.setCheckoutSessionUrl(session.getUrl());
 
-    return bookingMapper.toBookingCheckoutResponse(saved, session.getUrl());
+    return bookingMapper.toBookingCheckoutResponse(saved);
   }
 
   @Override

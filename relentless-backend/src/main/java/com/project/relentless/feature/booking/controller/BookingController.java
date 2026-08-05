@@ -33,6 +33,11 @@ public class BookingController {
     return ResponseEntity.ok(bookingService.getHostedByCurrentUser());
   }
 
+  @GetMapping("/{id}")
+  public ResponseEntity<BookingCheckoutResponse> getById(@PathVariable Long id) {
+    return ResponseEntity.ok(bookingService.getById(id));
+  }
+
   @PostMapping
   public ResponseEntity<BookingCheckoutResponse> create(
       @Valid @RequestBody CreateBookingRequest request) {
