@@ -87,12 +87,17 @@ export const fmtDateShort = (iso: string) => {
 
 export const fmtDateLong = (iso: string) => {
   const d = new Date(iso);
-  return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  return `${DAYS[d.getDay()]} ${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 };
 
 export const fmtDateNoDow = (iso: string) => {
   const d = new Date(iso);
-  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  return `${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+};
+
+export const fmtTime = (iso: string) => {
+  const d = new Date(iso);
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 };
 
 export const padDate = (d: Date) => d.toISOString().slice(0, 10);

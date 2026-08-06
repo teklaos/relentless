@@ -3,7 +3,7 @@
 import "./TransactionTable.css";
 import { Receipt } from "lucide-react";
 import { WalletTransaction } from "@/lib/types";
-import { fmtDateNoDow, fmtPrice } from "@/lib/format";
+import { fmtDateNoDow, fmtTime, fmtPrice } from "@/lib/format";
 
 interface TransactionTableProps {
   transactions: WalletTransaction[];
@@ -43,7 +43,10 @@ export default function TransactionTable({ transactions, emptyHeading, emptyText
                   {t.type}
                 </div>
               </div>
-              <span className="mono h-tx-date">{fmtDateNoDow(t.createdAt)}</span>
+              <div className="mono h-tx-date">
+                <div>{fmtDateNoDow(t.createdAt)}</div>
+                <div className="h-tx-time">{fmtTime(t.createdAt)}</div>
+              </div>
               <span className="mono h-tx-net">
                 {credit ? "+" : "−"}
                 {fmtPrice(Math.abs(t.amount))}

@@ -3,31 +3,57 @@
 import "./Admin.css";
 import "./Transactions.css";
 import { useEffect, useState } from "react";
-import { Receipt } from "lucide-react";
+import { Receipt, Landmark } from "lucide-react";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
-import { fetchAdminBookings } from "@/lib/api";
-import { Booking } from "@/lib/types";
-import { DAYS, fmtDateNoDow, fmtTimeRange, fmtPrice, statusMeta } from "@/lib/format";
+import { fetchAdminTransactions } from "@/lib/api";
+import { AdminTransaction, UserSummary } from "@/lib/types";
+import { fmtDateNoDow, fmtTime, fmtPrice } from "@/lib/format";
 
-const STATUSES = ["ALL", "PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"] as const;
-type StatusFilter = (typeof STATUSES)[number];
+const TYPES = ["ALL", "CREDIT", "DEBIT"] as const;
+type TypeFilter = (typeof TYPES)[number];
+
+function Party({ user, area }: { user: UserSummary | null; area: "from" | "to" }) {
+  return (
+    <div className={`a-tx-cell a-tx-${area}`}>
+      <AvatarImg
+        imageKey={user?.profileImageKey ?? null}
+        name={user?.username ?? "—"}
+        size={30}
+        radius={3}
+        style={{ flexShrink: 0 }}
+      />
+      <span className="a-tx-guest truncate">{user?.username ?? "—"}</span>
+    </div>
+  );
+}
+
+function Withdrawal({ area }: { area: "from" | "to" }) {
+  return (
+    <div className={`a-tx-cell a-tx-${area}`}>
+      <span className="a-tx-bank">
+        <Landmark size={15} />
+      </span>
+      <span className="a-tx-guest truncate">Bank</span>
+    </div>
+  );
+}
 
 export default function Transactions() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [filter, setFilter] = useState<StatusFilter>("ALL");
+  const [transactions, setTransactions] = useState<AdminTransaction[]>([]);
+  const [filter, setFilter] = useState<TypeFilter>("ALL");
 
   useEffect(() => {
-    fetchAdminBookings()
-      .then(setBookings)
-      .catch(() => setBookings([]));
+    fetchAdminTransactions()
+      .then(setTransactions)
+      .catch(() => setTransactions([]));
   }, []);
 
   const counts = Object.fromEntries(
-    STATUSES.map((s) => [s, s === "ALL" ? bookings.length : bookings.filter((b) => b.status === s).length])
-  ) as Record<StatusFilter, number>;
-  const rows = bookings
-    .filter((b) => filter === "ALL" || b.status === filter)
-    .sort((a, b) => b.startTime.localeCompare(a.startTime));
+    TYPES.map((t) => [t, t === "ALL" ? transactions.length : transactions.filter((x) => x.type === t).length])
+  ) as Record<TypeFilter, number>;
+  const rows = transactions
+    .filter((t) => filter === "ALL" || t.type === filter)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   return (
     <div>
@@ -36,7 +62,7 @@ export default function Transactions() {
       </div>
 
       <div className="tabs a-tabs">
-        {STATUSES.map((key) => (
+        {TYPES.map((key) => (
           <button key={key} onClick={() => setFilter(key)} className={`mono tab ${filter === key ? "active" : ""}`}>
             {key === "ALL" ? "All" : key.charAt(0) + key.slice(1).toLowerCase()}
             <span className="tab-count">{counts[key]}</span>
@@ -50,44 +76,43 @@ export default function Transactions() {
             <Receipt size={20} />
           </div>
           <div className="empty-h">No transactions found</div>
-          <div className="empty-p">Bookings made across the platform show up here.</div>
+          <div className="empty-p">Wallet credits and withdrawals across the platform show up here.</div>
         </div>
       ) : (
         <div>
           <div className="mono a-tx-grid a-tx-head">
-            <span>Guest - Space</span>
+            <span>From</span>
+            <span>To</span>
             <span>When</span>
             <span>Amount</span>
-            <span className="a-tx-status-h">Status</span>
+            <span className="a-tx-status-h">Type</span>
           </div>
-          {rows.map((b) => {
-            const sm = statusMeta(b.status);
+          {rows.map((t) => {
+            const credit = t.type === "CREDIT";
             return (
-              <div key={b.id} className="row a-tx-grid a-tx-row">
-                <div className="a-tx-cell">
-                  <AvatarImg
-                    imageKey={b.user.profileImageKey}
-                    name={b.user.username}
-                    size={30}
-                    radius={3}
-                    style={{ flexShrink: 0 }}
-                  />
-                  <div style={{ minWidth: 0 }}>
-                    <div className="a-tx-guest truncate">{b.user.username}</div>
-                    <div className="mono a-tx-space truncate">{b.space.name}</div>
-                  </div>
-                </div>
+              <div key={t.id} className="row a-tx-grid a-tx-row">
+                {credit ? (
+                  <>
+                    <Party user={t.user} area="from" />
+                    <Party user={t.host} area="to" />
+                  </>
+                ) : (
+                  <>
+                    <Party user={t.host} area="from" />
+                    <Withdrawal area="to" />
+                  </>
+                )}
                 <div className="mono a-tx-when">
-                  <div>
-                    <span className="a-tx-dow">{DAYS[new Date(b.startTime).getDay()]} </span>
-                    {fmtDateNoDow(b.startTime)}
-                  </div>
-                  <div className="a-tx-when-sub">{fmtTimeRange(b.startTime, b.endTime)}</div>
+                  <div>{fmtDateNoDow(t.createdAt)}</div>
+                  <div className="a-tx-time">{fmtTime(t.createdAt)}</div>
                 </div>
-                <span className="mono a-tx-amount">{fmtPrice(b.totalPrice)}</span>
-                <span className="mono badge a-tx-status" style={{ color: sm.fg }}>
-                  <span className="badge-dot" style={{ background: sm.dot }} />
-                  {b.status}
+                <span className="mono a-tx-amount">
+                  {credit ? "+" : "−"}
+                  {fmtPrice(Math.abs(credit ? (t.totalPrice ?? t.amount) : t.amount))}
+                </span>
+                <span className="mono badge a-tx-status" style={{ color: credit ? "var(--ok)" : "var(--ink-3)" }}>
+                  <span className="badge-dot" style={{ background: credit ? "var(--ok)" : "var(--ink-3)" }} />
+                  {t.type}
                 </span>
               </div>
             );

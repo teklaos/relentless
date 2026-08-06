@@ -1,6 +1,6 @@
 .a-tx-grid {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1.3fr 1fr 0.9fr;
   gap: 16px;
 }
 
@@ -32,19 +32,23 @@
   font-size: 13px;
 }
 
-.a-tx-space {
-  font-size: 9.5px;
-  color: var(--ink-4);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: 2px;
+.a-tx-bank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 3px;
+  background: var(--hairline);
+  color: var(--ink-3);
+  flex-shrink: 0;
 }
 
 .a-tx-when {
   font-size: 11.5px;
 }
 
-.a-tx-when-sub {
+.a-tx-time {
   color: var(--ink-3);
   font-size: 10.5px;
   margin-top: 2px;
@@ -67,18 +71,29 @@
 
   .a-tx-row {
     position: relative;
-    grid-template-columns: 1fr;
+    grid-template-columns: auto 1fr;
     grid-template-areas:
-      "cell"
-      "when"
-      "status";
+      "from to"
+      "when when"
+      "status status";
     row-gap: 6px;
     align-items: start;
     padding: 14px;
   }
 
-  .a-tx-cell {
-    grid-area: cell;
+  .a-tx-from {
+    grid-area: from;
+  }
+
+  .a-tx-from::after {
+    content: "→";
+    margin-left: 8px;
+    color: var(--ink-4);
+    flex-shrink: 0;
+  }
+
+  .a-tx-to {
+    grid-area: to;
   }
 
   .a-tx-when {
@@ -87,17 +102,13 @@
     flex-wrap: wrap;
   }
 
-  .a-tx-dow {
-    display: none;
-  }
-
-  .a-tx-when-sub {
+  .a-tx-time {
     color: inherit;
     margin-top: 0;
     font-size: inherit;
   }
 
-  .a-tx-when-sub::before {
+  .a-tx-time::before {
     content: ", ";
   }
 

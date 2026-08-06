@@ -38,6 +38,16 @@ export interface WalletTransaction {
   space: SpaceSummary | null;
 }
 
+export interface AdminTransaction {
+  id: number;
+  amount: number;
+  totalPrice: number | null;
+  type: WalletTransactionType;
+  createdAt: string;
+  user: UserSummary | null;
+  host: UserSummary;
+}
+
 export interface UpdateUserPayload {
   username?: string;
   email?: string;

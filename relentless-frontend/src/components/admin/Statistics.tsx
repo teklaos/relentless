@@ -2,51 +2,49 @@
 
 import "./Admin.css";
 import { useEffect, useState } from "react";
-import { fetchAdminUsers, fetchAdminBookings, fetchSpaces } from "@/lib/api";
-import { AdminUser, Booking, Space, WalletTransaction } from "@/lib/types";
-import { fmtPrice, buildEarningsBars, HOST_KEEP_RATE } from "@/lib/format";
-
-const PAID_STATUSES = new Set(["CONFIRMED", "COMPLETED"]);
+import { fetchAdminUsers, fetchAdminTransactions, fetchSpaces } from "@/lib/api";
+import { AdminUser, AdminTransaction, Space, WalletTransaction } from "@/lib/types";
+import { fmtPrice, buildEarningsBars } from "@/lib/format";
 
 export default function Statistics() {
   const [users, setUsers] = useState<AdminUser[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [transactions, setTransactions] = useState<AdminTransaction[]>([]);
   const [spaces, setSpaces] = useState<Space[]>([]);
 
   useEffect(() => {
     fetchAdminUsers()
       .then(setUsers)
       .catch(() => setUsers([]));
-    fetchAdminBookings()
-      .then(setBookings)
-      .catch(() => setBookings([]));
+    fetchAdminTransactions()
+      .then(setTransactions)
+      .catch(() => setTransactions([]));
     fetchSpaces()
       .then(setSpaces)
       .catch(() => setSpaces([]));
   }, []);
 
-  const paidBookings = bookings.filter((b) => PAID_STATUSES.has(b.status));
-  const grossVolume = paidBookings.reduce((sum, b) => sum + b.totalPrice, 0);
-  const platformRevenue = grossVolume * (1 - HOST_KEEP_RATE);
+  const credits = transactions.filter((t) => t.type === "CREDIT");
+  const grossVolume = credits.reduce((sum, t) => sum + (t.totalPrice ?? 0), 0);
+  const platformRevenue = credits.reduce((sum, t) => sum + ((t.totalPrice ?? 0) - t.amount), 0);
   const totalUsers = users.filter((u) => u.role === "USER").length;
   const totalHosts = users.filter((u) => u.role === "HOST").length;
 
   const kpis = [
-    { label: "Money transferred", value: fmtPrice(grossVolume) },
+    { label: "Total volume", value: fmtPrice(grossVolume) },
     { label: "Platform revenue", value: fmtPrice(platformRevenue) },
-    { label: "Paid bookings", value: String(paidBookings.length) },
+    { label: "Paid bookings", value: String(credits.length) },
     { label: "Users", value: String(totalUsers) },
     { label: "Hosts", value: String(totalHosts) },
     { label: "Active spaces", value: String(spaces.length) }
   ];
 
-  const trendTxs: WalletTransaction[] = paidBookings.map((b) => ({
-    id: b.id,
-    amount: b.totalPrice,
+  const trendTxs: WalletTransaction[] = credits.map((t) => ({
+    id: t.id,
+    amount: t.totalPrice ?? 0,
     type: "CREDIT",
-    createdAt: b.startTime,
-    bookingId: b.id,
-    space: b.space
+    createdAt: t.createdAt,
+    bookingId: null,
+    space: null
   }));
   const { hasEarnings, earningsBars } = buildEarningsBars(trendTxs);
 

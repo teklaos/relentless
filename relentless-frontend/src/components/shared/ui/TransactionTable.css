@@ -28,6 +28,12 @@
   font-size: 11.5px;
 }
 
+.h-tx-time {
+  color: var(--ink-3);
+  font-size: 10.5px;
+  margin-top: 2px;
+}
+
 .h-tx-space {
   font-size: 13px;
   font-weight: 500;

@@ -7,7 +7,7 @@ import { Users as UsersIcon } from "lucide-react";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import { fetchAdminUsers } from "@/lib/api";
 import { AdminUser } from "@/lib/types";
-import { fmtDateShort } from "@/lib/format";
+import { fmtDateNoDow } from "@/lib/format";
 
 const ROLE_FILTERS = ["ALL", "USER", "HOST", "ADMIN"] as const;
 type RoleFilter = (typeof ROLE_FILTERS)[number];
@@ -87,8 +87,8 @@ export default function Users() {
                 </div>
                 {showContact && <span className="a-usr-field">{fullName || "—"}</span>}
                 {showContact && <span className="mono a-usr-field a-usr-phone">{u.phoneNumber ?? "—"}</span>}
-                <span className="mono a-usr-field a-usr-dob">{u.dateOfBirth ? fmtDateShort(u.dateOfBirth) : "—"}</span>
-                <span className="mono a-usr-field a-usr-joined">{fmtDateShort(u.dateJoined)}</span>
+                <span className="mono a-usr-field a-usr-dob">{u.dateOfBirth ? fmtDateNoDow(u.dateOfBirth) : "—"}</span>
+                <span className="mono a-usr-field a-usr-joined">{fmtDateNoDow(u.dateJoined)}</span>
                 <span className="mono badge a-usr-role">
                   <span className="badge-dot" style={{ background: roleDot(u.role) }} />
                   {u.role}

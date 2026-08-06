@@ -286,9 +286,17 @@
     grid-template-columns: 1fr;
     gap: 20px;
   }
+
+  .profile-kv {
+    grid-template-columns: 110px 1fr 110px 1fr;
+  }
 }
 
 @media (width <= 480px) {
+  .profile-kv {
+    grid-template-columns: 110px 1fr;
+  }
+
   .profile-stat {
     padding: 16px 12px;
   }

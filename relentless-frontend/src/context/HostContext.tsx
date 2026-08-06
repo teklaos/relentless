@@ -28,13 +28,11 @@ import {
   uploadImage
 } from "@/lib/api";
 import type { BookingTab } from "@/lib/bookings";
-import { useMediaQuery } from "@/lib/useMediaQuery";
 
 const draftWorkingHours = (hours: Draft["hours"]) =>
   hours.filter((h) => h.on).map((h) => ({ dayOfWeek: h.dayOfWeek, openTime: h.open, closeTime: h.close }));
 
 export interface HostContextValue {
-  isMobile: boolean;
   spaces: Space[];
   bookings: Booking[];
   reviews: Review[];
@@ -83,7 +81,6 @@ export function HostProvider({ children }: { children: ReactNode }) {
   const { auth, user, showToast } = useApp();
   const isHost = user?.role === "HOST";
 
-  const isMobile = useMediaQuery("(max-width: 880px)");
   const [spaces, setSpaces] = useState<Space[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -338,7 +335,6 @@ export function HostProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<HostContextValue>(
     () => ({
-      isMobile,
       spaces,
       bookings,
       reviews,
@@ -376,7 +372,6 @@ export function HostProvider({ children }: { children: ReactNode }) {
       setReviewFilter
     }),
     [
-      isMobile,
       spaces,
       bookings,
       reviews,

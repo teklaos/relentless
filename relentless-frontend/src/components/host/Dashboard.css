@@ -22,12 +22,18 @@
 }
 
 .kpis.host-kpis {
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   margin-bottom: 34px;
 }
 
 .kpis.host-kpis .kpi-value {
   font-size: 27px;
+}
+
+@media (width <= 480px) {
+  .kpis.host-kpis {
+    grid-template-columns: 1fr;
+  }
 }
 
 .h-bar-m {

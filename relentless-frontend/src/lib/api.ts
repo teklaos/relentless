@@ -15,7 +15,8 @@ import {
   WalletTransaction,
   UpdateUserPayload,
   SpaceStatus,
-  AdminUser
+  AdminUser,
+  AdminTransaction
 } from "@/lib/types";
 import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "./auth";
 
@@ -285,6 +286,6 @@ export function fetchAdminUsers(): Promise<AdminUser[]> {
   return request<AdminUser[]>("/api/users");
 }
 
-export function fetchAdminBookings(): Promise<Booking[]> {
-  return request<Booking[]>("/api/bookings");
+export function fetchAdminTransactions(): Promise<AdminTransaction[]> {
+  return request<AdminTransaction[]>("/api/wallet/transactions");
 }
