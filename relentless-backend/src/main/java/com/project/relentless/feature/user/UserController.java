@@ -22,6 +22,11 @@ public class UserController {
     return ResponseEntity.ok(userService.getAll());
   }
 
+  @GetMapping("/active")
+  public ResponseEntity<List<AdminUserResponse>> getAllActive() {
+    return ResponseEntity.ok(userService.getAllActive());
+  }
+
   @GetMapping("/me")
   public ResponseEntity<UserResponse> getCurrent() {
     return ResponseEntity.ok(userService.getCurrent());

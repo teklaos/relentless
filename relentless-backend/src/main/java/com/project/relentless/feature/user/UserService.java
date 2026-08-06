@@ -9,6 +9,8 @@ import java.util.List;
 public interface UserService {
   List<AdminUserResponse> getAll();
 
+  List<AdminUserResponse> getAllActive();
+
   UserResponse getCurrent();
 
   AdminUserResponse getById(Long id);

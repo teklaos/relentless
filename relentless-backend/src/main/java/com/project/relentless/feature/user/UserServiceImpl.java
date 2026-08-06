@@ -11,6 +11,7 @@ import com.project.relentless.feature.user.dto.response.UserResponse;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.time.Period;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,12 @@ public class UserServiceImpl implements UserService {
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public List<AdminUserResponse> getAll() {
+    return userRepository.findAll().stream().map(userMapper::toAdminUserResponse).toList();
+  }
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<AdminUserResponse> getAllActive() {
     return userRepository.findAllByIsDeletedFalse().stream()
         .map(userMapper::toAdminUserResponse)
         .toList();
@@ -84,6 +91,14 @@ public class UserServiceImpl implements UserService {
       user.setEmail(request.email());
     }
     if (request.dateOfBirth() != null) {
+      if (user.getRole().equals(Role.USER)
+          && Period.between(request.dateOfBirth(), user.getDateOfBirth()).getYears() < 14) {
+        throw new IllegalArgumentException("You must be at least 14 years old.");
+      }
+      if (user.getRole().equals(Role.HOST)
+          && Period.between(request.dateOfBirth(), user.getDateOfBirth()).getYears() < 18) {
+        throw new IllegalArgumentException("You must be at least 18 years old to be a host.");
+      }
       user.setDateOfBirth(request.dateOfBirth());
     }
     if (request.profileImageKey() != null
@@ -143,7 +158,7 @@ public class UserServiceImpl implements UserService {
             .findById(userId)
             .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-    user.setEmail("deleted-user-" + userId + "@deleted.local");
+    user.setEmail("user-" + userId + "@del.local");
     user.setUsername("Deleted User");
     user.setDateOfBirth(null);
     user.setPasswordHash(null);
