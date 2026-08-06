@@ -4,6 +4,7 @@ import com.project.relentless.feature.auth.AuthService;
 import com.project.relentless.feature.booking.repository.BookingRepository;
 import com.project.relentless.feature.user.UserRepository;
 import com.project.relentless.feature.wallet.dto.request.DebitWalletRequest;
+import com.project.relentless.feature.wallet.dto.response.AdminTransactionResponse;
 import com.project.relentless.feature.wallet.dto.response.BalanceResponse;
 import com.project.relentless.feature.wallet.dto.response.TransactionResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,6 +27,14 @@ public class WalletServiceImpl implements WalletService {
   private final AuthService authService;
 
   private static final BigDecimal HOST_KEEP_RATE = new BigDecimal("0.95");
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<AdminTransactionResponse> getAllTransactions() {
+    return transactionRepository.findAllByOrderByCreatedAtDesc().stream()
+        .map(transactionMapper::toAdminTransactionResponse)
+        .toList();
+  }
 
   @Override
   @PreAuthorize("hasRole('HOST')")

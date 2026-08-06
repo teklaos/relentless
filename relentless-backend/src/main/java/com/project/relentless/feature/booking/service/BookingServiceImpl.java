@@ -40,12 +40,6 @@ public class BookingServiceImpl implements BookingService {
   private static final int SLOT_MINUTES = 30;
 
   @Override
-  @PreAuthorize("hasRole('ADMIN')")
-  public List<BookingResponse> getAll() {
-    return bookingRepository.findAll().stream().map(bookingMapper::toBookingResponse).toList();
-  }
-
-  @Override
   @PreAuthorize("hasRole('USER')")
   public List<BookingResponse> getByCurrentUser() {
     Long userId = authService.getCurrentUserId();

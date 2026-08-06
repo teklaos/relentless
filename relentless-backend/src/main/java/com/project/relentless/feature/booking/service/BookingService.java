@@ -6,8 +6,6 @@ import com.project.relentless.feature.booking.dto.response.BookingResponse;
 import java.util.List;
 
 public interface BookingService {
-  List<BookingResponse> getAll();
-
   List<BookingResponse> getByCurrentUser();
 
   List<BookingResponse> getHostedByCurrentUser();
