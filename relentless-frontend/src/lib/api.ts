@@ -286,6 +286,10 @@ export function fetchAdminUsers(): Promise<AdminUser[]> {
   return request<AdminUser[]>("/api/users");
 }
 
+export function fetchActiveAdminUsers(): Promise<AdminUser[]> {
+  return request<AdminUser[]>("/api/users/active");
+}
+
 export function fetchAdminTransactions(): Promise<AdminTransaction[]> {
   return request<AdminTransaction[]>("/api/wallet/transactions");
 }

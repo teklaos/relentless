@@ -2,7 +2,7 @@
 
 import "./Admin.css";
 import { useEffect, useState } from "react";
-import { fetchAdminUsers, fetchAdminTransactions, fetchSpaces } from "@/lib/api";
+import { fetchActiveAdminUsers, fetchAdminTransactions, fetchSpaces } from "@/lib/api";
 import { AdminUser, AdminTransaction, Space, WalletTransaction } from "@/lib/types";
 import { fmtPrice, buildEarningsBars } from "@/lib/format";
 
@@ -12,7 +12,7 @@ export default function Statistics() {
   const [spaces, setSpaces] = useState<Space[]>([]);
 
   useEffect(() => {
-    fetchAdminUsers()
+    fetchActiveAdminUsers()
       .then(setUsers)
       .catch(() => setUsers([]));
     fetchAdminTransactions()
@@ -40,7 +40,7 @@ export default function Statistics() {
 
   const trendTxs: WalletTransaction[] = credits.map((t) => ({
     id: t.id,
-    amount: t.totalPrice ?? 0,
+    amount: (t.totalPrice ?? 0) - t.amount,
     type: "CREDIT",
     createdAt: t.createdAt,
     bookingId: null,
