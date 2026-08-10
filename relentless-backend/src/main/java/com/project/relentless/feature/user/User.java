@@ -42,10 +42,10 @@ public class User {
   @Email(message = "Invalid email format.")
   private String email;
 
-  @Size(min = 2, max = 255, message = "First name must be between 2 and 255 characters.")
+  @Size(min = 2, max = 100, message = "First name must be between 2 and 100 characters.")
   private String firstName;
 
-  @Size(min = 2, max = 255, message = "Last name must be between 2 and 255 characters.")
+  @Size(min = 2, max = 100, message = "Last name must be between 2 and 100 characters.")
   private String lastName;
 
   @PhoneNumber(message = "Invalid phone number format.")
