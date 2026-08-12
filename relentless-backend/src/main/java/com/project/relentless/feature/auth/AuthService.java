@@ -1,16 +1,17 @@
 package com.project.relentless.feature.auth;
 
-import com.project.relentless.feature.auth.dto.request.LoginRequest;
-import com.project.relentless.feature.auth.dto.request.RefreshTokenRequest;
-import com.project.relentless.feature.auth.dto.request.RegisterHostRequest;
-import com.project.relentless.feature.auth.dto.request.RegisterUserRequest;
+import com.project.relentless.feature.auth.dto.request.*;
 import com.project.relentless.feature.auth.dto.response.AccessTokenResponse;
 import com.project.relentless.feature.auth.dto.response.AuthResponse;
 
 public interface AuthService {
-  AuthResponse register(RegisterUserRequest request);
+  void register(RegisterUserRequest request);
 
-  AuthResponse registerHost(RegisterHostRequest request);
+  void registerHost(RegisterHostRequest request);
+
+  void resendOtp(ResendOtpRequest request);
+
+  AuthResponse verifyOtp(VerifyOtpRequest request);
 
   AuthResponse login(LoginRequest request);
 

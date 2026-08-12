@@ -1,9 +1,6 @@
 package com.project.relentless.feature.auth;
 
-import com.project.relentless.feature.auth.dto.request.LoginRequest;
-import com.project.relentless.feature.auth.dto.request.RefreshTokenRequest;
-import com.project.relentless.feature.auth.dto.request.RegisterHostRequest;
-import com.project.relentless.feature.auth.dto.request.RegisterUserRequest;
+import com.project.relentless.feature.auth.dto.request.*;
 import com.project.relentless.feature.auth.dto.response.AccessTokenResponse;
 import com.project.relentless.feature.auth.dto.response.AuthResponse;
 import jakarta.validation.Valid;
@@ -20,14 +17,26 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/register")
-  public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterUserRequest request) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
+  public ResponseEntity<Void> register(@Valid @RequestBody RegisterUserRequest request) {
+    authService.register(request);
+    return ResponseEntity.accepted().build();
   }
 
   @PostMapping("/register/host")
-  public ResponseEntity<AuthResponse> registerHost(
-      @Valid @RequestBody RegisterHostRequest request) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerHost(request));
+  public ResponseEntity<Void> registerHost(@Valid @RequestBody RegisterHostRequest request) {
+    authService.registerHost(request);
+    return ResponseEntity.accepted().build();
+  }
+
+  @PostMapping("/resend-otp")
+  public ResponseEntity<Void> resendOtp(@Valid @RequestBody ResendOtpRequest request) {
+    authService.resendOtp(request);
+    return ResponseEntity.accepted().build();
+  }
+
+  @PostMapping("/verify-otp")
+  public ResponseEntity<AuthResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(authService.verifyOtp(request));
   }
 
   @PostMapping("/login")

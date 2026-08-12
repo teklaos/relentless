@@ -1,20 +1,24 @@
 package com.project.relentless.feature.auth;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.project.relentless.feature.auth.details.CustomUserDetails;
-import com.project.relentless.feature.auth.dto.request.LoginRequest;
-import com.project.relentless.feature.auth.dto.request.RefreshTokenRequest;
-import com.project.relentless.feature.auth.dto.request.RegisterHostRequest;
-import com.project.relentless.feature.auth.dto.request.RegisterUserRequest;
+import com.project.relentless.feature.auth.dto.PendingRegistration;
+import com.project.relentless.feature.auth.dto.request.*;
 import com.project.relentless.feature.auth.dto.response.AccessTokenResponse;
 import com.project.relentless.feature.auth.dto.response.AuthResponse;
 import com.project.relentless.feature.auth.jwt.JwtService;
 import com.project.relentless.feature.auth.refresh.RefreshTokenService;
+import com.project.relentless.feature.email.EmailService;
 import com.project.relentless.feature.user.Role;
+import com.project.relentless.feature.user.User;
 import com.project.relentless.feature.user.UserMapper;
 import com.project.relentless.feature.user.UserRepository;
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
+import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -35,38 +39,37 @@ public class AuthServiceImpl implements AuthService {
   private final UserMapper userMapper;
   private final JwtService jwtService;
   private final RefreshTokenService refreshTokenService;
+  private final EmailService emailService;
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
 
+  private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
+  private final Cache<String, PendingRegistration> pendingRegistrations =
+      Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).maximumSize(10_000).build();
+
   @Override
-  @Transactional
-  public AuthResponse register(RegisterUserRequest request) {
+  public void register(RegisterUserRequest request) {
     if (userRepository.findByEmail(request.email()).isPresent()) {
       throw new EntityExistsException("Email is already in use");
     }
     if (Period.between(request.dateOfBirth(), LocalDate.now()).getYears() < 14) {
-      throw new IllegalArgumentException("You must be at least 14 years old.");
+      throw new IllegalArgumentException("You must be at least 14 years old");
     }
 
     var user = userMapper.toUser(request);
     user.setPasswordHash(passwordEncoder.encode(request.password()));
 
-    var savedUser = userRepository.save(user);
-
-    String accessToken = jwtService.generateAccessToken(savedUser.getId());
-    String refreshToken = refreshTokenService.generateRefreshToken(savedUser.getId());
-
-    return new AuthResponse(accessToken, refreshToken);
+    recordAndSendOtp(user);
   }
 
   @Override
-  @Transactional
-  public AuthResponse registerHost(RegisterHostRequest request) {
+  public void registerHost(RegisterHostRequest request) {
     if (userRepository.findByEmail(request.email()).isPresent()) {
       throw new EntityExistsException("Email is already in use");
     }
     if (Period.between(request.dateOfBirth(), LocalDate.now()).getYears() < 18) {
-      throw new IllegalArgumentException("You must be at least 18 years old to be a host.");
+      throw new IllegalArgumentException("You must be at least 18 years old to be a host");
     }
 
     var user = userMapper.toUser(request);
@@ -74,7 +77,35 @@ public class AuthServiceImpl implements AuthService {
     user.setRole(Role.HOST);
     user.setDateAcceptedTerms(LocalDate.now());
 
-    var savedUser = userRepository.save(user);
+    recordAndSendOtp(user);
+  }
+
+  @Override
+  public void resendOtp(ResendOtpRequest request) {
+    var pendingRegistration = pendingRegistrations.getIfPresent(request.email());
+    if (pendingRegistration == null) {
+      throw new IllegalArgumentException("No pending registration found for this email");
+    }
+    recordAndSendOtp(pendingRegistration.user());
+  }
+
+  @Override
+  @Transactional
+  public AuthResponse verifyOtp(VerifyOtpRequest request) {
+    var pendingRegistration = pendingRegistrations.getIfPresent(request.email());
+    if (pendingRegistration == null) {
+      throw new IllegalArgumentException(
+          "Code expired or no pending registration found for this email");
+    }
+    if (!pendingRegistration.otp().equals(request.otp())) {
+      throw new IllegalArgumentException("Invalid code");
+    }
+    if (userRepository.findByEmail(request.email()).isPresent()) {
+      throw new EntityExistsException("Email is already in use");
+    }
+
+    pendingRegistrations.invalidate(request.email());
+    var savedUser = userRepository.save(pendingRegistration.user());
 
     String accessToken = jwtService.generateAccessToken(savedUser.getId());
     String refreshToken = refreshTokenService.generateRefreshToken(savedUser.getId());
@@ -138,5 +169,14 @@ public class AuthServiceImpl implements AuthService {
       throw new AuthenticationCredentialsNotFoundException("Unauthorized");
     }
     return userDetails.getId();
+  }
+
+  private void recordAndSendOtp(User user) {
+    String otp = String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
+    pendingRegistrations.put(user.getEmail(), new PendingRegistration(user, otp));
+    emailService.sendEmail(
+        user.getEmail(),
+        "Verify your email",
+        "Your Relentless verification code is " + otp + ". The code expires in 10 minutes.");
   }
 }
