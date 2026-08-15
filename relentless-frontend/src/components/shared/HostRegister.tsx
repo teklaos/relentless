@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import DatePicker from "@/components/shared/ui/DatePicker";
 import AuthBrandPanel from "@/components/shared/ui/AuthBrandPanel";
-import { User, Mail, Phone, Landmark, ArrowRight, ArrowLeft } from "lucide-react";
+import { User, Mail, Phone, Landmark, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import PasswordField from "@/components/shared/ui/PasswordField";
 import OtpInput from "@/components/shared/ui/OtpInput";
 import { EMAIL_RE, PHONE_RE, IBAN_RE, PASSWORD_RE, PASSWORD_HINT, HOST_MIN_AGE, maxDobIso } from "@/lib/format";
@@ -40,6 +40,7 @@ export default function HostRegister() {
   const [err, setErr] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const set = (k: string, v: string | boolean) => setForm((f) => ({ ...f, [k]: v }));
   const blur = (k: string) => setTouched((t) => ({ ...t, [k]: true }));
@@ -87,10 +88,7 @@ export default function HostRegister() {
       setStep(4);
     } catch (e) {
       setErr({
-        form:
-          e instanceof Error && e.message
-            ? e.message
-            : "Could not create host account. Check your details and try again."
+        form: e instanceof Error && e.message ? e.message : "Could not create host account"
       });
     }
     setLoading(false);
@@ -117,9 +115,10 @@ export default function HostRegister() {
     setOtp("");
     try {
       await resendSignUpOtp(form.email);
-      setErr({ form: "New code sent." });
+      setSent(true);
+      setTimeout(() => setSent(false), 4000);
     } catch {
-      setErr({ form: "Could not resend — start again." });
+      setErr({ form: "Could not resend code" });
     }
   };
 
@@ -387,8 +386,21 @@ export default function HostRegister() {
 
           <div className="auth-host-row">
             {step === 4 ? (
-              <button type="button" className="auth-link" onClick={resend} disabled={loading}>
-                Didn&apos;t get it? <b>Resend code</b>
+              <button
+                type="button"
+                className={`auth-link ${sent ? "sent" : ""}`}
+                onClick={resend}
+                disabled={loading || sent}
+              >
+                {sent ? (
+                  <span>
+                    <Check size={12} /> <b>New code sent</b>
+                  </span>
+                ) : (
+                  <>
+                    Didn&apos;t get it? <b>Resend code</b>
+                  </>
+                )}
               </button>
             ) : (
               <button type="button" className="auth-link" onClick={() => router.push("/login")}>

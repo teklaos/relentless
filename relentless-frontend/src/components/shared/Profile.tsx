@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Booking, User } from "@/lib/types";
 import AvatarImg from "@/components/shared/ui/AvatarImg";
 import Modal from "@/components/shared/ui/Modal";
+import ChangePasswordForm from "@/components/shared/ui/ChangePasswordForm";
 import DatePicker from "@/components/shared/ui/DatePicker";
 import { useApp } from "@/context/AppContext";
 import { uploadImage } from "@/lib/api";
@@ -21,8 +22,8 @@ interface ProfileProps {
 export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
   const router = useRouter();
   const { onUpdateProfile, showToast } = useApp();
-  const [twoFactor, setTwoFactor] = useState(true);
   const [editing, setEditing] = useState(false);
+  const [changingPw, setChangingPw] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -184,27 +185,19 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
           </div>
 
           <div className="settings-list">
-            <div className="setting" onClick={() => setTwoFactor((v) => !v)} style={{ cursor: "pointer" }}>
+            <div
+              className="setting"
+              onClick={() => (isAdmin ? setChangingPw(true) : router.push("/profile/privacy"))}
+              style={{ cursor: "pointer" }}
+            >
               <div className="setting-l">
-                <span className="setting-t">Two-factor authentication</span>
-                <span className="setting-d">Adds an extra step at sign-in</span>
+                <span className="setting-t">{isAdmin ? "Password" : "Data & privacy"}</span>
+                <span className="setting-d">{isAdmin ? "Change your password" : "Manage your personal data"}</span>
               </div>
-              <button className={`toggle ${twoFactor ? "on" : ""}`} aria-pressed={twoFactor}>
-                <span className="toggle-thumb" />
-              </button>
+              <span className="setting-v">
+                <ArrowRight size={12} />
+              </span>
             </div>
-
-            {!isAdmin && (
-              <div className="setting" onClick={() => router.push("/profile/privacy")} style={{ cursor: "pointer" }}>
-                <div className="setting-l">
-                  <span className="setting-t">Data & privacy</span>
-                  <span className="setting-d">Manage your personal data</span>
-                </div>
-                <span className="setting-v">
-                  <ArrowRight size={12} />
-                </span>
-              </div>
-            )}
 
             <div className="setting" onClick={onSignOut} style={{ cursor: "pointer" }}>
               <div className="setting-l">
@@ -218,6 +211,12 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
           </div>
         </div>
       </div>
+
+      {changingPw && (
+        <Modal title="Change password" subtitle={`@${user.username}`} onClose={() => setChangingPw(false)}>
+          <ChangePasswordForm onSuccess={() => setChangingPw(false)} />
+        </Modal>
+      )}
 
       {editing && (
         <Modal

@@ -148,6 +148,12 @@
   color: var(--accent-ink);
 }
 
+.auth-link.sent,
+.auth-link.sent b {
+  color: var(--accent-ink);
+  cursor: default;
+}
+
 .auth-host-row {
   margin-top: 26px;
   padding-top: 20px;

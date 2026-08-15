@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import DatePicker from "@/components/shared/ui/DatePicker";
 import AuthBrandPanel from "@/components/shared/ui/AuthBrandPanel";
-import { User, Mail, ArrowRight } from "lucide-react";
+import { User, Mail, ArrowRight, Check } from "lucide-react";
 import PasswordField from "@/components/shared/ui/PasswordField";
 import OtpInput from "@/components/shared/ui/OtpInput";
 import { EMAIL_RE, PASSWORD_RE, PASSWORD_HINT, USER_MIN_AGE, maxDobIso } from "@/lib/format";
@@ -28,6 +28,7 @@ export default function Auth({ mode }: AuthProps) {
   const [loading, setLoading] = useState(false);
   const [otpStep, setOtpStep] = useState(false);
   const [otp, setOtp] = useState("");
+  const [sent, setSent] = useState(false);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -109,9 +110,10 @@ export default function Auth({ mode }: AuthProps) {
     setOtp("");
     try {
       await resendSignUpOtp(form.email);
-      setErr({ otp: "New code sent" });
+      setSent(true);
+      setTimeout(() => setSent(false), 4000);
     } catch {
-      setErr({ otp: "Could not resend — start again" });
+      setErr({ otp: "Could not resend code" });
     }
   };
 
@@ -255,8 +257,21 @@ export default function Auth({ mode }: AuthProps) {
 
           <div className="auth-host-row">
             {otpStep ? (
-              <button type="button" className="auth-link" onClick={resend} disabled={loading}>
-                Didn&apos;t get it? <b>Resend code</b>
+              <button
+                type="button"
+                className={`auth-link ${sent ? "sent" : ""}`}
+                onClick={resend}
+                disabled={loading || sent}
+              >
+                {sent ? (
+                  <>
+                    <Check size={12} /> <b>New code sent</b>
+                  </>
+                ) : (
+                  <>
+                    Didn&apos;t get it? <b>Resend code</b>
+                  </>
+                )}
               </button>
             ) : (
               <button type="button" className="auth-link" onClick={() => router.push("/register/host")}>
