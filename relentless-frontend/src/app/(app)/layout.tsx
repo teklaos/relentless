@@ -2,70 +2,109 @@
 
 import "./layout.css";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
-import Sidebar from "@/components/layout/Sidebar";
-import BottomNav from "@/components/layout/BottomNav";
-import SpaceDetail from "@/components/detail/SpaceDetail";
-import ReviewModal from "@/components/pages/ReviewModal";
+import type { User } from "@/lib/types";
+import { HostProvider } from "@/context/HostContext";
+import Sidebar from "@/components/shared/Sidebar";
+import BottomNav from "@/components/shared/BottomNav";
+import SpaceDetail from "@/components/user/SpaceDetail";
+import ReviewModal from "@/components/user/ReviewModal";
+import PaymentModal from "@/components/user/PaymentModal";
+import AuthGateModal from "@/components/shared/AuthGateModal";
+
+const ROUTE_ROLES: [string, User["role"][]][] = [
+  ["/explore", ["USER"]],
+  ["/saved", ["USER"]],
+  ["/bookings", ["USER", "HOST"]],
+  ["/dashboard", ["HOST", "ADMIN"]],
+  ["/listings", ["HOST"]],
+  ["/wallet", ["HOST"]],
+  ["/reviews", ["HOST"]],
+  ["/users", ["ADMIN"]],
+  ["/transactions", ["ADMIN"]],
+  ["/statistics", ["ADMIN"]],
+  ["/profile", ["USER", "HOST", "ADMIN"]]
+];
+const PUBLIC_PATHS = ["/explore"];
+const HOME_PATH: Record<User["role"], string> = { USER: "/explore", HOST: "/dashboard", ADMIN: "/dashboard" };
+const isPublic = (p: string) => PUBLIC_PATHS.some((x) => p === x || p.startsWith(x + "/"));
+const rolesFor = (p: string) => ROUTE_ROLES.find(([prefix]) => p === prefix || p.startsWith(prefix + "/"))?.[1];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const {
     auth,
+    authReady,
+    user,
     detail,
     reviewing,
+    checkout,
     toast,
+    authGate,
     savedIds,
     onSave,
     onBook,
     onClose,
     onCloseReview,
     onSubmitReview,
+    onCloseCheckout,
+    onProceedPayment,
+    onCloseAuthGate,
+    onAuthGateContinue
   } = useApp();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
+    if (!authReady) return;
     if (!auth) {
-      router.replace("/login");
+      if (!isPublic(pathname)) router.replace("/login");
+      return;
     }
-  }, [auth, router]);
+    if (!user) return;
+    const allowed = rolesFor(pathname);
+    if (allowed && !allowed.includes(user.role)) {
+      router.replace(HOME_PATH[user.role]);
+    }
+  }, [authReady, auth, user, pathname, router]);
 
-  if (!auth) {
-    return null;
-  }
+  if (!authReady) return null;
+  if (!auth && !isPublic(pathname)) return null;
 
   return (
-    <div className="app">
-      <Sidebar />
-      <main className="main">
-        <div className="content">{children}</div>
-      </main>
-      <BottomNav />
+    <HostProvider>
+      <div className="app">
+        <Sidebar />
+        <main className="main">
+          <div className="content">{children}</div>
+        </main>
+        <BottomNav />
 
-      {detail && (
-        <SpaceDetail
-          space={detail}
-          saved={savedIds.has(detail.id)}
-          onClose={onClose}
-          onSave={onSave}
-          onBook={onBook}
-        />
-      )}
+        {detail && (
+          <SpaceDetail
+            space={detail}
+            saved={savedIds.has(detail.id)}
+            onClose={onClose}
+            onSave={onSave}
+            onBook={onBook}
+          />
+        )}
 
-      {reviewing && (
-        <ReviewModal
-          booking={reviewing}
-          onClose={onCloseReview}
-          onSubmit={onSubmitReview}
-        />
-      )}
+        {reviewing && <ReviewModal booking={reviewing} onClose={onCloseReview} onSubmit={onSubmitReview} />}
 
-      {toast && (
-        <div className="toast">
-          <span className="dot" />
-          {toast}
-        </div>
-      )}
-    </div>
+        {checkout && <PaymentModal checkout={checkout} onClose={onCloseCheckout} onProceed={onProceedPayment} />}
+
+        {authGate && (
+          <AuthGateModal action={authGate.action} onClose={onCloseAuthGate} onContinue={onAuthGateContinue} />
+        )}
+
+        {toast && (
+          <div className="toast">
+            <span className="dot" />
+            {toast}
+          </div>
+        )}
+      </div>
+    </HostProvider>
   );
 }

@@ -26,6 +26,11 @@ public record CustomUserDetails(User user) implements UserDetails {
     return user.getPasswordHash();
   }
 
+  @Override
+  public boolean isEnabled() {
+    return !user.isDeleted();
+  }
+
   public Long getId() {
     return user.getId();
   }

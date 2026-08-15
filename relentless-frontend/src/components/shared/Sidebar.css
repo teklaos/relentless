@@ -1,0 +1,143 @@
+.sidebar {
+  border-right: 1px solid var(--hairline);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 24px 20px;
+}
+
+.sb-logo {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.sb-logo-mark {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.sb-logo-mark .less {
+  color: var(--accent);
+}
+
+.sb-logo-meta {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 9px;
+  color: var(--ink-4);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sb-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 8px;
+  border-radius: 3px;
+  color: var(--ink-2);
+  font-size: 13.5px;
+  font-weight: 450;
+  transition:
+    background 0.12s,
+    color 0.12s;
+  position: relative;
+  text-align: left;
+}
+
+.sb-item:hover {
+  background: var(--bg-sunken);
+  color: var(--ink);
+}
+
+.sb-item.active {
+  color: var(--accent-ink);
+  background: var(--accent-softer);
+}
+
+.sb-item.active::before {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--accent);
+}
+
+.sb-item-icon {
+  display: flex;
+  align-items: center;
+}
+
+.sb-item.active .sb-item-icon {
+  color: var(--accent);
+}
+
+.sb-item-label {
+  flex: 1;
+}
+
+.sb-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sb-avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sb-user-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.sb-user-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sb-user-email {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  color: var(--ink-4);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (width <= 768px) {
+  .sidebar {
+    display: none;
+  }
+}

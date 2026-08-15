@@ -17,6 +17,7 @@ import javax.crypto.Mac;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -30,9 +31,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   @Value("${jwt.refresh.secret}")
   private String secret;
 
-  private static final long refreshTokenExpiration = 30 * 24 * 60 * 60 * 1000L;
-  private static final SecureRandom secureRandom = new SecureRandom();
-  private static final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
+  private static final long REFRESH_TOKEN_EXPIRATION = 30 * 24 * 60 * 60 * 1000L;
+  private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+  private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
 
   private Key key;
 
@@ -52,7 +53,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     String token = generateToken();
     String tokenHash = hmacSha256Hex(token);
 
-    var exp = Instant.now().plusMillis(refreshTokenExpiration);
+    var exp = Instant.now().plusMillis(REFRESH_TOKEN_EXPIRATION);
 
     var refreshToken =
         RefreshToken.builder().user(user).tokenHash(tokenHash).expiration(exp).build();
@@ -66,7 +67,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     String tokenHash = hmacSha256Hex(rawToken);
     return refreshTokenRepository
         .findByTokenHash(tokenHash)
-        .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+        .orElseThrow(
+            () -> new AuthenticationCredentialsNotFoundException("Refresh token not found"));
   }
 
   @Override
@@ -84,8 +86,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
   private String generateToken() {
     byte[] randomBytes = new byte[64];
-    secureRandom.nextBytes(randomBytes);
-    return encoder.encodeToString(randomBytes);
+    SECURE_RANDOM.nextBytes(randomBytes);
+    return ENCODER.encodeToString(randomBytes);
   }
 
   private String hmacSha256Hex(String rawToken) {

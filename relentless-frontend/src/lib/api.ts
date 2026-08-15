@@ -1,17 +1,26 @@
-import { Space, Category, Review, Booking, User } from "@/data";
 import {
-  getAccessToken,
-  getRefreshToken,
-  setTokens,
-  clearTokens,
-} from "./auth";
+  Space,
+  Category,
+  Review,
+  Booking,
+  User,
+  AmenitySummary,
+  TimeSlot,
+  DayAvailability,
+  AuthTokens,
+  CreateSpacePayload,
+  EditSpacePayload,
+  BookingCheckout,
+  WalletBalance,
+  WalletTransaction,
+  UpdateUserPayload,
+  SpaceStatus,
+  AdminUser,
+  AdminTransaction
+} from "@/lib/types";
+import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "./auth";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
-
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
 
 export function imageUrl(key: string): string {
   return `${API_BASE}/api/images/${key}`;
@@ -34,7 +43,7 @@ function refreshAccessToken(): Promise<boolean> {
         const res = await fetch(`${API_BASE}/api/auth/refresh-token`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken }),
+          body: JSON.stringify({ refreshToken })
         });
         if (!res.ok) return false;
         const data: { accessToken: string } = await res.json();
@@ -50,19 +59,15 @@ function refreshAccessToken(): Promise<boolean> {
   return refreshInFlight;
 }
 
-async function request<T>(
-  path: string,
-  init?: RequestInit,
-  retry = true,
-): Promise<T> {
+async function request<T>(path: string, init?: RequestInit, retry = true): Promise<T> {
   const token = getAccessToken();
   const res = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init?.headers,
-    },
+      ...init?.headers
+    }
   });
 
   if (res.status === 401 && retry) {
@@ -75,45 +80,59 @@ async function request<T>(
   }
 
   if (!res.ok) {
-    throw new Error(`${init?.method ?? "GET"} ${path} failed: ${res.status}`);
+    const text = await res.text();
+    let message: string | undefined;
+    try {
+      message = text ? (JSON.parse(text) as { message?: string }).message : undefined;
+    } catch {
+      message = undefined;
+    }
+    throw new Error(message || `${init?.method ?? "GET"} ${path} failed: ${res.status}`);
   }
   const text = await res.text();
   return (text ? JSON.parse(text) : undefined) as T;
 }
 
-export async function login(payload: {
-  email: string;
-  password: string;
-}): Promise<AuthTokens> {
-  const res = await fetch(`${API_BASE}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error(`Login failed: ${res.status}`);
-  return res.json();
+export function login(payload: { email: string; password: string }): Promise<AuthTokens> {
+  return request<AuthTokens>("/api/auth/login", { method: "POST", body: JSON.stringify(payload) }, false);
 }
 
-export async function register(payload: {
+export function register(payload: {
   username: string;
   email: string;
   password: string;
   dateOfBirth: string;
-}): Promise<AuthTokens> {
-  const res = await fetch(`${API_BASE}/api/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error(`Registration failed: ${res.status}`);
-  return res.json();
+}): Promise<void> {
+  return request<void>("/api/auth/register", { method: "POST", body: JSON.stringify(payload) }, false);
+}
+
+export function registerHost(payload: {
+  username: string;
+  email: string;
+  password: string;
+  dateOfBirth: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  iban: string;
+  acceptedTerms: boolean;
+}): Promise<void> {
+  return request<void>("/api/auth/register/host", { method: "POST", body: JSON.stringify(payload) }, false);
+}
+
+export function verifyOtp(payload: { email: string; otp: string }): Promise<AuthTokens> {
+  return request<AuthTokens>("/api/auth/verify-otp", { method: "POST", body: JSON.stringify(payload) }, false);
+}
+
+export function resendOtp(email: string): Promise<void> {
+  return request<void>("/api/auth/resend-otp", { method: "POST", body: JSON.stringify({ email }) }, false);
 }
 
 export async function logout(refreshToken: string): Promise<void> {
   await fetch(`${API_BASE}/api/auth/logout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refreshToken }),
+    body: JSON.stringify({ refreshToken })
   }).catch(() => {});
 }
 
@@ -133,12 +152,24 @@ export function fetchSpace(id: number): Promise<Space> {
   return request<Space>(`/api/spaces/${id}`);
 }
 
+export function fetchAvailability(id: number, date: string): Promise<TimeSlot[]> {
+  return request<TimeSlot[]>(`/api/spaces/${id}/availability?date=${date}`);
+}
+
+export function fetchMonthAvailability(id: number, month: string): Promise<DayAvailability[]> {
+  return request<DayAvailability[]>(`/api/spaces/${id}/availability/month?month=${month}`);
+}
+
 export function fetchMe(): Promise<User> {
   return request<User>("/api/users/me");
 }
 
 export function fetchMyBookings(): Promise<Booking[]> {
   return request<Booking[]>("/api/bookings/me");
+}
+
+export function fetchBookingCheckout(id: number): Promise<BookingCheckout> {
+  return request<BookingCheckout>(`/api/bookings/${id}`);
 }
 
 export function fetchSavedSpaces(): Promise<Space[]> {
@@ -149,21 +180,64 @@ export function createBooking(params: {
   spaceId: number;
   startTime: string;
   endTime: string;
-}): Promise<Booking> {
-  return request<Booking>("/api/bookings", {
+}): Promise<BookingCheckout> {
+  return request<BookingCheckout>("/api/bookings", {
     method: "POST",
-    body: JSON.stringify(params),
+    body: JSON.stringify(params)
   });
 }
 
-export function leaveReview(params: {
-  bookingId: number;
-  rating: number;
-  comment: string;
-}): Promise<Review> {
+export function fetchWalletBalance(): Promise<WalletBalance> {
+  return request<WalletBalance>("/api/wallet/me");
+}
+
+export function fetchWalletTransactions(): Promise<WalletTransaction[]> {
+  return request<WalletTransaction[]>("/api/wallet/me/transactions");
+}
+
+export function debitWallet(amount: number): Promise<void> {
+  return request<void>("/api/wallet/me/debit", {
+    method: "POST",
+    body: JSON.stringify({ amount })
+  });
+}
+
+export function editUser(payload: UpdateUserPayload): Promise<User> {
+  return request<User>("/api/users/me", {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function changePassword(payload: { currentPassword: string; newPassword: string }): Promise<void> {
+  return request<void>("/api/users/me/password", {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function deleteAccount(): Promise<void> {
+  return request<void>("/api/users/me", { method: "DELETE" });
+}
+
+export async function uploadImage(file: File): Promise<string> {
+  const token = getAccessToken();
+  const body = new FormData();
+  body.append("file", file);
+  const res = await fetch(`${API_BASE}/api/images`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body
+  });
+  if (!res.ok) throw new Error(`Image upload failed: ${res.status}`);
+  const data: { key: string } = await res.json();
+  return data.key;
+}
+
+export function leaveReview(params: { bookingId: number; rating: number; comment: string }): Promise<Review> {
   return request<Review>("/api/reviews", {
     method: "POST",
-    body: JSON.stringify(params),
+    body: JSON.stringify(params)
   });
 }
 
@@ -173,4 +247,57 @@ export function saveSpace(id: number): Promise<void> {
 
 export function unsaveSpace(id: number): Promise<void> {
   return request<void>(`/api/spaces/${id}/unsave`, { method: "DELETE" });
+}
+
+export function fetchHostedSpaces(): Promise<Space[]> {
+  return request<Space[]>("/api/spaces/me/hosted");
+}
+
+export function fetchHostedBookings(): Promise<Booking[]> {
+  return request<Booking[]>("/api/bookings/me/hosted");
+}
+
+export function fetchHostedReviews(): Promise<Review[]> {
+  return request<Review[]>("/api/reviews/me/hosted");
+}
+
+export function fetchAmenities(): Promise<AmenitySummary[]> {
+  return request<AmenitySummary[]>("/api/amenities");
+}
+
+export function createSpace(payload: CreateSpacePayload): Promise<Space> {
+  return request<Space>("/api/spaces", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function editSpace(id: number, payload: EditSpacePayload): Promise<Space> {
+  return request<Space>(`/api/spaces/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
+}
+
+export function changeSpaceStatus(id: number, status: SpaceStatus): Promise<Space> {
+  return request<Space>(`/api/spaces/${id}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ status })
+  });
+}
+
+export function deleteSpace(id: number): Promise<void> {
+  return request<void>(`/api/spaces/${id}`, { method: "DELETE" });
+}
+
+export function fetchAdminUsers(): Promise<AdminUser[]> {
+  return request<AdminUser[]>("/api/users");
+}
+
+export function fetchActiveAdminUsers(): Promise<AdminUser[]> {
+  return request<AdminUser[]>("/api/users/active");
+}
+
+export function fetchAdminTransactions(): Promise<AdminTransaction[]> {
+  return request<AdminTransaction[]>("/api/wallet/transactions");
 }

@@ -1,8 +1,11 @@
 package com.project.relentless.feature.user;
 
-import com.project.relentless.feature.user.dto.request.UpdateUserRequest;
+import com.project.relentless.feature.user.dto.request.ChangePasswordRequest;
+import com.project.relentless.feature.user.dto.request.EditUserRequest;
+import com.project.relentless.feature.user.dto.response.AdminUserResponse;
 import com.project.relentless.feature.user.dto.response.UserResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,19 +17,41 @@ public class UserController {
 
   private final UserService userService;
 
+  @GetMapping
+  public ResponseEntity<List<AdminUserResponse>> getAll() {
+    return ResponseEntity.ok(userService.getAll());
+  }
+
+  @GetMapping("/active")
+  public ResponseEntity<List<AdminUserResponse>> getAllActive() {
+    return ResponseEntity.ok(userService.getAllActive());
+  }
+
   @GetMapping("/me")
   public ResponseEntity<UserResponse> getCurrent() {
     return ResponseEntity.ok(userService.getCurrent());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> getById(@PathVariable Long id) {
+  public ResponseEntity<AdminUserResponse> getById(@PathVariable Long id) {
     return ResponseEntity.ok(userService.getById(id));
   }
 
-  @PatchMapping("/{id}")
-  public ResponseEntity<UserResponse> update(
-      @PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
-    return ResponseEntity.ok(userService.update(id, request));
+  @PatchMapping("/me")
+  public ResponseEntity<UserResponse> editCurrent(@Valid @RequestBody EditUserRequest request) {
+    return ResponseEntity.ok(userService.editCurrent(request));
+  }
+
+  @PatchMapping("/me/password")
+  public ResponseEntity<Void> changeCurrentPassword(
+      @Valid @RequestBody ChangePasswordRequest request) {
+    userService.changeCurrentPassword(request);
+    return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/me")
+  public ResponseEntity<Void> deleteCurrent() {
+    userService.deleteCurrent();
+    return ResponseEntity.noContent().build();
   }
 }

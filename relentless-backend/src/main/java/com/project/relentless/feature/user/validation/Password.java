@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
     regexp =
         "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()\\-_=+\\[\\]{}])[a-zA-Z0-9!@#$%^&*()\\-_=+\\[\\]{}]{8,64}$",
     message =
-        "Password must be 8-64 characters long, include uppercase and lowercase letters, at least one digit, at least one special character, and no whitespaces.")
+        "Password must be 8-64 characters long, include uppercase and lowercase letters, at least one digit, at least one special character, and contain no whitespaces.")
 public @interface Password {
   String message() default "Invalid password";
 

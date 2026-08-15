@@ -3,12 +3,15 @@ package com.project.relentless.feature.booking.entity;
 import com.project.relentless.feature.booking.BookingStatus;
 import com.project.relentless.feature.space.entity.Space;
 import com.project.relentless.feature.user.User;
+import com.project.relentless.feature.wallet.Transaction;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -38,6 +41,17 @@ public class Booking {
       message = "Total price must be a valid number with up to 2 decimal places.")
   private BigDecimal totalPrice;
 
+  @Size(
+      min = 2,
+      max = 1000,
+      message = "Checkout session URL must be between 2 and 1023 characters.")
+  private String checkoutSessionUrl;
+
+  @NotNull(message = "Creation time is required.")
+  @PastOrPresent(message = "Creation time must be in the past or present.")
+  @Builder.Default
+  private LocalDateTime createdAt = LocalDateTime.now();
+
   @NotNull(message = "Booking status is required.")
   @Enumerated(EnumType.STRING)
   @Builder.Default
@@ -53,6 +67,12 @@ public class Booking {
 
   @OneToOne(mappedBy = "booking", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private Review review;
+
+  @OneToMany(mappedBy = "booking")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @Builder.Default
+  private Set<Transaction> transactions = new HashSet<>();
 
   @Override
   public final boolean equals(Object o) {

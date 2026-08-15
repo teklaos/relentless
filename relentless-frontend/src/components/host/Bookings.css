@@ -1,0 +1,153 @@
+.h-led-grid {
+  display: grid;
+  grid-template-columns: 2.4fr 1.4fr 0.7fr 1fr;
+  gap: 16px;
+}
+
+.h-led-head {
+  padding: 10px 12px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-4);
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.h-led-row {
+  align-items: center;
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.h-led-space {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.h-led-thumb {
+  flex: none;
+  position: relative;
+  width: 88px;
+  height: 66px;
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+}
+
+.h-led-thumb-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.h-led-title {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
+.h-led-sub {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  margin-top: 2px;
+}
+
+.h-led-when {
+  font-size: 11.5px;
+}
+
+.h-led-when-sub {
+  color: var(--ink-3);
+  font-size: 10.5px;
+  margin-top: 2px;
+}
+
+.h-led-keep {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.h-led-keep::before {
+  content: "+";
+}
+
+.h-led-status,
+.h-led-status-h {
+  justify-self: end;
+}
+
+@media (width <= 1100px) {
+  .h-led-sub {
+    display: none;
+  }
+}
+
+@media (width <= 768px) {
+  .h-led-head {
+    display: none;
+  }
+
+  .h-led-row {
+    position: relative;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "thumb name"
+      "thumb when"
+      "thumb status";
+    gap: 5px 14px;
+    align-items: start;
+    padding: 14px;
+  }
+
+  .h-led-space {
+    display: contents;
+  }
+
+  .h-led-thumb {
+    grid-area: thumb;
+    align-self: start;
+  }
+
+  .h-led-info {
+    grid-area: name;
+  }
+
+  .h-led-when {
+    grid-area: when;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .h-led-dow {
+    display: none;
+  }
+
+  .h-led-when-sub {
+    color: inherit;
+    margin-top: 0;
+    font-size: inherit;
+  }
+
+  .h-led-when-sub::before {
+    content: ", ";
+  }
+
+  .h-led-status {
+    grid-area: status;
+    justify-self: start;
+  }
+
+  .h-led-keep {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+  }
+}

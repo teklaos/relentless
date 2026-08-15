@@ -29,9 +29,10 @@ public class Review {
   @Size(min = 1, max = 255, message = "Comment must be between 1 and 255 characters.")
   private String comment;
 
-  @NotNull(message = "Time of creation is required.")
-  @PastOrPresent(message = "Time of creation must be in the past or present.")
-  private LocalDateTime createdAt;
+  @NotNull(message = "Creation time is required.")
+  @PastOrPresent(message = "Creation time must be in the past or present.")
+  @Builder.Default
+  private LocalDateTime createdAt = LocalDateTime.now();
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "booking_id", nullable = false)

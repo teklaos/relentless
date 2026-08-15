@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useApp } from "@/context/AppContext";
-import Explore from "@/components/explore/Explore";
-import { Space, Category } from "@/data";
+import Explore from "@/components/user/Explore";
+import { Space, Category } from "@/lib/types";
 import { fetchSpaces, fetchCategories } from "@/lib/api";
 
 export default function ExplorePage() {
@@ -47,7 +47,6 @@ export default function ExplorePage() {
       savedIds={savedIds}
       onSave={onSave}
       onOpen={onOpen}
-      initialFilter={null}
     />
   );
 }

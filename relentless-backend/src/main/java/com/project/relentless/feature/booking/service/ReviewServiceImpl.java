@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -34,13 +35,24 @@ public class ReviewServiceImpl implements ReviewService {
       throw new EntityNotFoundException("Space not found");
     }
 
-    return reviewRepository.findBySpaceIdWithAuthor(spaceId).stream()
+    return reviewRepository.findBySpaceId(spaceId).stream()
+        .map(reviewMapper::toReviewResponse)
+        .toList();
+  }
+
+  @Override
+  @PreAuthorize("hasRole('HOST')")
+  public List<ReviewResponse> getHostedByCurrentUser() {
+    Long userId = authService.getCurrentUserId();
+
+    return reviewRepository.findByHostId(userId).stream()
         .map(reviewMapper::toReviewResponse)
         .toList();
   }
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('USER')")
   public ReviewResponse leave(LeaveReviewRequest request) {
     Long userId = authService.getCurrentUserId();
 

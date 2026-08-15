@@ -1,6 +1,7 @@
 package com.project.relentless;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.relentless.feature.payment.PaymentGatewayException;
 import io.jsonwebtoken.JwtException;
 import io.minio.errors.ErrorResponseException;
 import jakarta.persistence.EntityExistsException;
@@ -9,6 +10,7 @@ import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.impl.InvalidContentTypeException;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,9 +24,9 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
@@ -45,7 +47,8 @@ public class GlobalExceptionHandler {
     MethodArgumentTypeMismatchException.class,
     HttpMessageNotReadableException.class,
     HttpMediaTypeNotSupportedException.class,
-    MultipartException.class
+    MultipartException.class,
+    MissingServletRequestParameterException.class
   })
   public ResponseEntity<ErrorResponse> handleBadRequest(Exception ex) {
     return buildResponse(HttpStatus.BAD_REQUEST, "Bad request", ex);
@@ -55,7 +58,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
     String message =
         ex.getBindingResult().getFieldErrors().stream()
-            .map(err -> err.getField() + ": " + err.getDefaultMessage())
+            .map(err -> StringUtils.capitalize(err.getField()) + " " + err.getDefaultMessage())
             .collect(Collectors.joining(", "));
 
     if (message.isBlank()) {
@@ -109,7 +112,12 @@ public class GlobalExceptionHandler {
     return buildResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported media type", ex);
   }
 
-  @ExceptionHandler({ConnectException.class, ResourceAccessException.class})
+  @ExceptionHandler(PaymentGatewayException.class)
+  public ResponseEntity<ErrorResponse> handleBadGateway(Exception ex) {
+    return buildResponse(HttpStatus.BAD_GATEWAY, "Bad gateway", ex);
+  }
+
+  @ExceptionHandler(ConnectException.class)
   public ResponseEntity<ErrorResponse> handleServiceUnavailable(Exception ex) {
     return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, "Service unavailable", ex);
   }

@@ -1,10 +1,13 @@
 package com.project.relentless.feature.user;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+  List<User> findAllByIsDeletedFalse();
+
   Optional<User> findByEmail(String email);
 }

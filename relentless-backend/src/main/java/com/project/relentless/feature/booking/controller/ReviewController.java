@@ -22,6 +22,11 @@ public class ReviewController {
     return ResponseEntity.ok(reviewService.getBySpaceId(spaceId));
   }
 
+  @GetMapping("/me/hosted")
+  public ResponseEntity<List<ReviewResponse>> getHostedByCurrentUser() {
+    return ResponseEntity.ok(reviewService.getHostedByCurrentUser());
+  }
+
   @PostMapping
   public ResponseEntity<ReviewResponse> leave(@Valid @RequestBody LeaveReviewRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.leave(request));

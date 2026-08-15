@@ -16,7 +16,7 @@ import {
   Lightbulb,
   Truck,
   Lock,
-  Check,
+  Check
 } from "lucide-react";
 
 export const CAT_ICON_COMPONENT: Record<number, LucideIcon> = {
@@ -25,7 +25,7 @@ export const CAT_ICON_COMPONENT: Record<number, LucideIcon> = {
   3: Camera,
   4: Target,
   5: Music,
-  6: Headphones,
+  6: Headphones
 };
 
 export const CAT_ICON_FALLBACK: LucideIcon = Activity;
@@ -46,5 +46,5 @@ export const AMEN_ICON_COMPONENT: Record<string, LucideIcon> = {
   Backline: Music,
   "Loading Dock": Truck,
   Lockers: Lock,
-  _fallback: Check,
+  _fallback: Check
 };

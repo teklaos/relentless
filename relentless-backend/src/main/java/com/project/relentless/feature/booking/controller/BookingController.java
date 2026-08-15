@@ -1,6 +1,7 @@
 package com.project.relentless.feature.booking.controller;
 
 import com.project.relentless.feature.booking.dto.request.CreateBookingRequest;
+import com.project.relentless.feature.booking.dto.response.BookingCheckoutResponse;
 import com.project.relentless.feature.booking.dto.response.BookingResponse;
 import com.project.relentless.feature.booking.service.BookingService;
 import jakarta.validation.Valid;
@@ -22,8 +23,19 @@ public class BookingController {
     return ResponseEntity.ok(bookingService.getByCurrentUser());
   }
 
+  @GetMapping("/me/hosted")
+  public ResponseEntity<List<BookingResponse>> getHostedByCurrentUser() {
+    return ResponseEntity.ok(bookingService.getHostedByCurrentUser());
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<BookingCheckoutResponse> getById(@PathVariable Long id) {
+    return ResponseEntity.ok(bookingService.getById(id));
+  }
+
   @PostMapping
-  public ResponseEntity<BookingResponse> create(@Valid @RequestBody CreateBookingRequest request) {
+  public ResponseEntity<BookingCheckoutResponse> create(
+      @Valid @RequestBody CreateBookingRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.create(request));
   }
 }

@@ -1,0 +1,131 @@
+.datepicker {
+  position: relative;
+  width: 100%;
+}
+
+.dp-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  color: inherit;
+  cursor: pointer;
+}
+
+.dp-trigger:hover,
+.dp-trigger:focus {
+  border-color: var(--ink);
+  outline: none;
+}
+
+.dp-trigger.placeholder span {
+  color: var(--ink-3);
+}
+
+.dp-pop {
+  position: absolute;
+  z-index: var(--z-popover);
+  bottom: calc(100% + 6px);
+  left: 0;
+  width: 280px;
+  max-width: 92vw;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 0 12px 32px rgb(10 10 10 / 18%);
+  animation: pop 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.dp-selects {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+}
+
+.dp-selects .ts-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.dp-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  background: none;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.dp-nav:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.dp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.dp-dow {
+  margin-bottom: 4px;
+}
+
+.dp-dow-cell {
+  text-align: center;
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  color: var(--ink-3);
+  padding: 2px 0;
+}
+
+.dp-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.dp-day:hover {
+  background: var(--bg-sunken);
+}
+
+.dp-day:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.dp-day:disabled:hover {
+  background: transparent;
+}
+
+.dp-day.on {
+  background: var(--ink);
+  color: var(--bg);
+}

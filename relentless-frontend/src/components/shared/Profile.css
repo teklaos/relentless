@@ -1,0 +1,275 @@
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.profile-card {
+  border: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  padding: 32px;
+}
+
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.profile-avatar {
+  flex: none;
+  width: 88px;
+  height: 88px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 36px;
+  letter-spacing: -0.04em;
+}
+
+.profile-name {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  margin: 0 0 4px;
+}
+
+.profile-kv {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 14px 16px;
+  border-top: 1px solid var(--hairline);
+  padding-top: 20px;
+}
+
+.profile-kv .k {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-3);
+}
+
+.profile-kv .v {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 13px;
+}
+
+.profile-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-avatar-edit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  width: 100%;
+  padding: 20px;
+  border: 1.5px dashed var(--hairline-strong);
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.12s,
+    background 0.12s;
+}
+
+.profile-avatar-edit:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.profile-avatar-edit:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.profile-avatar-edit.dragging {
+  border-color: var(--accent);
+  background: var(--accent-softer, var(--bg-sunken));
+}
+
+.profile-avatar-btn {
+  position: relative;
+  display: block;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.profile-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-inverse);
+  background: rgb(10 10 10 / 35%);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.profile-avatar-edit:hover .profile-avatar-overlay {
+  opacity: 1;
+}
+
+.profile-avatar-hint {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--ink-3);
+}
+
+.profile-edit-form label {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-3);
+  margin-top: 10px;
+}
+
+.profile-edit-form label:first-child {
+  margin-top: 0;
+}
+
+.profile-input {
+  width: 100%;
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 6px;
+  background: var(--surface, transparent);
+  color: inherit;
+}
+
+.profile-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--hairline);
+  margin-bottom: 24px;
+}
+
+.profile-stat {
+  background: var(--bg-elevated);
+  padding: 24px 20px;
+  border-right: 1px solid var(--hairline);
+}
+
+.profile-stat:last-child {
+  border-right: none;
+}
+
+.profile-stat .num {
+  font-family: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 36px;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--accent-ink);
+}
+
+.profile-stat .lbl {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  margin-top: 8px;
+}
+
+.settings-list {
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+}
+
+.setting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--hairline);
+  transition: background 0.12s;
+}
+
+.setting:last-child {
+  border-bottom: none;
+}
+
+.setting:hover {
+  background: var(--bg-sunken);
+}
+
+.setting-l {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.setting-t {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.setting-d {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 10.5px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.setting-v {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-size: 12px;
+  color: var(--ink-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (width <= 768px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .profile-kv {
+    grid-template-columns: 110px 1fr 110px 1fr;
+  }
+}
+
+@media (width <= 480px) {
+  .profile-kv {
+    grid-template-columns: 110px 1fr;
+  }
+
+  .profile-stat {
+    padding: 16px 12px;
+  }
+
+  .profile-stat .num {
+    font-size: 26px;
+  }
+}

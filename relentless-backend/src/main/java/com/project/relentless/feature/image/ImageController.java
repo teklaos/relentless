@@ -38,10 +38,4 @@ public class ImageController {
   public ResponseEntity<UploadImageResponse> upload(@RequestParam("file") MultipartFile file) {
     return ResponseEntity.ok(imageService.upload(file));
   }
-
-  @DeleteMapping("/{key}")
-  public ResponseEntity<Void> deleteByKey(@PathVariable String key) {
-    imageService.deleteByKey(key);
-    return ResponseEntity.noContent().build();
-  }
 }

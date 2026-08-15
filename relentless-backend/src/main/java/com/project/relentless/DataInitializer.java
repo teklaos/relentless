@@ -9,17 +9,23 @@ import com.project.relentless.feature.space.entity.Address;
 import com.project.relentless.feature.space.entity.Amenity;
 import com.project.relentless.feature.space.entity.Category;
 import com.project.relentless.feature.space.entity.Space;
+import com.project.relentless.feature.space.entity.WorkingHours;
 import com.project.relentless.feature.space.repository.AmenityRepository;
 import com.project.relentless.feature.space.repository.CategoryRepository;
 import com.project.relentless.feature.space.repository.SpaceRepository;
 import com.project.relentless.feature.user.Role;
 import com.project.relentless.feature.user.User;
 import com.project.relentless.feature.user.UserRepository;
+import com.project.relentless.feature.wallet.Transaction;
+import com.project.relentless.feature.wallet.TransactionRepository;
+import com.project.relentless.feature.wallet.TransactionType;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +41,7 @@ import org.springframework.stereotype.Component;
 public class DataInitializer {
 
   private final BookingRepository bookingRepository;
+  private final TransactionRepository transactionRepository;
   private final ReviewRepository reviewRepository;
   private final AmenityRepository amenityRepository;
   private final CategoryRepository categoryRepository;
@@ -42,9 +49,12 @@ public class DataInitializer {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
+  private static final BigDecimal HOST_KEEP_RATE = new BigDecimal("0.95");
+
   @EventListener(ContextRefreshedEvent.class)
   public void init() {
     if (bookingRepository.count() > 0
+        || transactionRepository.count() > 0
         || reviewRepository.count() > 0
         || amenityRepository.count() > 0
         || categoryRepository.count() > 0
@@ -61,7 +71,6 @@ public class DataInitializer {
             .email("user@gmail.com")
             .dateOfBirth(LocalDate.of(2005, 1, 12))
             .profileImageKey("avatar.jpg")
-            .isDeleted(false)
             .build();
 
     var host =
@@ -69,12 +78,25 @@ public class DataInitializer {
             .username("host")
             .passwordHash(passwordEncoder.encode("P@ssw0rd"))
             .email("host@gmail.com")
+            .firstName("John")
+            .lastName("Doe")
+            .phoneNumber("+48123456789")
+            .iban("PL61109010140000071219812874")
             .dateOfBirth(LocalDate.of(2004, 11, 20))
+            .dateAcceptedTerms(LocalDate.of(2026, 2, 18))
             .role(Role.HOST)
-            .isDeleted(false)
             .build();
 
-    userRepository.saveAll(List.of(user, host));
+    var admin =
+        User.builder()
+            .username("admin")
+            .passwordHash(passwordEncoder.encode("P@ssw0rd"))
+            .email("admin@gmail.com")
+            .dateOfBirth(LocalDate.of(2005, 3, 7))
+            .role(Role.ADMIN)
+            .build();
+
+    userRepository.saveAll(List.of(user, host, admin));
 
     var amenity1 = Amenity.builder().name("Wi-Fi").build();
 
@@ -94,6 +116,11 @@ public class DataInitializer {
 
     categoryRepository.saveAll(List.of(category1, category2));
 
+    var workingHours =
+        Arrays.stream(DayOfWeek.values())
+            .map(day -> WorkingHours.builder().dayOfWeek(day).build())
+            .toList();
+
     var space1 =
         Space.builder()
             .name("MOVE DANCE STUDIO")
@@ -109,6 +136,8 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("50.00"))
             .publishedOn(LocalDate.of(2025, 12, 1))
+            .workingHours(workingHours)
+            .imageKeys(List.of("dance.webp"))
             .build();
 
     var space2 =
@@ -126,6 +155,8 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("70.00"))
             .publishedOn(LocalDate.of(2025, 11, 15))
+            .workingHours(workingHours)
+            .imageKeys(List.of("vocal.webp"))
             .build();
 
     space1.setHost(host);
@@ -163,10 +194,24 @@ public class DataInitializer {
             .startTime(startTime)
             .endTime(endTime)
             .totalPrice(totalPrice)
+            .checkoutSessionUrl("https://checkout.stripe.com/pay/cs_test_1a2b3c4d5e6f7g8h")
             .status(BookingStatus.COMPLETED)
             .build();
 
     bookingRepository.save(booking);
+
+    var amount = booking.getTotalPrice().multiply(HOST_KEEP_RATE).setScale(2, RoundingMode.HALF_UP);
+
+    var transaction =
+        Transaction.builder()
+            .amount(amount)
+            .createdAt(LocalDateTime.of(2026, 3, 6, 14, 0))
+            .type(TransactionType.CREDIT)
+            .host(host)
+            .booking(booking)
+            .build();
+
+    transactionRepository.save(transaction);
 
     var review =
         Review.builder()

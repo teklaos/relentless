@@ -1,15 +1,17 @@
 "use client";
 
 import { useApp } from "@/context/AppContext";
-import History from "@/components/pages/History";
+import History from "@/components/user/History";
+import HostBookings from "@/components/host/Bookings";
 
 export default function BookingsPage() {
-  const { bookings, onLeaveReview, onOpenById } = useApp();
+  const { user, bookings, onLeaveReview, onPayBooking, onOpenById } = useApp();
+
+  if (user?.role === "HOST") {
+    return <HostBookings />;
+  }
+
   return (
-    <History
-      bookings={bookings}
-      onLeaveReview={onLeaveReview}
-      onOpenSpace={onOpenById}
-    />
+    <History bookings={bookings} onLeaveReview={onLeaveReview} onPayBooking={onPayBooking} onOpenSpace={onOpenById} />
   );
 }

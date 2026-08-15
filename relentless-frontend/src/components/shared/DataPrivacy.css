@@ -1,0 +1,50 @@
+.page-header.privacy-head {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.privacy-back {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.privacy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.privacy-copy {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-3);
+  margin: 0 0 16px;
+}
+
+.privacy-danger {
+  border-color: var(--danger);
+}
+
+.privacy-delete-btn {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.privacy-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.privacy-delete-btn:hover:not(:disabled) {
+  background: var(--danger);
+  color: var(--bg-elevated);
+}
+
+@media (width <= 768px) {
+  .privacy-grid {
+    grid-template-columns: 1fr;
+  }
+}

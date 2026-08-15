@@ -1,0 +1,125 @@
+.page-header.host-head {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.h-accent {
+  color: var(--accent-ink);
+  font-weight: 500;
+}
+
+.h-intro {
+  color: var(--ink-3);
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+.h-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.kpis.host-kpis {
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 34px;
+}
+
+.kpis.host-kpis .kpi-value {
+  font-size: 27px;
+}
+
+@media (width <= 480px) {
+  .kpis.host-kpis {
+    grid-template-columns: 1fr;
+  }
+}
+
+.h-bar-m {
+  font-size: 8.5px;
+  color: var(--ink-3);
+}
+
+@keyframes h-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.h-panel-link {
+  font-size: 10px;
+  color: var(--accent-ink);
+  cursor: pointer;
+}
+
+.h-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.h-panel-name {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.h-empty-plain {
+  border: none;
+  padding: 40px 18px;
+}
+
+.h-up-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.h-up-date {
+  text-align: center;
+  flex-shrink: 0;
+  width: 42px;
+}
+
+.h-up-day {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.h-up-mon {
+  font-size: 9px;
+  color: var(--ink-3);
+  margin-top: 2px;
+}
+
+.h-up-div {
+  width: 1px;
+  height: 30px;
+  background: var(--hairline);
+}
+
+.h-up-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.h-up-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.h-up-meta {
+  font-size: 10px;
+  color: var(--ink-3);
+  margin-top: 2px;
+}

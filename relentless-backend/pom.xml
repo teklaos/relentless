@@ -29,7 +29,10 @@
         <java.version>25</java.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <jwt.version>0.11.5</jwt.version>
+        <bucket4j.version>8.19.0</bucket4j.version>
+        <caffeine.version>3.2.4</caffeine.version>
         <minio.version>8.5.17</minio.version>
+        <stripe.version>33.1.0</stripe.version>
         <spotless.version>3.4.0</spotless.version>
     </properties>
     <dependencies>
@@ -94,9 +97,26 @@
         </dependency>
 
         <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-core</artifactId>
+            <version>${bucket4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${caffeine.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
             <version>${minio.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>${stripe.version}</version>
         </dependency>
 
         <dependency>

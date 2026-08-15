@@ -1,0 +1,47 @@
+.rating-pick {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.rating-star {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.12s;
+  color: var(--ink-4);
+}
+
+.rating-star:hover,
+.rating-star.on {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.rating-star.on {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.review-modal textarea {
+  width: 100%;
+  border: 1px solid var(--hairline-strong);
+  padding: 12px;
+  min-height: 100px;
+  font-size: 14px;
+  border-radius: 2px;
+  resize: vertical;
+  font-family: inherit;
+  color: inherit;
+  background: var(--bg-elevated);
+}
+
+.review-modal textarea:focus {
+  border-color: var(--ink);
+  outline: none;
+}

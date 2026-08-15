@@ -1,0 +1,62 @@
+.h-wallet-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr);
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+@media (width <= 768px) {
+  .h-wallet-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.h-withdraw {
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 2px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 170px;
+}
+
+.h-withdraw-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgb(255 255 255 / 55%);
+  margin-bottom: 12px;
+}
+
+.h-withdraw-amt {
+  font-weight: 500;
+  font-size: 34px;
+  letter-spacing: -0.02em;
+}
+
+.h-withdraw-btn {
+  margin-top: 18px;
+  padding: 11px;
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.h-withdraw-btn:hover {
+  background: var(--bg-sunken);
+}
+
+.h-withdraw-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.h-panel-title-lg {
+  font-weight: 500;
+  font-size: 15px;
+}

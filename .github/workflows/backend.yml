@@ -1,6 +1,8 @@
 name: Java CI with Maven
 
 on:
+  push:
+    branches: [dev]
   pull_request:
     branches: [master]
 
@@ -38,18 +40,18 @@ jobs:
         working-directory: ./relentless-backend
         run: mvn -B clean verify
         env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: testdb
+          DB_URL: jdbc:postgresql://localhost:5432/testdb
           DB_USERNAME: testuser
           DB_PASSWORD: testpassword
           JWT_ACCESS_SECRET: ci-dummy-jwt-access-token-secret
           JWT_REFRESH_SECRET: ci-dummy-jwt-refresh-token-secret
-          MINIO_HOST: localhost
-          MINIO_PORT: 9000
+          MINIO_URL: http://localhost:9000
           MINIO_ACCESS_KEY: ci-dummy-minio-access-key
           MINIO_SECRET_KEY: ci-dummy-minio-secret-key
           MAIL_HOST: localhost
           MAIL_PORT: 1025
           MAIL_USERNAME: testuser
           MAIL_PASSWORD: testpassword
+          STRIPE_SECRET_KEY: ci-dummy-stripe-secret-key
+          STRIPE_WEBHOOK_SECRET: ci-dummy-stripe-webhook-secret
+          FRONTEND_URL: http://localhost:3000

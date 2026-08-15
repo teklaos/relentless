@@ -16,9 +16,10 @@ public class EmailServiceImpl implements EmailService {
 
   private final JavaMailSender javaMailSender;
 
-  private static final String fromEmail = "noreply@relentless.com";
-  private static final String fromName = "Relentless";
+  private static final String FROM_EMAIL = "noreply@relentless.com";
+  private static final String FROM_NAME = "Relentless";
 
+  @Override
   @Async
   @SneakyThrows
   public void sendEmail(String to, String subject, String text) {
@@ -26,10 +27,10 @@ public class EmailServiceImpl implements EmailService {
       MimeMessage mimeMessage = javaMailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
-      helper.setFrom(fromEmail, fromName);
+      helper.setFrom(FROM_EMAIL, FROM_NAME);
       helper.setTo(to);
       helper.setSubject(subject);
-      helper.setReplyTo(fromEmail);
+      helper.setReplyTo(FROM_EMAIL);
       helper.setText(text, false);
 
       javaMailSender.send(mimeMessage);
