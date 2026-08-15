@@ -102,8 +102,8 @@ export function register(payload: {
   email: string;
   password: string;
   dateOfBirth: string;
-}): Promise<AuthTokens> {
-  return request<AuthTokens>("/api/auth/register", { method: "POST", body: JSON.stringify(payload) }, false);
+}): Promise<void> {
+  return request<void>("/api/auth/register", { method: "POST", body: JSON.stringify(payload) }, false);
 }
 
 export function registerHost(payload: {
@@ -116,8 +116,16 @@ export function registerHost(payload: {
   phoneNumber: string;
   iban: string;
   acceptedTerms: boolean;
-}): Promise<AuthTokens> {
-  return request<AuthTokens>("/api/auth/register/host", { method: "POST", body: JSON.stringify(payload) }, false);
+}): Promise<void> {
+  return request<void>("/api/auth/register/host", { method: "POST", body: JSON.stringify(payload) }, false);
+}
+
+export function verifyOtp(payload: { email: string; otp: string }): Promise<AuthTokens> {
+  return request<AuthTokens>("/api/auth/verify-otp", { method: "POST", body: JSON.stringify(payload) }, false);
+}
+
+export function resendOtp(email: string): Promise<void> {
+  return request<void>("/api/auth/resend-otp", { method: "POST", body: JSON.stringify({ email }) }, false);
 }
 
 export async function logout(refreshToken: string): Promise<void> {

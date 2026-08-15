@@ -8,20 +8,24 @@ import DatePicker from "@/components/shared/ui/DatePicker";
 import AuthBrandPanel from "@/components/shared/ui/AuthBrandPanel";
 import { User, Mail, Phone, Landmark, ArrowRight, ArrowLeft } from "lucide-react";
 import PasswordField from "@/components/shared/ui/PasswordField";
+import OtpInput from "@/components/shared/ui/OtpInput";
 import { EMAIL_RE, PHONE_RE, IBAN_RE, PASSWORD_RE, PASSWORD_HINT, HOST_MIN_AGE, maxDobIso } from "@/lib/format";
 
-const STEP_LABELS = ["Account", "Identity", "Payout", "Review"];
+const STEP_LABELS = ["Account", "Identity", "Payout", "Review", "Verify"];
 const STEP_FIELDS: string[][] = [
   ["username", "email", "password", "dob"],
   ["firstName", "lastName"],
   ["phoneNumber", "iban"],
-  ["acceptedTerms"]
+  ["acceptedTerms"],
+  ["otp"]
 ];
+const LAST_STEP = STEP_LABELS.length - 1;
 
 export default function HostRegister() {
   const router = useRouter();
-  const { signUpHost } = useApp();
+  const { signUpHost, verifySignUpHost, resendSignUpOtp } = useApp();
   const [step, setStep] = useState(0);
+  const [otp, setOtp] = useState("");
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -48,6 +52,7 @@ export default function HostRegister() {
     if (s === 1) return form.firstName.trim().length >= 2 && form.lastName.trim().length >= 2;
     if (s === 2) return PHONE_RE.test(form.phoneNumber) && IBAN_RE.test(form.iban);
     if (s === 3) return form.acceptedTerms;
+    if (s === 4) return /^\d{6}$/.test(otp);
     return true;
   };
 
@@ -56,7 +61,7 @@ export default function HostRegister() {
       revealStepErrors(step);
       return;
     }
-    setStep((s) => Math.min(s + 1, 3));
+    setStep((s) => Math.min(s + 1, LAST_STEP));
   };
   const back = () => (step === 0 ? router.push("/register") : setStep((s) => s - 1));
 
@@ -79,9 +84,42 @@ export default function HostRegister() {
         iban: form.iban,
         acceptedTerms: form.acceptedTerms
       });
+      setStep(4);
+    } catch (e) {
+      setErr({
+        form:
+          e instanceof Error && e.message
+            ? e.message
+            : "Could not create host account. Check your details and try again."
+      });
+    }
+    setLoading(false);
+  };
+
+  const verify = async () => {
+    if (!stepValid(4)) {
+      revealStepErrors(4);
+      return;
+    }
+    setLoading(true);
+    setErr({});
+    try {
+      await verifySignUpHost(form.email, otp);
     } catch {
-      setErr({ form: "Could not create host account. Check your details and try again." });
+      setErr({ form: "Invalid or expired code" });
+      setOtp("");
       setLoading(false);
+    }
+  };
+
+  const resend = async () => {
+    setErr({});
+    setOtp("");
+    try {
+      await resendSignUpOtp(form.email);
+      setErr({ form: "New code sent." });
+    } catch {
+      setErr({ form: "Could not resend — start again." });
     }
   };
 
@@ -96,6 +134,7 @@ export default function HostRegister() {
           onSubmit={(e) => {
             e.preventDefault();
             if (step === 3) submit();
+            else if (step === 4) verify();
             else next();
           }}
         >
@@ -298,6 +337,27 @@ export default function HostRegister() {
             </>
           )}
 
+          {step === 4 && (
+            <>
+              <div className="auth-sub" style={{ marginBottom: 18 }}>
+                Enter the 6-digit code we sent to <b>{form.email}</b>.
+              </div>
+              <div className="field">
+                <div className="field-label">
+                  <span>Verification code</span>
+                  {touched.otp && !/^\d{6}$/.test(otp) && <span className="field-err">6 digits</span>}
+                </div>
+                <OtpInput
+                  value={otp}
+                  onChange={setOtp}
+                  onBlur={() => blur("otp")}
+                  invalid={touched.otp && !/^\d{6}$/.test(otp)}
+                  autoFocus
+                />
+              </div>
+            </>
+          )}
+
           {err.form && (
             <div className="field-err" style={{ fontSize: 12, marginTop: 16 }}>
               {err.form}
@@ -310,15 +370,31 @@ export default function HostRegister() {
               <span>BACK</span>
             </button>
             <button type="submit" className="btn primary lg host-next" disabled={loading}>
-              <span>{loading ? "CREATING…" : step === 3 ? "CREATE ACCOUNT" : "CONTINUE"}</span>
+              <span>
+                {loading
+                  ? step === 4
+                    ? "VERIFYING…"
+                    : "CREATING…"
+                  : step === 4
+                    ? "VERIFY"
+                    : step === 3
+                      ? "CREATE ACCOUNT"
+                      : "CONTINUE"}
+              </span>
               {!loading && <ArrowRight size={15} />}
             </button>
           </div>
 
           <div className="auth-host-row">
-            <button type="button" className="auth-link" onClick={() => router.push("/login")}>
-              Log in <ArrowRight size={12} />
-            </button>
+            {step === 4 ? (
+              <button type="button" className="auth-link" onClick={resend} disabled={loading}>
+                Didn&apos;t get it? <b>Resend code</b>
+              </button>
+            ) : (
+              <button type="button" className="auth-link" onClick={() => router.push("/login")}>
+                Log in <ArrowRight size={12} />
+              </button>
+            )}
           </div>
         </form>
       </div>

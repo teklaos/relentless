@@ -16,6 +16,8 @@ import {
   login,
   register,
   registerHost,
+  verifyOtp,
+  resendOtp,
   logout,
   editUser,
   deleteAccount,
@@ -64,6 +66,9 @@ interface AppContextValue {
     iban: string;
     acceptedTerms: boolean;
   }) => Promise<void>;
+  verifySignUp: (email: string, otp: string) => Promise<void>;
+  verifySignUpHost: (email: string, otp: string) => Promise<void>;
+  resendSignUpOtp: (email: string) => Promise<void>;
   onSignOut: () => void;
   onDeleteAccount: () => Promise<void>;
   onSave: (id: number) => void;
@@ -179,13 +184,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const signUp = useCallback(
     async (payload: { username: string; email: string; password: string; dateOfBirth: string }) => {
-      const tokens = await register(payload);
-      setTokens(tokens.accessToken, tokens.refreshToken);
-      setAuth(true);
-      router.push("/explore");
-      resumePendingSpace();
+      await register(payload);
     },
-    [router, resumePendingSpace]
+    []
   );
 
   const signUpHost = useCallback(
@@ -200,7 +201,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
       iban: string;
       acceptedTerms: boolean;
     }) => {
-      const tokens = await registerHost(payload);
+      await registerHost(payload);
+    },
+    []
+  );
+
+  const verifySignUp = useCallback(
+    async (email: string, otp: string) => {
+      const tokens = await verifyOtp({ email, otp });
+      setTokens(tokens.accessToken, tokens.refreshToken);
+      setAuth(true);
+      router.push("/explore");
+      resumePendingSpace();
+    },
+    [router, resumePendingSpace]
+  );
+
+  const verifySignUpHost = useCallback(
+    async (email: string, otp: string) => {
+      const tokens = await verifyOtp({ email, otp });
       setTokens(tokens.accessToken, tokens.refreshToken);
       setAuth(true);
       try {
@@ -212,6 +231,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     },
     [router]
   );
+
+  const resendSignUpOtp = useCallback(async (email: string) => {
+    await resendOtp(email);
+  }, []);
 
   const onSignOut = useCallback(() => {
     const refreshToken = getRefreshToken();
@@ -380,6 +403,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         signUpHost,
+        verifySignUp,
+        verifySignUpHost,
+        resendSignUpOtp,
         onSignOut,
         onDeleteAccount,
         onSave,
