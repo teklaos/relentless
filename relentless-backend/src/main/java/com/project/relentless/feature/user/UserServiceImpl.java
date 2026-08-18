@@ -11,6 +11,7 @@ import com.project.relentless.feature.user.dto.response.UserResponse;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -92,11 +93,11 @@ public class UserServiceImpl implements UserService {
     }
     if (request.dateOfBirth() != null) {
       if (user.getRole().equals(Role.TENANT)
-          && Period.between(request.dateOfBirth(), user.getDateOfBirth()).getYears() < 14) {
+          && Period.between(request.dateOfBirth(), LocalDate.now()).getYears() < 14) {
         throw new IllegalArgumentException("You must be at least 14 years old.");
       }
       if (user.getRole().equals(Role.HOST)
-          && Period.between(request.dateOfBirth(), user.getDateOfBirth()).getYears() < 18) {
+          && Period.between(request.dateOfBirth(), LocalDate.now()).getYears() < 18) {
         throw new IllegalArgumentException("You must be at least 18 years old to be a host.");
       }
       user.setDateOfBirth(request.dateOfBirth());
