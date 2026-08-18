@@ -52,7 +52,7 @@ public class ReviewServiceImpl implements ReviewService {
 
   @Override
   @Transactional
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public ReviewResponse leave(LeaveReviewRequest request) {
     Long userId = authService.getCurrentUserId();
 

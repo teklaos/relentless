@@ -40,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
   private static final int SLOT_MINUTES = 30;
 
   @Override
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public List<BookingResponse> getByCurrentUser() {
     Long userId = authService.getCurrentUserId();
     return bookingRepository.findAllByUserId(userId).stream()
@@ -58,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public BookingCheckoutResponse getById(Long id) {
     var booking =
         bookingRepository
@@ -75,7 +75,7 @@ public class BookingServiceImpl implements BookingService {
 
   @Override
   @Transactional
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public BookingCheckoutResponse create(CreateBookingRequest request) {
     if (!request.startTime().isBefore(request.endTime())) {
       throw new IllegalArgumentException("Start time must be before end time");

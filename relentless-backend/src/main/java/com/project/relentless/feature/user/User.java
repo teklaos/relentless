@@ -71,7 +71,7 @@ public class User {
   @NotNull(message = "Role is required.")
   @Enumerated(EnumType.STRING)
   @Builder.Default
-  private Role role = Role.USER;
+  private Role role = Role.TENANT;
 
   @NotNull(message = "Is deleted flag is required.")
   @Builder.Default

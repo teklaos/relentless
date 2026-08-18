@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
       user.setEmail(request.email());
     }
     if (request.dateOfBirth() != null) {
-      if (user.getRole().equals(Role.USER)
+      if (user.getRole().equals(Role.TENANT)
           && Period.between(request.dateOfBirth(), user.getDateOfBirth()).getYears() < 14) {
         throw new IllegalArgumentException("You must be at least 14 years old.");
       }

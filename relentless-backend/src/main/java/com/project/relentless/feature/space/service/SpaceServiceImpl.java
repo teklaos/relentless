@@ -62,7 +62,7 @@ public class SpaceServiceImpl implements SpaceService {
   }
 
   @Override
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public List<SpaceResponse> getSavedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
     return spaceRepository.findBySavedByIdAndStatus(userId, SpaceStatus.ACTIVE).stream()
@@ -162,7 +162,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public void save(Long id) {
     Long userId = authService.getCurrentUserId();
     var user =
@@ -184,7 +184,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public void unsave(Long id) {
     Long userId = authService.getCurrentUserId();
     var user =
