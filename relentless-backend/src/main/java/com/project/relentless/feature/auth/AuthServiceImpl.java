@@ -60,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
     var user = userMapper.toUser(request);
     user.setPasswordHash(passwordEncoder.encode(request.password()));
 
-    recordAndSendOtp(user);
+    putAndSendOtp(user);
   }
 
   @Override
@@ -77,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
     user.setRole(Role.HOST);
     user.setDateAcceptedTerms(LocalDate.now());
 
-    recordAndSendOtp(user);
+    putAndSendOtp(user);
   }
 
   @Override
@@ -86,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
     if (pendingRegistration == null) {
       throw new IllegalArgumentException("No pending registration found for this email");
     }
-    recordAndSendOtp(pendingRegistration.user());
+    putAndSendOtp(pendingRegistration.user());
   }
 
   @Override
@@ -171,12 +171,9 @@ public class AuthServiceImpl implements AuthService {
     return userDetails.getId();
   }
 
-  private void recordAndSendOtp(User user) {
+  private void putAndSendOtp(User user) {
     String otp = String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
     pendingRegistrations.put(user.getEmail(), new PendingRegistration(user, otp));
-    emailService.sendEmail(
-        user.getEmail(),
-        "Verify your email",
-        "Your Relentless verification code is " + otp + ". The code expires in 10 minutes.");
+    emailService.sendOtp(user.getEmail(), otp);
   }
 }

@@ -2,6 +2,7 @@ package com.project.relentless.feature.payment;
 
 import com.project.relentless.feature.booking.BookingStatus;
 import com.project.relentless.feature.booking.repository.BookingRepository;
+import com.project.relentless.feature.email.EmailService;
 import com.project.relentless.feature.wallet.WalletService;
 import com.stripe.model.checkout.Session;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,6 +18,7 @@ public class PaymentController {
   private final PaymentService paymentService;
   private final BookingRepository bookingRepository;
   private final WalletService walletService;
+  private final EmailService emailService;
 
   @PostMapping("/webhook")
   public ResponseEntity<String> handleStripeWebhook(
@@ -40,6 +42,15 @@ public class PaymentController {
         booking.setStatus(BookingStatus.CONFIRMED);
         bookingRepository.save(booking);
         walletService.credit(bookingId);
+
+        emailService.sendBookingConfirmation(
+            booking.getUser().getEmail(),
+            booking.getUser().getUsername(),
+            booking.getSpace().getName(),
+            booking.getStartTime(),
+            booking.getEndTime(),
+            booking.getTotalPrice(),
+            booking.getId());
       }
     }
     return ResponseEntity.ok().build();
