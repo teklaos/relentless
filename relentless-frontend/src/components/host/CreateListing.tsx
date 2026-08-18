@@ -144,9 +144,9 @@ export default function CreateListing() {
               <Field label="Space name">
                 <input
                   className="h-input"
-                  value={d.name}
+                  value={d.name ?? ""}
                   onChange={(e) => host.setDraft("name", e.target.value)}
-                  placeholder="e.g. MOVE DANCE STUDIO"
+                  placeholder="My Studio"
                 />
               </Field>
               <Field label="Category">
@@ -165,7 +165,7 @@ export default function CreateListing() {
               <Field label="Description">
                 <textarea
                   className="h-input h-textarea"
-                  value={d.description}
+                  value={d.description ?? ""}
                   onChange={(e) => host.setDraft("description", e.target.value)}
                   placeholder="A spacious studio with…"
                   rows={3}
@@ -180,7 +180,7 @@ export default function CreateListing() {
                 <Field label="Street">
                   <input
                     className="h-input"
-                    value={d.street}
+                    value={d.street ?? ""}
                     onChange={(e) => host.setDraft("street", e.target.value)}
                     placeholder="Main St."
                   />
@@ -188,9 +188,9 @@ export default function CreateListing() {
                 <Field label="No.">
                   <input
                     className="h-input"
-                    value={d.streetNumber}
+                    value={d.streetNumber ?? ""}
                     onChange={(e) => host.setDraft("streetNumber", e.target.value)}
-                    placeholder="67"
+                    placeholder="21"
                   />
                 </Field>
               </div>
@@ -198,7 +198,7 @@ export default function CreateListing() {
                 <Field label="City">
                   <input
                     className="h-input"
-                    value={d.city}
+                    value={d.city ?? ""}
                     onChange={(e) => host.setDraft("city", e.target.value)}
                     placeholder="Warsaw"
                   />
@@ -206,7 +206,7 @@ export default function CreateListing() {
                 <Field label="Postal code">
                   <input
                     className="h-input"
-                    value={d.postalCode}
+                    value={d.postalCode ?? ""}
                     onChange={(e) => host.setDraft("postalCode", e.target.value)}
                     placeholder="00-120"
                   />
@@ -215,7 +215,7 @@ export default function CreateListing() {
               <Field label="Country">
                 <input
                   className="h-input"
-                  value={d.country}
+                  value={d.country ?? ""}
                   onChange={(e) => host.setDraft("country", e.target.value)}
                   placeholder="Poland"
                 />
@@ -230,10 +230,10 @@ export default function CreateListing() {
                   <span className="mono h-price-aff">€</span>
                   <input
                     className="mono h-price-input"
-                    value={d.price}
+                    value={d.price ?? ""}
                     onChange={(e) => host.setDraft("price", e.target.value.replace(/[^0-9.]/g, ""))}
                     inputMode="decimal"
-                    placeholder="50"
+                    placeholder="20"
                   />
                   <span className="mono h-price-suf">/ HR</span>
                 </div>
