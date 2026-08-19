@@ -38,13 +38,15 @@ public class Space {
   private Address address;
 
   @NotNull(message = "Price per hour is required.")
-  @PositiveOrZero(message = "Price per hour must be positive.")
+  @DecimalMin(value = "1.00", message = "Price per hour must be at least 1.")
   @Digits(
       integer = 10,
       fraction = 2,
       message = "Price per hour must be a valid number with up to 2 decimal places.")
   private BigDecimal pricePerHour;
 
+  @NotEmpty(message = "Working hours are required.")
+  @Valid
   @ElementCollection
   @CollectionTable(name = "space_hours", joinColumns = @JoinColumn(name = "space_id"))
   @Builder.Default
@@ -60,12 +62,10 @@ public class Space {
   @Builder.Default
   private SpaceStatus status = SpaceStatus.ACTIVE;
 
-  @NotNull(message = "Rating is required.")
   @PositiveOrZero(message = "Rating must be positive.")
   @Builder.Default
   private double rating = 0.0;
 
-  @NotNull(message = "Review count is required.")
   @PositiveOrZero(message = "Review count must be positive.")
   @Builder.Default
   private int reviewCount = 0;

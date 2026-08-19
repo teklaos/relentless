@@ -34,7 +34,7 @@ public class Booking {
   private LocalDateTime endTime;
 
   @NotNull(message = "Total price is required.")
-  @Positive(message = "Total price must be positive or zero.")
+  @Positive(message = "Total price must be positive.")
   @Digits(
       integer = 10,
       fraction = 2,

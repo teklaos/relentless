@@ -10,9 +10,9 @@ public record CreateSpaceRequest(
     @NotBlank @Size(max = 50) String name,
     @Size(max = 255) String description,
     @NotNull @Valid AddressRequest address,
-    @NotNull @DecimalMin(value = "0.00") @Digits(integer = 10, fraction = 2)
+    @NotNull @DecimalMin(value = "1.00") @Digits(integer = 10, fraction = 2)
         BigDecimal pricePerHour,
-    @NotNull @Valid List<WorkingHoursRequest> workingHours,
+    @NotEmpty @Valid List<WorkingHoursRequest> workingHours,
     List<String> imageKeys,
     @NotNull Long categoryId,
     Set<Long> amenityIds) {}

@@ -69,7 +69,7 @@ export default function CreateListing() {
   let canContinue = true;
   if (step === 0) canContinue = d.name.trim().length > 0;
   else if (step === 1) canContinue = d.city.trim().length > 0;
-  else if (step === 2) canContinue = priceNum > 0;
+  else if (step === 2) canContinue = priceNum >= 1;
   else if (step === 3) canContinue = d.hours.some((h) => h.on);
   else if (step === 5) canContinue = d.photos.length >= 1;
 
