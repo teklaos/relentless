@@ -26,8 +26,6 @@ public class WalletServiceImpl implements WalletService {
   private final UserRepository userRepository;
   private final AuthService authService;
 
-  private static final BigDecimal HOST_KEEP_RATE = new BigDecimal("0.95");
-
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public List<AdminTransactionResponse> getAllTransactions() {

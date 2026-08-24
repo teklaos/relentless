@@ -38,6 +38,7 @@ public class BookingServiceImpl implements BookingService {
   private final PaymentService paymentService;
 
   private static final int SLOT_MINUTES = 30;
+  private static final int CANCEL_DELAY_MINUTES = 5;
 
   @Override
   @PreAuthorize("hasRole('TENANT')")
@@ -68,6 +69,15 @@ public class BookingServiceImpl implements BookingService {
     Long userId = authService.getCurrentUserId();
     if (!booking.getUser().getId().equals(userId)) {
       throw new AuthorizationDeniedException("You are not allowed to access this booking");
+    }
+
+    if (booking.getStatus() == BookingStatus.PENDING
+        && booking
+            .getCreatedAt()
+            .isBefore(
+                LocalDateTime.now()
+                    .minusMinutes(PaymentService.CHECKOUT_SESSION_EXPIRATION_MINUTES))) {
+      booking.setCheckoutSessionUrl(null);
     }
 
     return bookingMapper.toBookingCheckoutResponse(booking);
@@ -153,7 +163,10 @@ public class BookingServiceImpl implements BookingService {
   public void cancelPending() {
     var bookings =
         bookingRepository.findAllByStatusAndCreatedAtBefore(
-            BookingStatus.PENDING, LocalDateTime.now().minusMinutes(35));
+            BookingStatus.PENDING,
+            LocalDateTime.now()
+                .minusMinutes(PaymentService.CHECKOUT_SESSION_EXPIRATION_MINUTES)
+                .minusMinutes(CANCEL_DELAY_MINUTES));
     for (var booking : bookings) {
       booking.setStatus(BookingStatus.CANCELLED);
       bookingRepository.save(booking);

@@ -19,7 +19,7 @@ public class JwtServiceImpl implements JwtService {
   @Value("${jwt.access.secret}")
   private String secret;
 
-  private static final long ACCESS_TOKEN_EXPIRATION = 60 * 60 * 1000L;
+  private static final long ACCESS_TOKEN_EXPIRATION_MILLIS = 60 * 60 * 1000L;
 
   private Key key;
 
@@ -31,7 +31,7 @@ public class JwtServiceImpl implements JwtService {
   @Override
   public String generateAccessToken(Long id) {
     var now = new Date();
-    var exp = new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION);
+    var exp = new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION_MILLIS);
 
     return Jwts.builder()
         .setSubject(id.toString())

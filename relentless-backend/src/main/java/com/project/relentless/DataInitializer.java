@@ -19,6 +19,7 @@ import com.project.relentless.feature.user.UserRepository;
 import com.project.relentless.feature.wallet.Transaction;
 import com.project.relentless.feature.wallet.TransactionRepository;
 import com.project.relentless.feature.wallet.TransactionType;
+import com.project.relentless.feature.wallet.WalletService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
@@ -48,8 +49,6 @@ public class DataInitializer {
   private final SpaceRepository spaceRepository;
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
-
-  private static final BigDecimal HOST_KEEP_RATE = new BigDecimal("0.95");
 
   @EventListener(ContextRefreshedEvent.class)
   public void init() {
@@ -359,7 +358,11 @@ public class DataInitializer {
 
     bookingRepository.save(booking);
 
-    var amount = booking.getTotalPrice().multiply(HOST_KEEP_RATE).setScale(2, RoundingMode.HALF_UP);
+    var amount =
+        booking
+            .getTotalPrice()
+            .multiply(WalletService.HOST_KEEP_RATE)
+            .setScale(2, RoundingMode.HALF_UP);
 
     var transaction =
         Transaction.builder()
