@@ -18,6 +18,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -75,8 +76,9 @@ public class BookingServiceImpl implements BookingService {
         && booking
             .getCreatedAt()
             .isBefore(
-                LocalDateTime.now()
-                    .minusMinutes(PaymentService.CHECKOUT_SESSION_EXPIRATION_MINUTES))) {
+                Instant.now()
+                    .minus(
+                        Duration.ofMinutes(PaymentService.CHECKOUT_SESSION_EXPIRATION_MINUTES)))) {
       booking.setCheckoutSessionUrl(null);
     }
 
@@ -164,9 +166,11 @@ public class BookingServiceImpl implements BookingService {
     var bookings =
         bookingRepository.findAllByStatusAndCreatedAtBefore(
             BookingStatus.PENDING,
-            LocalDateTime.now()
-                .minusMinutes(PaymentService.CHECKOUT_SESSION_EXPIRATION_MINUTES)
-                .minusMinutes(CANCEL_DELAY_MINUTES));
+            Instant.now()
+                .minus(
+                    Duration.ofMinutes(
+                        PaymentService.CHECKOUT_SESSION_EXPIRATION_MINUTES
+                            + CANCEL_DELAY_MINUTES)));
     for (var booking : bookings) {
       booking.setStatus(BookingStatus.CANCELLED);
       bookingRepository.save(booking);

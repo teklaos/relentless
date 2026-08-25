@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -55,7 +56,7 @@ public class Booking {
   @NotNull(message = "Creation time is required.")
   @PastOrPresent(message = "Creation time must be in the past or present.")
   @Builder.Default
-  private LocalDateTime createdAt = LocalDateTime.now();
+  private Instant createdAt = Instant.now();
 
   @NotNull(message = "Booking status is required.")
   @Enumerated(EnumType.STRING)

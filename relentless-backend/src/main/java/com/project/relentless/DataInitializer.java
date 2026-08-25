@@ -22,10 +22,7 @@ import com.project.relentless.feature.wallet.TransactionType;
 import com.project.relentless.feature.wallet.WalletService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -367,7 +364,7 @@ public class DataInitializer {
     var transaction =
         Transaction.builder()
             .amount(amount)
-            .createdAt(LocalDateTime.of(2026, 3, 6, 14, 0))
+            .createdAt(Instant.parse("2026-03-06T14:15:12Z"))
             .type(TransactionType.CREDIT)
             .host(host)
             .booking(booking)
@@ -379,7 +376,7 @@ public class DataInitializer {
         Review.builder()
             .rating(5)
             .comment("Great place!")
-            .createdAt(LocalDateTime.of(2026, 3, 7, 19, 0))
+            .createdAt(Instant.parse("2026-03-06T19:23:09Z"))
             .build();
 
     review.setBooking(booking);

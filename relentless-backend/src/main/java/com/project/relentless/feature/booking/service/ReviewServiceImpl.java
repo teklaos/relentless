@@ -12,7 +12,7 @@ import com.project.relentless.feature.space.repository.SpaceRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -78,7 +78,7 @@ public class ReviewServiceImpl implements ReviewService {
             .booking(booking)
             .rating(request.rating())
             .comment(request.comment())
-            .createdAt(LocalDateTime.now())
+            .createdAt(Instant.now())
             .build();
 
     var saved = reviewRepository.save(review);
