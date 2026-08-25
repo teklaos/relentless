@@ -351,6 +351,7 @@ public class DataInitializer {
             .totalPrice(totalPrice)
             .checkoutSessionUrl("https://checkout.stripe.com/pay/cs_test_1a2b3c4d5e6f7g8h")
             .status(BookingStatus.COMPLETED)
+            .createdAt(Instant.parse("2026-03-05T17:03:54Z"))
             .build();
 
     bookingRepository.save(booking);
@@ -364,7 +365,7 @@ public class DataInitializer {
     var transaction =
         Transaction.builder()
             .amount(amount)
-            .createdAt(Instant.parse("2026-03-06T14:15:12Z"))
+            .createdAt(Instant.parse("2026-03-05T17:05:31Z"))
             .type(TransactionType.CREDIT)
             .host(host)
             .booking(booking)
@@ -376,7 +377,7 @@ public class DataInitializer {
         Review.builder()
             .rating(5)
             .comment("Great place!")
-            .createdAt(Instant.parse("2026-03-06T19:23:09Z"))
+            .createdAt(Instant.parse("2026-03-08T19:23:09Z"))
             .build();
 
     review.setBooking(booking);
