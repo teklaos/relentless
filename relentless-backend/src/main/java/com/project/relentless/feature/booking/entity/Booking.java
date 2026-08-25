@@ -20,6 +20,11 @@ import org.hibernate.proxy.HibernateProxy;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(
+    indexes = {
+      @Index(name = "idx_booking_user", columnList = "user_id"),
+      @Index(name = "idx_booking_space_time", columnList = "space_id, start_time, end_time")
+    })
 @Builder
 public class Booking {
 

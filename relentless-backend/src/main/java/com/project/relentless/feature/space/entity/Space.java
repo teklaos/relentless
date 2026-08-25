@@ -18,6 +18,7 @@ import org.hibernate.proxy.HibernateProxy;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(indexes = @Index(name = "idx_space_host", columnList = "host_id"))
 @Builder
 public class Space {
 
