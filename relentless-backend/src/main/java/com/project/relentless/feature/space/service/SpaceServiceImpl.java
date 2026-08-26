@@ -3,6 +3,7 @@ package com.project.relentless.feature.space.service;
 import com.project.relentless.feature.auth.AuthService;
 import com.project.relentless.feature.booking.BookingStatus;
 import com.project.relentless.feature.booking.repository.BookingRepository;
+import com.project.relentless.feature.booking.service.BookingService;
 import com.project.relentless.feature.image.ImageService;
 import com.project.relentless.feature.space.SpaceStatus;
 import com.project.relentless.feature.space.dto.request.CreateSpaceRequest;
@@ -50,9 +51,6 @@ public class SpaceServiceImpl implements SpaceService {
   private final AuthService authService;
   private final WorkingHoursMapper workingHoursMapper;
   private final ImageService imageService;
-
-  private static final int SLOT_MINUTES = 30;
-  private static final int MIN_BOOKING_LEAD_HOURS = 2;
 
   @Override
   public List<SpaceResponse> getAll() {
@@ -121,13 +119,13 @@ public class SpaceServiceImpl implements SpaceService {
         bookingRepository.findAllBySpaceIdAndStatusNotAndStartTimeBeforeAndEndTimeAfter(
             id, BookingStatus.CANCELLED, closeDateTime, openDateTime);
 
-    var earliestStart = LocalDateTime.now().plusHours(MIN_BOOKING_LEAD_HOURS);
+    var earliestStart = LocalDateTime.now().plusHours(BookingService.MIN_BOOKING_LEAD_HOURS);
     var availableSlots = new ArrayList<TimeSlotResponse>();
     for (var start = openDateTime;
         start.isBefore(closeDateTime);
-        start = start.plusMinutes(SLOT_MINUTES)) {
+        start = start.plusMinutes(BookingService.SLOT_MINUTES)) {
       var slotStart = start;
-      var slotEnd = start.plusMinutes(SLOT_MINUTES);
+      var slotEnd = start.plusMinutes(BookingService.SLOT_MINUTES);
 
       if (slotEnd.isAfter(closeDateTime)) {
         break;

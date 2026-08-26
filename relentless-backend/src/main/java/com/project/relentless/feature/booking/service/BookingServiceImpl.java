@@ -38,7 +38,6 @@ public class BookingServiceImpl implements BookingService {
   private final AuthService authService;
   private final PaymentService paymentService;
 
-  private static final int SLOT_MINUTES = 30;
   private static final int CANCEL_DELAY_MINUTES = 5;
 
   @Override
@@ -91,6 +90,11 @@ public class BookingServiceImpl implements BookingService {
   public BookingCheckoutResponse create(CreateBookingRequest request) {
     if (!request.startTime().isBefore(request.endTime())) {
       throw new IllegalArgumentException("Start time must be before end time");
+    }
+
+    if (request.startTime().isBefore(LocalDateTime.now().plusHours(MIN_BOOKING_LEAD_HOURS))) {
+      throw new IllegalArgumentException(
+          "Start time must be at least " + MIN_BOOKING_LEAD_HOURS + " hours from now");
     }
 
     if (bookingRepository.existsBySpaceIdAndStatusNotAndStartTimeBeforeAndEndTimeAfter(

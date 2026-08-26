@@ -6,6 +6,10 @@ import com.project.relentless.feature.booking.dto.response.BookingResponse;
 import java.util.List;
 
 public interface BookingService {
+  int SLOT_MINUTES = 30;
+
+  int MIN_BOOKING_LEAD_HOURS = 2;
+
   List<BookingResponse> getByCurrentUser();
 
   List<BookingResponse> getHostedByCurrentUser();
