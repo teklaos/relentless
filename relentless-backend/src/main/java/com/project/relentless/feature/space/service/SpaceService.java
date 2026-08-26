@@ -34,4 +34,6 @@ public interface SpaceService {
   SpaceResponse changeStatus(Long id, SpaceStatusRequest request);
 
   void delete(Long id);
+
+  void deleteHostedByCurrentUser();
 }

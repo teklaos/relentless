@@ -4,6 +4,7 @@ import com.project.relentless.feature.auth.AuthService;
 import com.project.relentless.feature.auth.details.CustomUserDetails;
 import com.project.relentless.feature.auth.refresh.RefreshTokenService;
 import com.project.relentless.feature.image.ImageService;
+import com.project.relentless.feature.space.service.SpaceService;
 import com.project.relentless.feature.user.dto.request.ChangePasswordRequest;
 import com.project.relentless.feature.user.dto.request.EditUserRequest;
 import com.project.relentless.feature.user.dto.response.AdminUserResponse;
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final UserMapper userMapper;
+  private final SpaceService spaceService;
   private final AuthService authService;
   private final RefreshTokenService refreshTokenService;
   private final ImageService imageService;
@@ -164,10 +166,13 @@ public class UserServiceImpl implements UserService {
     user.setDateOfBirth(null);
     user.setPasswordHash(null);
 
-    user.setFirstName(null);
-    user.setLastName(null);
-    user.setPhoneNumber(null);
-    user.setIban(null);
+    if (user.getRole().equals(Role.HOST)) {
+      user.setFirstName(null);
+      user.setLastName(null);
+      user.setPhoneNumber(null);
+      user.setIban(null);
+      spaceService.deleteHostedByCurrentUser();
+    }
 
     user.setProfileImageKey(null);
     refreshTokenService.deleteAllByUserId(userId);

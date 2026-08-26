@@ -65,7 +65,7 @@ public class SpaceServiceImpl implements SpaceService {
   @PreAuthorize("hasRole('TENANT')")
   public List<SpaceResponse> getSavedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
-    return spaceRepository.findBySavedByIdAndStatus(userId, SpaceStatus.ACTIVE).stream()
+    return spaceRepository.findAllBySavedByIdAndStatus(userId, SpaceStatus.ACTIVE).stream()
         .map(spaceMapper::toSpaceResponse)
         .toList();
   }
@@ -74,7 +74,7 @@ public class SpaceServiceImpl implements SpaceService {
   @PreAuthorize("hasRole('HOST')")
   public List<SpaceResponse> getHostedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
-    return spaceRepository.findByHostIdAndStatusNot(userId, SpaceStatus.DELETED).stream()
+    return spaceRepository.findAllByHostIdAndStatusNot(userId, SpaceStatus.DELETED).stream()
         .map(spaceMapper::toSpaceResponse)
         .toList();
   }
@@ -330,6 +330,18 @@ public class SpaceServiceImpl implements SpaceService {
     var space = getOwnedSpaceByIdOrThrow(id, "You are not allowed to delete this space");
     space.setStatus(SpaceStatus.DELETED);
     spaceRepository.save(space);
+  }
+
+  @Override
+  @Transactional
+  @PreAuthorize("hasRole('HOST')")
+  public void deleteHostedByCurrentUser() {
+    Long userId = authService.getCurrentUserId();
+    var spaces = spaceRepository.findAllByHostIdAndStatusNot(userId, SpaceStatus.DELETED);
+    for (var space : spaces) {
+      space.setStatus(SpaceStatus.DELETED);
+      spaceRepository.save(space);
+    }
   }
 
   private Space getOwnedSpaceByIdOrThrow(Long id, String message) {
