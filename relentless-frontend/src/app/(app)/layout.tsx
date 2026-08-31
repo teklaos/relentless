@@ -14,9 +14,9 @@ import PaymentModal from "@/components/user/PaymentModal";
 import AuthGateModal from "@/components/shared/AuthGateModal";
 
 const ROUTE_ROLES: [string, User["role"][]][] = [
-  ["/explore", ["USER"]],
-  ["/saved", ["USER"]],
-  ["/bookings", ["USER", "HOST"]],
+  ["/explore", ["TENANT"]],
+  ["/saved", ["TENANT"]],
+  ["/bookings", ["TENANT", "HOST"]],
   ["/dashboard", ["HOST", "ADMIN"]],
   ["/listings", ["HOST"]],
   ["/wallet", ["HOST"]],
@@ -24,10 +24,10 @@ const ROUTE_ROLES: [string, User["role"][]][] = [
   ["/users", ["ADMIN"]],
   ["/transactions", ["ADMIN"]],
   ["/statistics", ["ADMIN"]],
-  ["/profile", ["USER", "HOST", "ADMIN"]]
+  ["/profile", ["TENANT", "HOST", "ADMIN"]]
 ];
 const PUBLIC_PATHS = ["/explore"];
-const HOME_PATH: Record<User["role"], string> = { USER: "/explore", HOST: "/dashboard", ADMIN: "/dashboard" };
+const HOME_PATH: Record<User["role"], string> = { TENANT: "/explore", HOST: "/dashboard", ADMIN: "/dashboard" };
 const isPublic = (p: string) => PUBLIC_PATHS.some((x) => p === x || p.startsWith(x + "/"));
 const rolesFor = (p: string) => ROUTE_ROLES.find(([prefix]) => p === prefix || p.startsWith(prefix + "/"))?.[1];
 

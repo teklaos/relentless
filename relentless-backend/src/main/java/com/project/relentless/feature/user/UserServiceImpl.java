@@ -4,6 +4,7 @@ import com.project.relentless.feature.auth.AuthService;
 import com.project.relentless.feature.auth.details.CustomUserDetails;
 import com.project.relentless.feature.auth.refresh.RefreshTokenService;
 import com.project.relentless.feature.image.ImageService;
+import com.project.relentless.feature.space.service.SpaceService;
 import com.project.relentless.feature.user.dto.request.ChangePasswordRequest;
 import com.project.relentless.feature.user.dto.request.EditUserRequest;
 import com.project.relentless.feature.user.dto.response.AdminUserResponse;
@@ -11,6 +12,7 @@ import com.project.relentless.feature.user.dto.response.UserResponse;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final UserMapper userMapper;
+  private final SpaceService spaceService;
   private final AuthService authService;
   private final RefreshTokenService refreshTokenService;
   private final ImageService imageService;
@@ -91,12 +94,12 @@ public class UserServiceImpl implements UserService {
       user.setEmail(request.email());
     }
     if (request.dateOfBirth() != null) {
-      if (user.getRole().equals(Role.USER)
-          && Period.between(request.dateOfBirth(), user.getDateOfBirth()).getYears() < 14) {
+      if (user.getRole().equals(Role.TENANT)
+          && Period.between(request.dateOfBirth(), LocalDate.now()).getYears() < 14) {
         throw new IllegalArgumentException("You must be at least 14 years old.");
       }
       if (user.getRole().equals(Role.HOST)
-          && Period.between(request.dateOfBirth(), user.getDateOfBirth()).getYears() < 18) {
+          && Period.between(request.dateOfBirth(), LocalDate.now()).getYears() < 18) {
         throw new IllegalArgumentException("You must be at least 18 years old to be a host.");
       }
       user.setDateOfBirth(request.dateOfBirth());
@@ -163,10 +166,13 @@ public class UserServiceImpl implements UserService {
     user.setDateOfBirth(null);
     user.setPasswordHash(null);
 
-    user.setFirstName(null);
-    user.setLastName(null);
-    user.setPhoneNumber(null);
-    user.setIban(null);
+    if (user.getRole().equals(Role.HOST)) {
+      user.setFirstName(null);
+      user.setLastName(null);
+      user.setPhoneNumber(null);
+      user.setIban(null);
+      spaceService.deleteHostedByCurrentUser();
+    }
 
     user.setProfileImageKey(null);
     refreshTokenService.deleteAllByUserId(userId);

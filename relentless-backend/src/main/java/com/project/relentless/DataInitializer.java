@@ -19,12 +19,10 @@ import com.project.relentless.feature.user.UserRepository;
 import com.project.relentless.feature.wallet.Transaction;
 import com.project.relentless.feature.wallet.TransactionRepository;
 import com.project.relentless.feature.wallet.TransactionType;
+import com.project.relentless.feature.wallet.WalletService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -49,8 +47,6 @@ public class DataInitializer {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  private static final BigDecimal HOST_KEEP_RATE = new BigDecimal("0.95");
-
   @EventListener(ContextRefreshedEvent.class)
   public void init() {
     if (bookingRepository.count() > 0
@@ -70,7 +66,6 @@ public class DataInitializer {
             .passwordHash(passwordEncoder.encode("P@ssw0rd"))
             .email("user@gmail.com")
             .dateOfBirth(LocalDate.of(2005, 1, 12))
-            .profileImageKey("avatar.jpg")
             .build();
 
     var host =
@@ -99,12 +94,28 @@ public class DataInitializer {
     userRepository.saveAll(List.of(user, host, admin));
 
     var amenity1 = Amenity.builder().name("Wi-Fi").build();
-
     var amenity2 = Amenity.builder().name("Air Conditioning").build();
-
     var amenity3 = Amenity.builder().name("Parking").build();
+    var amenity4 = Amenity.builder().name("Mirror").build();
+    var amenity5 = Amenity.builder().name("Sound System").build();
+    var amenity6 = Amenity.builder().name("Projector").build();
+    var amenity7 = Amenity.builder().name("Soundproofing").build();
+    var amenity8 = Amenity.builder().name("Natural Light").build();
+    var amenity9 = Amenity.builder().name("Piano").build();
+    var amenity10 = Amenity.builder().name("Heating").build();
+    var amenity11 = Amenity.builder().name("Coffee Machine").build();
+    var amenity12 = Amenity.builder().name("Smart TV").build();
+    var amenity13 = Amenity.builder().name("Whiteboard").build();
+    var amenity14 = Amenity.builder().name("Drum Kit").build();
+    var amenity15 = Amenity.builder().name("Green Screen").build();
+    var amenity16 = Amenity.builder().name("Lockers").build();
+    var amenity17 = Amenity.builder().name("Security Cameras").build();
 
-    amenityRepository.saveAll(List.of(amenity1, amenity2, amenity3));
+    amenityRepository.saveAll(
+        List.of(
+            amenity1, amenity2, amenity3, amenity4, amenity5, amenity6, amenity7, amenity8,
+            amenity9, amenity10, amenity11, amenity12, amenity13, amenity14, amenity15, amenity16,
+            amenity17));
 
     var category1 =
         Category.builder()
@@ -114,7 +125,32 @@ public class DataInitializer {
 
     var category2 = Category.builder().name("Vocal Studio").build();
 
-    categoryRepository.saveAll(List.of(category1, category2));
+    var category3 =
+        Category.builder()
+            .name("Recording Studio")
+            .description("A soundproof room with a control desk and microphones")
+            .build();
+
+    var category4 =
+        Category.builder()
+            .name("Photo Studio")
+            .description("A lit room with backdrops and softboxes")
+            .build();
+
+    var category5 = Category.builder().name("Yoga Studio").build();
+    var category6 = Category.builder().name("Rehearsal Room").build();
+    var category7 = Category.builder().name("Conference Room").build();
+
+    var category8 =
+        Category.builder()
+            .name("Art Workshop")
+            .description("A workshop with easels, sinks and storage")
+            .build();
+
+    categoryRepository.saveAll(
+        List.of(
+            category1, category2, category3, category4, category5, category6, category7,
+            category8));
 
     var workingHours =
         Arrays.stream(DayOfWeek.values())
@@ -134,10 +170,9 @@ public class DataInitializer {
                     .postalCode("00-120")
                     .country("Poland")
                     .build())
-            .pricePerHour(new BigDecimal("50.00"))
+            .pricePerHour(new BigDecimal("25.00"))
             .publishedOn(LocalDate.of(2025, 12, 1))
             .workingHours(workingHours)
-            .imageKeys(List.of("dance.webp"))
             .build();
 
     var space2 =
@@ -153,24 +188,144 @@ public class DataInitializer {
                     .postalCode("00-130")
                     .country("Poland")
                     .build())
-            .pricePerHour(new BigDecimal("70.00"))
+            .pricePerHour(new BigDecimal("40.00"))
             .publishedOn(LocalDate.of(2025, 11, 15))
             .workingHours(workingHours)
-            .imageKeys(List.of("vocal.webp"))
             .build();
 
-    space1.setHost(host);
-    space2.setHost(host);
+    var space3 =
+        Space.builder()
+            .name("SOUND RECORDING")
+            .description("A soundproof recording studio with a control room and a vocal booth.")
+            .address(
+                Address.builder()
+                    .street("Third St.")
+                    .streetNumber("12")
+                    .city("Warsaw")
+                    .postalCode("00-140")
+                    .country("Poland")
+                    .build())
+            .pricePerHour(new BigDecimal("55.00"))
+            .publishedOn(LocalDate.of(2026, 1, 10))
+            .workingHours(workingHours)
+            .build();
 
-    spaceRepository.saveAll(List.of(space1, space2));
+    var space4 =
+        Space.builder()
+            .name("LUMEN PHOTO STUDIO")
+            .description("A bright photo studio with white cyclorama, softboxes and backdrops.")
+            .address(
+                Address.builder()
+                    .street("Fourth St.")
+                    .streetNumber("8")
+                    .apartmentNumber("C")
+                    .city("Krakow")
+                    .postalCode("30-050")
+                    .country("Poland")
+                    .build())
+            .pricePerHour(new BigDecimal("20.00"))
+            .publishedOn(LocalDate.of(2026, 1, 22))
+            .workingHours(workingHours)
+            .build();
+
+    var space5 =
+        Space.builder()
+            .name("ZEN YOGA LOFT")
+            .description("A calm loft with mats, blocks and floor-to-ceiling windows.")
+            .address(
+                Address.builder()
+                    .street("Fifth St.")
+                    .streetNumber("101")
+                    .city("Gdansk")
+                    .postalCode("80-180")
+                    .country("Poland")
+                    .build())
+            .pricePerHour(new BigDecimal("25.00"))
+            .publishedOn(LocalDate.of(2026, 2, 3))
+            .workingHours(workingHours)
+            .build();
+
+    var space6 =
+        Space.builder()
+            .name("AMP REHEARSAL ROOM")
+            .address(
+                Address.builder()
+                    .street("Sixth St.")
+                    .streetNumber("23")
+                    .apartmentNumber("2")
+                    .city("Wroclaw")
+                    .postalCode("50-070")
+                    .country("Poland")
+                    .build())
+            .pricePerHour(new BigDecimal("50.00"))
+            .publishedOn(LocalDate.of(2026, 2, 14))
+            .workingHours(workingHours)
+            .build();
+
+    var space7 =
+        Space.builder()
+            .name("NEXUS CONFERENCE ROOM")
+            .description("A meeting room for twelve people with a projector and a whiteboard.")
+            .address(
+                Address.builder()
+                    .street("Seventh St.")
+                    .streetNumber("5")
+                    .apartmentNumber("14")
+                    .city("Poznan")
+                    .postalCode("61-001")
+                    .country("Poland")
+                    .build())
+            .pricePerHour(new BigDecimal("35.00"))
+            .publishedOn(LocalDate.of(2026, 3, 1))
+            .workingHours(workingHours)
+            .build();
+
+    var space8 =
+        Space.builder()
+            .name("PALETTE ART WORKSHOP")
+            .description("An art workshop with easels, a sink and storage for materials.")
+            .address(
+                Address.builder()
+                    .street("Eighth St.")
+                    .streetNumber("77")
+                    .city("Lodz")
+                    .postalCode("90-001")
+                    .country("Poland")
+                    .build())
+            .pricePerHour(new BigDecimal("20.00"))
+            .publishedOn(LocalDate.of(2026, 3, 12))
+            .workingHours(workingHours)
+            .build();
+
+    var spaces = List.of(space1, space2, space3, space4, space5, space6, space7, space8);
+
+    spaces.forEach(space -> space.setHost(host));
+
+    spaceRepository.saveAll(spaces);
 
     space1.setCategory(category1);
     space2.setCategory(category2);
+    space3.setCategory(category3);
+    space4.setCategory(category4);
+    space5.setCategory(category5);
+    space6.setCategory(category6);
+    space7.setCategory(category7);
+    space8.setCategory(category8);
 
-    space1.setAmenities(Set.of(amenity1, amenity2));
-    space2.setAmenities(Set.of(amenity2, amenity3));
+    space1.setAmenities(
+        Set.of(amenity1, amenity2, amenity4, amenity5, amenity8, amenity10, amenity16));
+    space2.setAmenities(Set.of(amenity2, amenity3, amenity5, amenity7, amenity9, amenity10));
+    space3.setAmenities(
+        Set.of(amenity1, amenity2, amenity5, amenity7, amenity9, amenity12, amenity17));
+    space4.setAmenities(Set.of(amenity1, amenity3, amenity8, amenity11, amenity15, amenity17));
+    space5.setAmenities(
+        Set.of(amenity1, amenity2, amenity3, amenity4, amenity8, amenity10, amenity16));
+    space6.setAmenities(Set.of(amenity3, amenity5, amenity7, amenity14));
+    space7.setAmenities(
+        Set.of(amenity1, amenity2, amenity3, amenity6, amenity8, amenity11, amenity12, amenity13));
+    space8.setAmenities(Set.of(amenity1, amenity8, amenity10, amenity11, amenity16));
 
-    spaceRepository.saveAll(List.of(space1, space2));
+    spaceRepository.saveAll(spaces);
 
     user.setSavedSpaces(Set.of(space1));
 
@@ -196,16 +351,21 @@ public class DataInitializer {
             .totalPrice(totalPrice)
             .checkoutSessionUrl("https://checkout.stripe.com/pay/cs_test_1a2b3c4d5e6f7g8h")
             .status(BookingStatus.COMPLETED)
+            .createdAt(Instant.parse("2026-03-05T17:03:54Z"))
             .build();
 
     bookingRepository.save(booking);
 
-    var amount = booking.getTotalPrice().multiply(HOST_KEEP_RATE).setScale(2, RoundingMode.HALF_UP);
+    var amount =
+        booking
+            .getTotalPrice()
+            .multiply(WalletService.HOST_KEEP_RATE)
+            .setScale(2, RoundingMode.HALF_UP);
 
     var transaction =
         Transaction.builder()
             .amount(amount)
-            .createdAt(LocalDateTime.of(2026, 3, 6, 14, 0))
+            .createdAt(Instant.parse("2026-03-05T17:05:31Z"))
             .type(TransactionType.CREDIT)
             .host(host)
             .booking(booking)
@@ -217,7 +377,7 @@ public class DataInitializer {
         Review.builder()
             .rating(5)
             .comment("Great place!")
-            .createdAt(LocalDateTime.of(2026, 3, 7, 19, 0))
+            .createdAt(Instant.parse("2026-03-08T19:23:09Z"))
             .build();
 
     review.setBooking(booking);

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface SpaceRepository extends JpaRepository<Space, Long> {
   List<Space> findAllByStatus(SpaceStatus status);
 
-  List<Space> findBySavedByIdAndStatus(Long userId, SpaceStatus status);
+  List<Space> findAllBySavedByIdAndStatus(Long userId, SpaceStatus status);
 
-  List<Space> findByHostIdAndStatusNot(Long userId, SpaceStatus status);
+  List<Space> findAllByHostIdAndStatusNot(Long userId, SpaceStatus status);
 }

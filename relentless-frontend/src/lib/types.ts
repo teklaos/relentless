@@ -111,7 +111,7 @@ export interface CategorySummary {
   name: string;
 }
 
-export type UserRole = "USER" | "HOST" | "ADMIN";
+export type UserRole = "TENANT" | "HOST" | "ADMIN";
 
 export interface User {
   id: number;

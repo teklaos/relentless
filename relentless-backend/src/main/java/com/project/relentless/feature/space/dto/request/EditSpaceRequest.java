@@ -10,8 +10,8 @@ public record EditSpaceRequest(
     @Size(max = 50) String name,
     @Size(max = 255) String description,
     @Valid AddressRequest address,
-    @DecimalMin(value = "0.00") @Digits(integer = 10, fraction = 2) BigDecimal pricePerHour,
-    @Valid List<WorkingHoursRequest> workingHours,
+    @DecimalMin(value = "1.00") @Digits(integer = 10, fraction = 2) BigDecimal pricePerHour,
+    @Size(min = 1) @Valid List<WorkingHoursRequest> workingHours,
     List<String> imageKeys,
     Long categoryId,
     Set<Long> amenityIds) {}

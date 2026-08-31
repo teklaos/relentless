@@ -9,7 +9,7 @@ import { fetchAdminUsers } from "@/lib/api";
 import { AdminUser } from "@/lib/types";
 import { fmtDateNoDow } from "@/lib/format";
 
-const ROLE_FILTERS = ["ALL", "USER", "HOST", "ADMIN"] as const;
+const ROLE_FILTERS = ["ALL", "TENANT", "HOST", "ADMIN"] as const;
 type RoleFilter = (typeof ROLE_FILTERS)[number];
 
 const roleDot = (role: string) =>

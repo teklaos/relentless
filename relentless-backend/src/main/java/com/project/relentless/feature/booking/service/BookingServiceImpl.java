@@ -18,6 +18,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -37,10 +38,10 @@ public class BookingServiceImpl implements BookingService {
   private final AuthService authService;
   private final PaymentService paymentService;
 
-  private static final int SLOT_MINUTES = 30;
+  private static final int CANCEL_DELAY_MINUTES = 5;
 
   @Override
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public List<BookingResponse> getByCurrentUser() {
     Long userId = authService.getCurrentUserId();
     return bookingRepository.findAllByUserId(userId).stream()
@@ -58,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public BookingCheckoutResponse getById(Long id) {
     var booking =
         bookingRepository
@@ -70,15 +71,30 @@ public class BookingServiceImpl implements BookingService {
       throw new AuthorizationDeniedException("You are not allowed to access this booking");
     }
 
+    if (booking.getStatus() == BookingStatus.PENDING
+        && booking
+            .getCreatedAt()
+            .isBefore(
+                Instant.now()
+                    .minus(
+                        Duration.ofMinutes(PaymentService.CHECKOUT_SESSION_EXPIRATION_MINUTES)))) {
+      booking.setCheckoutSessionUrl(null);
+    }
+
     return bookingMapper.toBookingCheckoutResponse(booking);
   }
 
   @Override
   @Transactional
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public BookingCheckoutResponse create(CreateBookingRequest request) {
     if (!request.startTime().isBefore(request.endTime())) {
       throw new IllegalArgumentException("Start time must be before end time");
+    }
+
+    if (request.startTime().isBefore(LocalDateTime.now().plusHours(MIN_BOOKING_LEAD_HOURS))) {
+      throw new IllegalArgumentException(
+          "Start time must be at least " + MIN_BOOKING_LEAD_HOURS + " hours from now");
     }
 
     if (bookingRepository.existsBySpaceIdAndStatusNotAndStartTimeBeforeAndEndTimeAfter(
@@ -153,7 +169,12 @@ public class BookingServiceImpl implements BookingService {
   public void cancelPending() {
     var bookings =
         bookingRepository.findAllByStatusAndCreatedAtBefore(
-            BookingStatus.PENDING, LocalDateTime.now().minusMinutes(35));
+            BookingStatus.PENDING,
+            Instant.now()
+                .minus(
+                    Duration.ofMinutes(
+                        PaymentService.CHECKOUT_SESSION_EXPIRATION_MINUTES
+                            + CANCEL_DELAY_MINUTES)));
     for (var booking : bookings) {
       booking.setStatus(BookingStatus.CANCELLED);
       bookingRepository.save(booking);

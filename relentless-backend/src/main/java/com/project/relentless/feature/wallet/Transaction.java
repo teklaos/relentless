@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -34,7 +34,7 @@ public class Transaction {
   @NotNull(message = "Creation time is required.")
   @PastOrPresent(message = "Creation time must be in the past or present.")
   @Builder.Default
-  private LocalDateTime createdAt = LocalDateTime.now();
+  private Instant createdAt = Instant.now();
 
   @NotNull(message = "Transaction type is required.")
   @Enumerated(EnumType.STRING)

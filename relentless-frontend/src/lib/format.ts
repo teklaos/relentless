@@ -39,7 +39,7 @@ const MONTHS = MONTH_NAMES.map((m) => m.slice(0, 3));
 export const HOST_KEEP_RATE = 0.95;
 
 export const HOST_MIN_AGE = 18;
-export const USER_MIN_AGE = 14;
+export const TENANT_MIN_AGE = 14;
 export const maxDobIso = (minAge: number): string => {
   const d = new Date();
   d.setFullYear(d.getFullYear() - minAge);

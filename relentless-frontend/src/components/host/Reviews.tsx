@@ -89,7 +89,7 @@ export default function Reviews() {
               </div>
               <div className="h-rev-body">{r.comment}</div>
               <div className="h-rev-foot">
-                <span className="mono h-rev-date">{fmtDate(r.createdAt.slice(0, 10))}</span>
+                <span className="mono h-rev-date">{fmtDate(r.createdAt)}</span>
               </div>
             </div>
           ))}

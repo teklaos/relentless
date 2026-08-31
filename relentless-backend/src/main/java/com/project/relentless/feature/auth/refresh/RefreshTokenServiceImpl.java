@@ -31,7 +31,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   @Value("${jwt.refresh.secret}")
   private String secret;
 
-  private static final long REFRESH_TOKEN_EXPIRATION = 30 * 24 * 60 * 60 * 1000L;
+  private static final long REFRESH_TOKEN_EXPIRATION_MILLIS = 30 * 24 * 60 * 60 * 1000L;
   private static final SecureRandom SECURE_RANDOM = new SecureRandom();
   private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
 
@@ -53,7 +53,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     String token = generateToken();
     String tokenHash = hmacSha256Hex(token);
 
-    var exp = Instant.now().plusMillis(REFRESH_TOKEN_EXPIRATION);
+    var exp = Instant.now().plusMillis(REFRESH_TOKEN_EXPIRATION_MILLIS);
 
     var refreshToken =
         RefreshToken.builder().user(user).tokenHash(tokenHash).expiration(exp).build();

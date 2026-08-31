@@ -161,7 +161,7 @@ export default function Profile({ user, bookings, onSignOut }: ProfileProps) {
         </div>
 
         <div>
-          {user.role === "USER" && (
+          {user.role === "TENANT" && (
             <div className="profile-stats">
               <div className="profile-stat">
                 <div className="num">{completed}</div>

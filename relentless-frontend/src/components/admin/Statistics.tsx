@@ -26,7 +26,7 @@ export default function Statistics() {
   const credits = transactions.filter((t) => t.type === "CREDIT");
   const grossVolume = credits.reduce((sum, t) => sum + (t.totalPrice ?? 0), 0);
   const platformRevenue = credits.reduce((sum, t) => sum + ((t.totalPrice ?? 0) - t.amount), 0);
-  const totalUsers = users.filter((u) => u.role === "USER").length;
+  const totalUsers = users.filter((u) => u.role === "TENANT").length;
   const totalHosts = users.filter((u) => u.role === "HOST").length;
 
   const kpis = [

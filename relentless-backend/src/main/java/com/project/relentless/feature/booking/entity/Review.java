@@ -3,7 +3,7 @@ package com.project.relentless.feature.booking.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -32,7 +32,7 @@ public class Review {
   @NotNull(message = "Creation time is required.")
   @PastOrPresent(message = "Creation time must be in the past or present.")
   @Builder.Default
-  private LocalDateTime createdAt = LocalDateTime.now();
+  private Instant createdAt = Instant.now();
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "booking_id", nullable = false)

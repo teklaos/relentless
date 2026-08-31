@@ -34,7 +34,10 @@ public class PaymentServiceImpl implements PaymentService {
               .setSuccessUrl(frontendUrl + "/payments/success")
               .setCancelUrl(frontendUrl + "/payments/cancel")
               .putMetadata("bookingId", booking.getId().toString())
-              .setExpiresAt(Instant.now().plus(Duration.ofMinutes(30)).getEpochSecond())
+              .setExpiresAt(
+                  Instant.now()
+                      .plus(Duration.ofMinutes(CHECKOUT_SESSION_EXPIRATION_MINUTES))
+                      .getEpochSecond())
               .addLineItem(
                   SessionCreateParams.LineItem.builder()
                       .setQuantity(1L)

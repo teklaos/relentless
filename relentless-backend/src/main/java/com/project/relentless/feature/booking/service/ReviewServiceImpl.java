@@ -12,7 +12,7 @@ import com.project.relentless.feature.space.repository.SpaceRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,7 +35,7 @@ public class ReviewServiceImpl implements ReviewService {
       throw new EntityNotFoundException("Space not found");
     }
 
-    return reviewRepository.findBySpaceId(spaceId).stream()
+    return reviewRepository.findAllBySpaceId(spaceId).stream()
         .map(reviewMapper::toReviewResponse)
         .toList();
   }
@@ -45,14 +45,14 @@ public class ReviewServiceImpl implements ReviewService {
   public List<ReviewResponse> getHostedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
 
-    return reviewRepository.findByHostId(userId).stream()
+    return reviewRepository.findAllByHostId(userId).stream()
         .map(reviewMapper::toReviewResponse)
         .toList();
   }
 
   @Override
   @Transactional
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public ReviewResponse leave(LeaveReviewRequest request) {
     Long userId = authService.getCurrentUserId();
 
@@ -78,7 +78,7 @@ public class ReviewServiceImpl implements ReviewService {
             .booking(booking)
             .rating(request.rating())
             .comment(request.comment())
-            .createdAt(LocalDateTime.now())
+            .createdAt(Instant.now())
             .build();
 
     var saved = reviewRepository.save(review);

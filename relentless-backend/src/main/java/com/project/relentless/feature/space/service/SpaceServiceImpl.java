@@ -3,6 +3,7 @@ package com.project.relentless.feature.space.service;
 import com.project.relentless.feature.auth.AuthService;
 import com.project.relentless.feature.booking.BookingStatus;
 import com.project.relentless.feature.booking.repository.BookingRepository;
+import com.project.relentless.feature.booking.service.BookingService;
 import com.project.relentless.feature.image.ImageService;
 import com.project.relentless.feature.space.SpaceStatus;
 import com.project.relentless.feature.space.dto.request.CreateSpaceRequest;
@@ -51,9 +52,6 @@ public class SpaceServiceImpl implements SpaceService {
   private final WorkingHoursMapper workingHoursMapper;
   private final ImageService imageService;
 
-  private static final int SLOT_MINUTES = 30;
-  private static final int MIN_BOOKING_LEAD_HOURS = 2;
-
   @Override
   public List<SpaceResponse> getAll() {
     return spaceRepository.findAllByStatus(SpaceStatus.ACTIVE).stream()
@@ -62,10 +60,10 @@ public class SpaceServiceImpl implements SpaceService {
   }
 
   @Override
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public List<SpaceResponse> getSavedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
-    return spaceRepository.findBySavedByIdAndStatus(userId, SpaceStatus.ACTIVE).stream()
+    return spaceRepository.findAllBySavedByIdAndStatus(userId, SpaceStatus.ACTIVE).stream()
         .map(spaceMapper::toSpaceResponse)
         .toList();
   }
@@ -74,7 +72,7 @@ public class SpaceServiceImpl implements SpaceService {
   @PreAuthorize("hasRole('HOST')")
   public List<SpaceResponse> getHostedByCurrentUser() {
     Long userId = authService.getCurrentUserId();
-    return spaceRepository.findByHostIdAndStatusNot(userId, SpaceStatus.DELETED).stream()
+    return spaceRepository.findAllByHostIdAndStatusNot(userId, SpaceStatus.DELETED).stream()
         .map(spaceMapper::toSpaceResponse)
         .toList();
   }
@@ -121,13 +119,13 @@ public class SpaceServiceImpl implements SpaceService {
         bookingRepository.findAllBySpaceIdAndStatusNotAndStartTimeBeforeAndEndTimeAfter(
             id, BookingStatus.CANCELLED, closeDateTime, openDateTime);
 
-    var earliestStart = LocalDateTime.now().plusHours(MIN_BOOKING_LEAD_HOURS);
+    var earliestStart = LocalDateTime.now().plusHours(BookingService.MIN_BOOKING_LEAD_HOURS);
     var availableSlots = new ArrayList<TimeSlotResponse>();
     for (var start = openDateTime;
         start.isBefore(closeDateTime);
-        start = start.plusMinutes(SLOT_MINUTES)) {
+        start = start.plusMinutes(BookingService.SLOT_MINUTES)) {
       var slotStart = start;
-      var slotEnd = start.plusMinutes(SLOT_MINUTES);
+      var slotEnd = start.plusMinutes(BookingService.SLOT_MINUTES);
 
       if (slotEnd.isAfter(closeDateTime)) {
         break;
@@ -162,7 +160,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public void save(Long id) {
     Long userId = authService.getCurrentUserId();
     var user =
@@ -184,7 +182,7 @@ public class SpaceServiceImpl implements SpaceService {
 
   @Override
   @Transactional
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('TENANT')")
   public void unsave(Long id) {
     Long userId = authService.getCurrentUserId();
     var user =
@@ -330,6 +328,18 @@ public class SpaceServiceImpl implements SpaceService {
     var space = getOwnedSpaceByIdOrThrow(id, "You are not allowed to delete this space");
     space.setStatus(SpaceStatus.DELETED);
     spaceRepository.save(space);
+  }
+
+  @Override
+  @Transactional
+  @PreAuthorize("hasRole('HOST')")
+  public void deleteHostedByCurrentUser() {
+    Long userId = authService.getCurrentUserId();
+    var spaces = spaceRepository.findAllByHostIdAndStatusNot(userId, SpaceStatus.DELETED);
+    for (var space : spaces) {
+      space.setStatus(SpaceStatus.DELETED);
+      spaceRepository.save(space);
+    }
   }
 
   private Space getOwnedSpaceByIdOrThrow(Long id, String message) {

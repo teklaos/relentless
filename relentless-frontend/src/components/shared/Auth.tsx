@@ -9,7 +9,7 @@ import AuthBrandPanel from "@/components/shared/ui/AuthBrandPanel";
 import { User, Mail, ArrowRight, Check } from "lucide-react";
 import PasswordField from "@/components/shared/ui/PasswordField";
 import OtpInput from "@/components/shared/ui/OtpInput";
-import { EMAIL_RE, PASSWORD_RE, PASSWORD_HINT, USER_MIN_AGE, maxDobIso } from "@/lib/format";
+import { EMAIL_RE, PASSWORD_RE, PASSWORD_HINT, TENANT_MIN_AGE, maxDobIso } from "@/lib/format";
 
 interface AuthProps {
   mode: "login" | "register";
@@ -229,7 +229,7 @@ export default function Auth({ mode }: AuthProps) {
                 value={form.dob}
                 onChange={(iso) => set("dob", iso)}
                 placeholder="Date of birth"
-                maxDate={maxDobIso(USER_MIN_AGE)}
+                maxDate={maxDobIso(TENANT_MIN_AGE)}
               />
             </div>
           )}
