@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useApp } from "@/context/AppContext";
-import Explore from "@/components/user/Explore";
+import Explore from "@/components/tenant/Explore";
 import { Space, Category } from "@/lib/types";
 import { fetchSpaces, fetchCategories } from "@/lib/api";
 

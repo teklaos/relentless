@@ -1,6 +1,6 @@
 "use client";
 
-import SpaceCard from "@/components/user/SpaceCard";
+import SpaceCard from "@/components/tenant/SpaceCard";
 import { Space } from "@/lib/types";
 import { Bookmark } from "lucide-react";
 

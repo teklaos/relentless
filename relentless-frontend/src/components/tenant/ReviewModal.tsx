@@ -37,29 +37,17 @@ export default function ReviewModal({ booking, onClose, onSubmit }: ReviewModalP
     >
       <div className="review-modal">
         <div className="book-label">RATING - 1 TO 5</div>
-        <div className="rating-pick">
+        <div className="rating-pick" onMouseLeave={() => setHover(0)}>
           {[1, 2, 3, 4, 5].map((n) => (
             <button
               key={n}
               className={`rating-star ${n <= (hover || rating) ? "on" : ""}`}
               onMouseEnter={() => setHover(n)}
-              onMouseLeave={() => setHover(0)}
               onClick={() => setRating(n)}
             >
-              <Star size={16} fill="currentColor" strokeWidth={0} />
+              <Star size={44} strokeWidth={0} />
             </button>
           ))}
-          <span
-            className="mono"
-            style={{
-              alignSelf: "center",
-              marginLeft: 10,
-              color: "var(--ink-3)",
-              fontSize: 12
-            }}
-          >
-            {rating}.0 / 5.0
-          </span>
         </div>
 
         <div className="book-label" style={{ marginTop: 12 }}>
@@ -69,7 +57,7 @@ export default function ReviewModal({ booking, onClose, onSubmit }: ReviewModalP
           maxLength={255}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="What was good? What could be better? Be specific — future renters rely on this."
+          placeholder="What was good? What could be better?"
         />
       </div>
     </Modal>
