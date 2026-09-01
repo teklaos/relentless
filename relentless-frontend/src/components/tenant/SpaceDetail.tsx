@@ -135,7 +135,7 @@ export default function SpaceDetail({ space, saved, onClose, onSave, onBook }: S
               )}
             </div>
 
-            {images.length > 0 && (
+            {images.length > 1 && (
               <div className="detail-thumbs">
                 {thumbs.map((key, i) => (
                   <div key={i} className="detail-thumb">
