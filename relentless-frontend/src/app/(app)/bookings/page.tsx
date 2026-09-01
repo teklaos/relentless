@@ -1,7 +1,7 @@
 "use client";
 
 import { useApp } from "@/context/AppContext";
-import History from "@/components/user/History";
+import History from "@/components/tenant/History";
 import HostBookings from "@/components/host/Bookings";
 
 export default function BookingsPage() {

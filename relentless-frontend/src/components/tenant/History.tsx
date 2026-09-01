@@ -130,11 +130,6 @@ export default function History({ bookings, onLeaveReview, onPayBooking, onOpenS
                       <Check size={11} /> REVIEWED
                     </span>
                   )}
-                  {b.status === "CANCELLED" && (
-                    <button className="btn sm ghost" disabled>
-                      CANCELLED
-                    </button>
-                  )}
                 </span>
                 <button
                   className="br-menu"
@@ -176,7 +171,6 @@ export default function History({ bookings, onLeaveReview, onPayBooking, onOpenS
                 <Check size={14} /> Already reviewed
               </div>
             )}
-            {menuBooking.status === "CANCELLED" && <div className="mono br-menu-note">Booking cancelled</div>}
             {menuBooking.status === "PENDING" && (
               <button
                 className="btn accent"
@@ -188,7 +182,9 @@ export default function History({ bookings, onLeaveReview, onPayBooking, onOpenS
                 <CreditCard size={14} /> PROCEED TO PAYMENT
               </button>
             )}
-            {menuBooking.status === "CONFIRMED" && <div className="mono br-menu-note">No actions available</div>}
+            {(menuBooking.status === "CONFIRMED" || menuBooking.status === "CANCELLED") && (
+              <div className="mono br-menu-note">No actions available</div>
+            )}
           </div>
         </Modal>
       )}

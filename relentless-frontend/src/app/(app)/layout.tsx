@@ -8,9 +8,9 @@ import type { User } from "@/lib/types";
 import { HostProvider } from "@/context/HostContext";
 import Sidebar from "@/components/shared/Sidebar";
 import BottomNav from "@/components/shared/BottomNav";
-import SpaceDetail from "@/components/user/SpaceDetail";
-import ReviewModal from "@/components/user/ReviewModal";
-import PaymentModal from "@/components/user/PaymentModal";
+import SpaceDetail from "@/components/tenant/SpaceDetail";
+import ReviewModal from "@/components/tenant/ReviewModal";
+import PaymentModal from "@/components/tenant/PaymentModal";
 import AuthGateModal from "@/components/shared/AuthGateModal";
 
 const ROUTE_ROLES: [string, User["role"][]][] = [
