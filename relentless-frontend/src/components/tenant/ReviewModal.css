@@ -1,31 +1,35 @@
 .rating-pick {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   margin-bottom: 16px;
 }
 
 .rating-star {
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--hairline);
-  border-radius: 2px;
+  border: none;
+  background: none;
+  padding: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.12s;
-  color: var(--ink-4);
+  color: var(--hairline-strong);
+  transition:
+    color 0.12s,
+    transform 0.12s;
 }
 
-.rating-star:hover,
-.rating-star.on {
-  border-color: var(--ink);
-  color: var(--ink);
+.rating-star svg {
+  fill: currentcolor;
+}
+
+.rating-star:hover {
+  transform: scale(1.12);
 }
 
 .rating-star.on {
-  background: var(--ink);
-  color: var(--bg);
+  color: var(--accent);
 }
 
 .review-modal textarea {
