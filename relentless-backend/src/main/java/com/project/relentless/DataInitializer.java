@@ -24,7 +24,9 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -178,7 +180,7 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("25.00"))
             .publishedOn(LocalDate.of(2025, 12, 1))
-            .workingHours(workingHours)
+            .workingHours(new ArrayList<>(workingHours))
             .build();
 
     var space2 =
@@ -196,7 +198,7 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("40.00"))
             .publishedOn(LocalDate.of(2025, 11, 15))
-            .workingHours(workingHours)
+            .workingHours(new ArrayList<>(workingHours))
             .build();
 
     var space3 =
@@ -213,7 +215,7 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("55.00"))
             .publishedOn(LocalDate.of(2026, 1, 10))
-            .workingHours(workingHours)
+            .workingHours(new ArrayList<>(workingHours))
             .build();
 
     var space4 =
@@ -231,7 +233,7 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("20.00"))
             .publishedOn(LocalDate.of(2026, 1, 22))
-            .workingHours(workingHours)
+            .workingHours(new ArrayList<>(workingHours))
             .build();
 
     var space5 =
@@ -248,7 +250,7 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("25.00"))
             .publishedOn(LocalDate.of(2026, 2, 3))
-            .workingHours(workingHours)
+            .workingHours(new ArrayList<>(workingHours))
             .build();
 
     var space6 =
@@ -265,7 +267,7 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("50.00"))
             .publishedOn(LocalDate.of(2026, 2, 14))
-            .workingHours(workingHours)
+            .workingHours(new ArrayList<>(workingHours))
             .build();
 
     var space7 =
@@ -283,7 +285,7 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("35.00"))
             .publishedOn(LocalDate.of(2026, 3, 1))
-            .workingHours(workingHours)
+            .workingHours(new ArrayList<>(workingHours))
             .build();
 
     var space8 =
@@ -300,7 +302,7 @@ public class DataInitializer {
                     .build())
             .pricePerHour(new BigDecimal("20.00"))
             .publishedOn(LocalDate.of(2026, 3, 12))
-            .workingHours(workingHours)
+            .workingHours(new ArrayList<>(workingHours))
             .build();
 
     var spaces = List.of(space1, space2, space3, space4, space5, space6, space7, space8);
@@ -319,21 +321,29 @@ public class DataInitializer {
     space8.setCategory(category8);
 
     space1.setAmenities(
-        Set.of(amenity1, amenity2, amenity4, amenity5, amenity8, amenity10, amenity16));
-    space2.setAmenities(Set.of(amenity2, amenity3, amenity5, amenity7, amenity9, amenity10));
+        new HashSet<>(
+            Set.of(amenity1, amenity2, amenity4, amenity5, amenity8, amenity10, amenity16)));
+    space2.setAmenities(
+        new HashSet<>(Set.of(amenity2, amenity3, amenity5, amenity7, amenity9, amenity10)));
     space3.setAmenities(
-        Set.of(amenity1, amenity2, amenity5, amenity7, amenity9, amenity12, amenity17));
-    space4.setAmenities(Set.of(amenity1, amenity3, amenity8, amenity11, amenity15, amenity17));
+        new HashSet<>(
+            Set.of(amenity1, amenity2, amenity5, amenity7, amenity9, amenity12, amenity17)));
+    space4.setAmenities(
+        new HashSet<>(Set.of(amenity1, amenity3, amenity8, amenity11, amenity15, amenity17)));
     space5.setAmenities(
-        Set.of(amenity1, amenity2, amenity3, amenity4, amenity8, amenity10, amenity16));
-    space6.setAmenities(Set.of(amenity3, amenity5, amenity7, amenity14));
+        new HashSet<>(
+            Set.of(amenity1, amenity2, amenity3, amenity4, amenity8, amenity10, amenity16)));
+    space6.setAmenities(new HashSet<>(Set.of(amenity3, amenity5, amenity7, amenity14)));
     space7.setAmenities(
-        Set.of(amenity1, amenity2, amenity3, amenity6, amenity8, amenity11, amenity12, amenity13));
-    space8.setAmenities(Set.of(amenity1, amenity8, amenity10, amenity11, amenity16));
+        new HashSet<>(
+            Set.of(
+                amenity1, amenity2, amenity3, amenity6, amenity8, amenity11, amenity12,
+                amenity13)));
+    space8.setAmenities(new HashSet<>(Set.of(amenity1, amenity8, amenity10, amenity11, amenity16)));
 
     spaceRepository.saveAll(spaces);
 
-    user.setSavedSpaces(Set.of(space1));
+    user.setSavedSpaces(new HashSet<>(Set.of(space1)));
 
     userRepository.saveAll(List.of(user, host));
 
