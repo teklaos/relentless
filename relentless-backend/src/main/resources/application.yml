@@ -35,6 +35,7 @@ spring:
 
 app:
   frontend-url: ${FRONTEND_URL}
+  default-password: ${DEFAULT_PASSWORD}
 
 jwt:
   access:

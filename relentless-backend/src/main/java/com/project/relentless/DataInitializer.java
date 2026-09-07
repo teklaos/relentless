@@ -20,6 +20,7 @@ import com.project.relentless.feature.wallet.Transaction;
 import com.project.relentless.feature.wallet.TransactionRepository;
 import com.project.relentless.feature.wallet.TransactionType;
 import com.project.relentless.feature.wallet.WalletService;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.*;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +39,9 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class DataInitializer {
+
+  @Value("${app.default-password}")
+  private String defaultPassword;
 
   private final BookingRepository bookingRepository;
   private final TransactionRepository transactionRepository;
@@ -48,6 +53,7 @@ public class DataInitializer {
   private final PasswordEncoder passwordEncoder;
 
   @EventListener(ContextRefreshedEvent.class)
+  @Transactional
   public void init() {
     if (bookingRepository.count() > 0
         || transactionRepository.count() > 0
@@ -63,7 +69,7 @@ public class DataInitializer {
     var user =
         User.builder()
             .username("user")
-            .passwordHash(passwordEncoder.encode("P@ssw0rd"))
+            .passwordHash(passwordEncoder.encode(defaultPassword))
             .email("user@gmail.com")
             .dateOfBirth(LocalDate.of(2005, 1, 12))
             .build();
@@ -71,7 +77,7 @@ public class DataInitializer {
     var host =
         User.builder()
             .username("host")
-            .passwordHash(passwordEncoder.encode("P@ssw0rd"))
+            .passwordHash(passwordEncoder.encode(defaultPassword))
             .email("host@gmail.com")
             .firstName("John")
             .lastName("Doe")
@@ -85,7 +91,7 @@ public class DataInitializer {
     var admin =
         User.builder()
             .username("admin")
-            .passwordHash(passwordEncoder.encode("P@ssw0rd"))
+            .passwordHash(passwordEncoder.encode(defaultPassword))
             .email("admin@gmail.com")
             .dateOfBirth(LocalDate.of(2005, 3, 7))
             .role(Role.ADMIN)
