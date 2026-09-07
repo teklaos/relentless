@@ -1,9 +1,8 @@
 package com.project.relentless.feature.payment;
 
-import com.project.relentless.feature.booking.BookingStatus;
 import com.project.relentless.feature.booking.repository.BookingRepository;
+import com.project.relentless.feature.booking.service.BookingService;
 import com.project.relentless.feature.email.EmailService;
-import com.project.relentless.feature.wallet.WalletService;
 import com.stripe.model.checkout.Session;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,7 @@ public class PaymentController {
 
   private final PaymentService paymentService;
   private final BookingRepository bookingRepository;
-  private final WalletService walletService;
+  private final BookingService bookingService;
   private final EmailService emailService;
 
   @PostMapping("/webhook")
@@ -33,15 +32,11 @@ public class PaymentController {
       }
 
       Long bookingId = Long.valueOf(session.getMetadata().get("bookingId"));
-      var booking =
-          bookingRepository
-              .findById(bookingId)
-              .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-
-      if (booking.getStatus() == BookingStatus.PENDING) {
-        booking.setStatus(BookingStatus.CONFIRMED);
-        bookingRepository.save(booking);
-        walletService.credit(bookingId);
+      if (bookingService.confirmPaid(bookingId)) {
+        var booking =
+            bookingRepository
+                .findById(bookingId)
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
         emailService.sendBookingConfirmation(
             booking.getUser().getEmail(),

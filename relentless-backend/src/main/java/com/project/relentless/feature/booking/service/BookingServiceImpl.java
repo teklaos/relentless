@@ -12,6 +12,7 @@ import com.project.relentless.feature.payment.PaymentService;
 import com.project.relentless.feature.space.SpaceStatus;
 import com.project.relentless.feature.space.repository.SpaceRepository;
 import com.project.relentless.feature.user.UserRepository;
+import com.project.relentless.feature.wallet.WalletService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -23,10 +24,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
@@ -35,8 +38,9 @@ public class BookingServiceImpl implements BookingService {
   private final BookingMapper bookingMapper;
   private final UserRepository userRepository;
   private final SpaceRepository spaceRepository;
-  private final AuthService authService;
   private final PaymentService paymentService;
+  private final WalletService walletService;
+  private final AuthService authService;
 
   private static final int CANCEL_DELAY_MINUTES = 5;
 
@@ -162,6 +166,28 @@ public class BookingServiceImpl implements BookingService {
     saved.setCheckoutSessionUrl(session.getUrl());
 
     return bookingMapper.toBookingCheckoutResponse(saved);
+  }
+
+  @Override
+  @Transactional
+  public boolean confirmPaid(Long id) {
+    var booking =
+        bookingRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+
+    if (booking.getStatus() != BookingStatus.PENDING) {
+      if (booking.getStatus() != BookingStatus.CANCELLED) {
+        log.error("Payment received for non-pending booking {}: {}", id, booking.getStatus());
+      }
+      return false;
+    }
+
+    booking.setStatus(BookingStatus.CONFIRMED);
+    bookingRepository.save(booking);
+    walletService.credit(id);
+
+    return true;
   }
 
   @Override
