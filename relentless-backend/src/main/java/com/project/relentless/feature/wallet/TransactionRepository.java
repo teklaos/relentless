@@ -1,7 +1,9 @@
 package com.project.relentless.feature.wallet;
 
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
   List<Transaction> findAllByOrderByCreatedAtDesc();
@@ -9,4 +11,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
   List<Transaction> findAllByHostIdOrderByCreatedAtDesc(Long userId);
 
   boolean existsByBookingId(Long bookingId);
+
+  @Query(
+      """
+      SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t
+      WHERE t.host.id = :userId AND t.type = :type
+      """)
+  BigDecimal sumByHostIdAndType(Long userId, TransactionType type);
 }

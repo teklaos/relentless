@@ -6,6 +6,7 @@ import io.jsonwebtoken.JwtException;
 import io.minio.errors.ErrorResponseException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -44,6 +45,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({
     IllegalArgumentException.class,
+    ConstraintViolationException.class,
     MethodArgumentTypeMismatchException.class,
     HttpMessageNotReadableException.class,
     HttpMediaTypeNotSupportedException.class,

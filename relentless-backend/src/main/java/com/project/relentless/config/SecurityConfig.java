@@ -4,6 +4,7 @@ import com.project.relentless.feature.auth.jwt.JwtAuthFilter;
 import com.project.relentless.feature.auth.jwt.JwtAuthenticationEntryPoint;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,6 +25,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+  @Value("${app.frontend-url}")
+  private String frontendUrl;
 
   private final JwtAuthFilter jwtAuthFilter;
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -63,10 +67,9 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     var configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+    configuration.setAllowedOrigins(List.of(frontendUrl));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("*"));
-    configuration.setAllowCredentials(true);
 
     var source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);

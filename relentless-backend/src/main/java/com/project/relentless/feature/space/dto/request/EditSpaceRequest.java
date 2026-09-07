@@ -12,6 +12,6 @@ public record EditSpaceRequest(
     @Valid AddressRequest address,
     @DecimalMin(value = "1.00") @Digits(integer = 10, fraction = 2) BigDecimal pricePerHour,
     @Size(min = 1) @Valid List<WorkingHoursRequest> workingHours,
-    List<String> imageKeys,
+    @Size(min = 1) List<String> imageKeys,
     Long categoryId,
     Set<Long> amenityIds) {}

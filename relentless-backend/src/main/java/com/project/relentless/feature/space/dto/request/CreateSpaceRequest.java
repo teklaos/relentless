@@ -13,6 +13,6 @@ public record CreateSpaceRequest(
     @NotNull @DecimalMin(value = "1.00") @Digits(integer = 10, fraction = 2)
         BigDecimal pricePerHour,
     @NotEmpty @Valid List<WorkingHoursRequest> workingHours,
-    List<String> imageKeys,
+    @NotEmpty List<String> imageKeys,
     @NotNull Long categoryId,
     Set<Long> amenityIds) {}

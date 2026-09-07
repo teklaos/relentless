@@ -149,11 +149,14 @@ public class UserServiceImpl implements UserService {
     }
 
     user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+    refreshTokenService.deleteAllByUserId(userId);
+
     userRepository.save(user);
   }
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('TENANT') or hasRole('HOST')")
   public void deleteCurrent() {
     Long userId = authService.getCurrentUserId();
     var user =
