@@ -24,6 +24,7 @@ const ROUTE_ROLES: [string, User["role"][]][] = [
   ["/users", ["ADMIN"]],
   ["/transactions", ["ADMIN"]],
   ["/statistics", ["ADMIN"]],
+  ["/profile/privacy", ["TENANT", "HOST"]],
   ["/profile", ["TENANT", "HOST", "ADMIN"]]
 ];
 const PUBLIC_PATHS = ["/explore"];

@@ -64,7 +64,7 @@ async function request<T>(path: string, init?: RequestInit, retry = true): Promi
   const res = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers: {
-      "Content-Type": "application/json",
+      ...(init?.body ? { "Content-Type": "application/json" } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...init?.headers
     }
