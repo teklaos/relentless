@@ -14,4 +14,14 @@ public record EditSpaceRequest(
     @Size(min = 1) @Valid List<WorkingHoursRequest> workingHours,
     @Size(min = 1) List<String> imageKeys,
     Long categoryId,
-    Set<Long> amenityIds) {}
+    Set<Long> amenityIds) {
+
+  @AssertTrue(message = "must not contain the same day of week more than once")
+  public boolean isWorkingHoursUnique() {
+    if (workingHours == null) {
+      return true;
+    }
+    return workingHours.stream().map(WorkingHoursRequest::dayOfWeek).distinct().count()
+        == workingHours.size();
+  }
+}

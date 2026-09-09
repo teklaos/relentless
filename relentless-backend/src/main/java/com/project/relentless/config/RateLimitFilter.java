@@ -34,7 +34,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     var capacity = getCapacity(request);
-    var bucket = buckets.get(capacity + ":" + getClientIp(request), _ -> getNewBucket(capacity));
+    var bucket = buckets.get(capacity + ":" + request.getRemoteAddr(), _ -> getNewBucket(capacity));
     var probe = bucket.tryConsumeAndReturnRemaining(1);
 
     if (probe.isConsumed()) {
@@ -57,14 +57,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
       return MAX_IMAGE_REQUESTS_PER_MINUTE;
     }
     return MAX_REQUESTS_PER_MINUTE;
-  }
-
-  private String getClientIp(HttpServletRequest request) {
-    String header = request.getHeader("X-Forwarded-For");
-    if (header == null || header.isBlank()) {
-      return request.getRemoteAddr();
-    }
-    return header.split(",")[0].trim();
   }
 
   private Bucket getNewBucket(long capacity) {

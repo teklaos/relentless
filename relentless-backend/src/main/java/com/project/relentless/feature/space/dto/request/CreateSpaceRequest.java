@@ -15,4 +15,14 @@ public record CreateSpaceRequest(
     @NotEmpty @Valid List<WorkingHoursRequest> workingHours,
     @NotEmpty List<String> imageKeys,
     @NotNull Long categoryId,
-    Set<Long> amenityIds) {}
+    Set<Long> amenityIds) {
+
+  @AssertTrue(message = "must not contain the same day of week more than once")
+  public boolean isWorkingHoursUnique() {
+    if (workingHours == null) {
+      return true;
+    }
+    return workingHours.stream().map(WorkingHoursRequest::dayOfWeek).distinct().count()
+        == workingHours.size();
+  }
+}
