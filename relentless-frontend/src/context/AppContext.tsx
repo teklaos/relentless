@@ -368,7 +368,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await leaveReview({ bookingId: reviewing.id, rating, comment });
         setBookings(await fetchMyBookings());
         setReviewing(null);
-        showToast(`REVIEW SUBMITTED`);
+        showToast("REVIEW SUBMITTED");
       } catch {
         showToast("REVIEW FAILED");
       }
