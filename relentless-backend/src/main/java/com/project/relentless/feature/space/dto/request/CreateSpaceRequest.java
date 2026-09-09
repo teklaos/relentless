@@ -13,6 +13,16 @@ public record CreateSpaceRequest(
     @NotNull @DecimalMin(value = "1.00") @Digits(integer = 10, fraction = 2)
         BigDecimal pricePerHour,
     @NotEmpty @Valid List<WorkingHoursRequest> workingHours,
-    List<String> imageKeys,
+    @NotEmpty List<String> imageKeys,
     @NotNull Long categoryId,
-    Set<Long> amenityIds) {}
+    Set<Long> amenityIds) {
+
+  @AssertTrue(message = "must not contain the same day of week more than once")
+  public boolean isWorkingHoursUnique() {
+    if (workingHours == null) {
+      return true;
+    }
+    return workingHours.stream().map(WorkingHoursRequest::dayOfWeek).distinct().count()
+        == workingHours.size();
+  }
+}

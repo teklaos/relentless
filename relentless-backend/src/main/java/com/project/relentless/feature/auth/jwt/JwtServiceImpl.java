@@ -20,6 +20,7 @@ public class JwtServiceImpl implements JwtService {
   private String secret;
 
   private static final long ACCESS_TOKEN_EXPIRATION_MILLIS = 60 * 60 * 1000L;
+  private static final String ISSUER = "relentless-backend";
 
   private Key key;
 
@@ -36,7 +37,7 @@ public class JwtServiceImpl implements JwtService {
     return Jwts.builder()
         .setSubject(id.toString())
         .setIssuedAt(now)
-        .setIssuer("relentless-backend")
+        .setIssuer(ISSUER)
         .setExpiration(exp)
         .signWith(key)
         .compact();
@@ -53,7 +54,12 @@ public class JwtServiceImpl implements JwtService {
   }
 
   private Claims extractAllClaims(String token) {
-    return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    return Jwts.parserBuilder()
+        .setSigningKey(key)
+        .requireIssuer(ISSUER)
+        .build()
+        .parseClaimsJws(token)
+        .getBody();
   }
 
   @Override

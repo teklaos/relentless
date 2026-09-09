@@ -6,11 +6,12 @@ import io.jsonwebtoken.JwtException;
 import io.minio.errors.ErrorResponseException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.impl.InvalidContentTypeException;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.util.StringUtils;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -55,11 +57,27 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
+  public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(
+      MethodArgumentNotValidException ex) {
     String message =
         ex.getBindingResult().getFieldErrors().stream()
-            .map(err -> StringUtils.capitalize(err.getField()) + " " + err.getDefaultMessage())
-            .collect(Collectors.joining(", "));
+            .map(
+                err -> StringUtils.capitalize(err.getField()) + " " + err.getDefaultMessage() + ".")
+            .collect(Collectors.joining(" "));
+
+    if (message.isBlank()) {
+      message = "Bad request";
+    }
+
+    return buildResponse(HttpStatus.BAD_REQUEST, message, ex);
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
+    String message =
+        ex.getConstraintViolations().stream()
+            .map(ConstraintViolation::getMessage)
+            .collect(Collectors.joining(" "));
 
     if (message.isBlank()) {
       message = "Bad request";

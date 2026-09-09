@@ -98,9 +98,17 @@ public class EmailServiceImpl implements EmailService {
       helper.setText(text, false);
 
       javaMailSender.send(mimeMessage);
-      log.info("Email sent successfully to: {}", to);
+      log.info("Email sent successfully to: {}", mask(to));
     } catch (MessagingException | UnsupportedEncodingException | MailException ex) {
-      log.error("Error sending email to {}: {}", to, ex.getMessage(), ex);
+      log.error("Error sending email to {}: {}", mask(to), ex.getMessage(), ex);
     }
+  }
+
+  private String mask(String email) {
+    int atIndex = email.indexOf('@');
+    if (atIndex < 1) {
+      return "***";
+    }
+    return email.charAt(0) + "***" + email.substring(atIndex);
   }
 }

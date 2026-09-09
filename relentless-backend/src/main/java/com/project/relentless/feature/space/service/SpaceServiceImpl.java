@@ -48,9 +48,9 @@ public class SpaceServiceImpl implements SpaceService {
   private final CategoryRepository categoryRepository;
   private final AmenityRepository amenityRepository;
   private final AddressMapper addressMapper;
-  private final AuthService authService;
   private final WorkingHoursMapper workingHoursMapper;
   private final ImageService imageService;
+  private final AuthService authService;
 
   @Override
   public List<SpaceResponse> getAll() {

@@ -7,7 +7,6 @@ import com.stripe.model.Event;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
@@ -25,7 +24,6 @@ public class PaymentServiceImpl implements PaymentService {
   private String frontendUrl;
 
   @Override
-  @Transactional
   public Session createCheckoutSession(Booking booking) {
     try {
       var params =
@@ -65,7 +63,6 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
   @Override
-  @Transactional
   public Event constructWebhookEvent(String payload, String signatureHeader) {
     try {
       return Webhook.constructEvent(payload, signatureHeader, stripeWebhookSecret);

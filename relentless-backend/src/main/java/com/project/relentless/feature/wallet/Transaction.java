@@ -16,6 +16,8 @@ import org.hibernate.proxy.HibernateProxy;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(
+    indexes = @Index(name = "idx_transaction_host_created_at", columnList = "host_id, created_at"))
 @Builder
 public class Transaction {
 

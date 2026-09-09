@@ -32,10 +32,10 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final SpaceService spaceService;
-  private final AuthService authService;
   private final RefreshTokenService refreshTokenService;
   private final ImageService imageService;
   private final PasswordEncoder passwordEncoder;
+  private final AuthService authService;
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
@@ -149,11 +149,14 @@ public class UserServiceImpl implements UserService {
     }
 
     user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+    refreshTokenService.deleteAllByUserId(userId);
+
     userRepository.save(user);
   }
 
   @Override
   @Transactional
+  @PreAuthorize("hasRole('TENANT') or hasRole('HOST')")
   public void deleteCurrent() {
     Long userId = authService.getCurrentUserId();
     var user =

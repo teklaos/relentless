@@ -103,8 +103,8 @@ public class WalletServiceImpl implements WalletService {
   }
 
   private BigDecimal getBalanceByUserId(Long userId) {
-    return transactionRepository.findAllByHostIdOrderByCreatedAtDesc(userId).stream()
-        .map(t -> t.getType() == TransactionType.CREDIT ? t.getAmount() : t.getAmount().negate())
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
+    return transactionRepository
+        .sumByHostIdAndType(userId, TransactionType.CREDIT)
+        .subtract(transactionRepository.sumByHostIdAndType(userId, TransactionType.DEBIT));
   }
 }

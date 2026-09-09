@@ -55,3 +55,4 @@ jobs:
           STRIPE_SECRET_KEY: ci-dummy-stripe-secret-key
           STRIPE_WEBHOOK_SECRET: ci-dummy-stripe-webhook-secret
           FRONTEND_URL: http://localhost:3000
+          DEFAULT_PASSWORD: testpassword

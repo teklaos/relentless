@@ -24,7 +24,9 @@ import org.hibernate.proxy.HibernateProxy;
 @Table(
     indexes = {
       @Index(name = "idx_booking_user", columnList = "user_id"),
-      @Index(name = "idx_booking_space_time", columnList = "space_id, start_time, end_time")
+      @Index(name = "idx_booking_space_time", columnList = "space_id, start_time, end_time"),
+      @Index(name = "idx_booking_status_created_at", columnList = "status, created_at"),
+      @Index(name = "idx_booking_status_end_time", columnList = "status, end_time"),
     })
 @Builder
 public class Booking {

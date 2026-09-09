@@ -18,6 +18,8 @@ public interface BookingService {
 
   BookingCheckoutResponse create(CreateBookingRequest request);
 
+  boolean confirmPaid(Long id);
+
   void cancelPending();
 
   void completeFinished();
