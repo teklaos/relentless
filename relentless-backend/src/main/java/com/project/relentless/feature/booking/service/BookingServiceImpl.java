@@ -42,7 +42,7 @@ public class BookingServiceImpl implements BookingService {
   private final WalletService walletService;
   private final AuthService authService;
 
-  private static final int CANCEL_DELAY_MINUTES = 5;
+  private static final int CANCEL_DELAY_MINUTES = 2;
 
   @Override
   @PreAuthorize("hasRole('TENANT')")
